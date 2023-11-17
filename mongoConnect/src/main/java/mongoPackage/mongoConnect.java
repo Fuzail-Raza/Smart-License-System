@@ -64,7 +64,7 @@ public class mongoConnect{
         System.out.println("Document deleted.");
     }
     public Document readDocument(String ide){
-        Document readDoc = collection.find(eq("Cnic", "3520101367325")).first();
+        Document readDoc = collection.find(eq("Cnic", ide)).first();
         if (readDoc != null) {
 //            System.out.println("Document found: " + readDoc.toJson());
 

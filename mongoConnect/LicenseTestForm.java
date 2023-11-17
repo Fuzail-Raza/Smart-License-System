@@ -291,7 +291,7 @@ class TestForm {
                 if(e.getActionCommand().equals("Retrieve")){
 
                     mongoConnect userInfo=new mongoConnect();
-                    Document userFetchData=userInfo.readDocument(String.valueOf(learnerInput.getText()));
+                    Document userFetchData=userInfo.readDocument(textField1.getText().trim());
                     nameLabel.setText(userFetchData.getString("Name"));
                     cnicLabel.setText(userFetchData.getString("Cnic"));
                     fatherNameLabel.setText(userFetchData.getString("Father Name"));
