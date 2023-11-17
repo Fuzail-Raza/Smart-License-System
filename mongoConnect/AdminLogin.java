@@ -82,7 +82,7 @@ class Login{
                         documentMap.put("Image", d1.storeImage(path));
 //                        d1.createDocument(documentMap);
 //                        d1.createDocument(39091, userName.getText(), String.valueOf(password.getPassword()), "Lahore",path);
-                            Document d=d1.readDocument(39096);
+//                            Document d=d1.readDocument(39096);
 //                            JLabel imageLabel=d1.fetchImage(d.get("Image",Binary.class));
 //                            JFrame f1=new JFrame();
 //                            f1.setVisible(true);

@@ -48,7 +48,7 @@ public class mongoConnect{
 //                    .append("Image",storeImage(imagePa));
             Document newPerson = new Document(documentMap);
             collection.insertOne(newPerson);
-            JOptionPane.showMessageDialog(null,"Document inserted: " + newPerson.toJson());
+//            JOptionPane.showMessageDialog(null,"Document inserted: " + newPerson.toJson());
         }
         catch (Exception e){
             JOptionPane.showMessageDialog(null,e);
@@ -63,8 +63,8 @@ public class mongoConnect{
         collection.deleteOne(eq("Ide", id));
         System.out.println("Document deleted.");
     }
-    public Document readDocument(int id){
-        Document readDoc = collection.find(eq("Ide", id)).first();
+    public Document readDocument(String ide){
+        Document readDoc = collection.find(eq("Cnic", "3520101367325")).first();
         if (readDoc != null) {
 //            System.out.println("Document found: " + readDoc.toJson());
 
@@ -94,7 +94,7 @@ public class mongoConnect{
 
     }
 
-    public JLabel fetchImage(Binary retrievedImageBinary ){
+    public byte[] fetchImage(Binary retrievedImageBinary ){
 
         if (retrievedImageBinary != null) {
 
@@ -106,7 +106,7 @@ public class mongoConnect{
                 ImageIcon imageIcon = new ImageIcon(retrievedImageBytes);
                 l1.setIcon(imageIcon);
 
-                return l1;
+                return retrievedImageBytes;
             }
             else {
                 System.out.println("Image data is null. Unable to display the image.");
