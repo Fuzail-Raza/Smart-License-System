@@ -122,7 +122,8 @@ public class DrivingInfo extends JFrame {
 
         submitButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                    mongoConnect userData=new mongoConnect();
+
+                mongoConnect userData=new mongoConnect("Driving_Center","testing");
                 Map<String, Object> documentMap = new HashMap<>();
                 String path="C:\\Users\\Administrator\\Downloads\\Picsart_23-04-22_22-138-37-352.jpg";
             try {

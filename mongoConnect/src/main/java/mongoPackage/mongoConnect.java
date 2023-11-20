@@ -22,19 +22,17 @@ public class mongoConnect{
     String uri;
     MongoDatabase database;
     MongoCollection<Document> collection;
-    public mongoConnect(){
+    public mongoConnect(String databaseName,String collectionName){
         uri = "mongodb+srv://Fuzail:Fuzailraza111@cluster0.belxlmj.mongodb.net/?retryWrites=true&w=majority";
 
         try {
             MongoClient mongoClient = MongoClients.create(uri);
-            database = mongoClient.getDatabase("Driving_Center");
-            collection = database.getCollection("testing");
-
+            database = mongoClient.getDatabase(databaseName);
+            collection = database.getCollection(collectionName);
 
 
         } catch (Exception e) {
             System.out.println(e);
-            JOptionPane.showMessageDialog(null, "User Login SuccessFully + Conncetion");
         }
 
     }
@@ -63,8 +61,8 @@ public class mongoConnect{
         collection.deleteOne(eq("Ide", id));
         System.out.println("Document deleted.");
     }
-    public Document readDocument(String ide){
-        Document readDoc = collection.find(eq("Cnic", ide)).first();
+    public Document readDocument(String fieldName,String ide){
+        Document readDoc = collection.find(eq(fieldName, ide)).first();
         if (readDoc != null) {
 //            System.out.println("Document found: " + readDoc.toJson());
 
@@ -124,7 +122,7 @@ public class mongoConnect{
     public static void main(String[] args) {
 
 
-        new mongoConnect();
+        new mongoConnect("Driving_Center","testing");
 
 
     }

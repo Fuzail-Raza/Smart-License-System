@@ -290,24 +290,29 @@ class TestForm {
 
                 if(e.getActionCommand().equals("Retrieve")){
 
-                    mongoConnect userInfo=new mongoConnect();
-                    Document userFetchData=userInfo.readDocument(textField1.getText().trim());
-                    nameLabel.setText(userFetchData.getString("Name"));
-                    cnicLabel.setText(userFetchData.getString("Cnic"));
-                    fatherNameLabel.setText(userFetchData.getString("Father Name"));
-                    fatherCniclabel.setText(userFetchData.getString("Father Cnic"));
-                    dateOfBirthLabel.setText(userFetchData.getString("Date of Birth"));
-                    dateOfIssueLabel.setText(userFetchData.getString("Date of Issue"));
-                    dateOfExpiryLabel.setText(userFetchData.getString("Date of Expiry"));
-                    phoneNoLabel.setText(userFetchData.getString("Phone No"));
-                    ageLabel.setText(calculateAge(userFetchData.getString("Date of Birth")));
-                    typeLabel.setText(userFetchData.getString("Type"));
-                    String expiry= String.valueOf(calculateExpiryDuration(userFetchData.getString("Date of Issue"),userFetchData.getString("Date of Expiry")));
-                    reamainingValidityLabel.setText(String.valueOf(expiry + " Days"));
-                    bloodGroupLabel.setText(userFetchData.getString("Blood Group"));
-                    byte[] imageData = userInfo.fetchImage(userFetchData.get("Image", Binary.class));
-                    ImageIcon imageIcon = new ImageIcon(imageData);
-                    picture.setIcon(imageIcon);
+                    mongoConnect userInfo=new mongoConnect("Driving_Center","testing");
+                    try {
+                        Document userFetchData = userInfo.readDocument("Cnic", textField1.getText().trim());
+                        nameLabel.setText(userFetchData.getString("Name"));
+                        cnicLabel.setText(userFetchData.getString("Cnic"));
+                        fatherNameLabel.setText(userFetchData.getString("Father Name"));
+                        fatherCniclabel.setText(userFetchData.getString("Father Cnic"));
+                        dateOfBirthLabel.setText(userFetchData.getString("Date of Birth"));
+                        dateOfIssueLabel.setText(userFetchData.getString("Date of Issue"));
+                        dateOfExpiryLabel.setText(userFetchData.getString("Date of Expiry"));
+                        phoneNoLabel.setText(userFetchData.getString("Phone No"));
+                        ageLabel.setText(calculateAge(userFetchData.getString("Date of Birth")));
+                        typeLabel.setText(userFetchData.getString("Type"));
+                        String expiry = String.valueOf(calculateExpiryDuration(userFetchData.getString("Date of Issue"), userFetchData.getString("Date of Expiry")));
+                        reamainingValidityLabel.setText(String.valueOf(expiry + " Days"));
+                        bloodGroupLabel.setText(userFetchData.getString("Blood Group"));
+                        byte[] imageData = userInfo.fetchImage(userFetchData.get("Image", Binary.class));
+                        ImageIcon imageIcon = new ImageIcon(imageData);
+                        picture.setIcon(imageIcon);
+                    }
+                    catch (Exception ex){
+                        System.out.println("User Not Found");
+                    }
 
                 }
                 else if (e.getActionCommand().equals("Submit")){
