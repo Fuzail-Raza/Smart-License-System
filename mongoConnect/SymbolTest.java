@@ -4,7 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.time.LocalTime;
 
-public class SymbolTest extends JFrame{
+public class SymbolTest {
 
     private JFrame mainFrame;
 
@@ -16,6 +16,7 @@ public class SymbolTest extends JFrame{
 
     private ButtonGroup optionCheck;
     private JButton submitLabel;
+    private JButton nextButton;
     private JPanel sysmbolTest;
     private JLabel questionNoLabel;
     private JLabel timeLabel;
@@ -111,7 +112,11 @@ public class SymbolTest extends JFrame{
         optionCheck.add(option3Label);
         optionCheck.add(option4Label);
 
+        nextButton=new JButton("Next");
+        tempTestPanel.add(nextButton);
+
         submitLabel=new JButton("Submit");
+        submitLabel.setVisible(false);
         tempTestPanel.add(submitLabel);
 
 

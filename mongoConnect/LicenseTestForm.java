@@ -4,6 +4,7 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.ImageObserver;
 import java.awt.print.*;
 import java.time.LocalDate;
 import java.time.Period;
@@ -95,12 +96,12 @@ class TestForm {
         addActionListeners();
     }
 
-    public static String calculateExpiryDuration(String dateOfIssue, String dateOfExpiry){
+    public static String calculateExpiryDuration( String dateOfExpiry){
 
-        LocalDate dateIssue = LocalDate.parse(dateOfIssue);
+        LocalDate currentDate = LocalDate.now();
         LocalDate expiryDate = LocalDate.parse(dateOfExpiry);
 
-        Period expiryDuration = Period.between(dateIssue, expiryDate);;
+        Period expiryDuration = Period.between(currentDate, expiryDate);;
 
         return String.valueOf(expiryDuration.getYears()*12*30 + expiryDuration.getMonths() * 30 + expiryDuration.getDays());
     }
@@ -303,7 +304,7 @@ class TestForm {
                         phoneNoLabel.setText(userFetchData.getString("Phone No"));
                         ageLabel.setText(calculateAge(userFetchData.getString("Date of Birth")));
                         typeLabel.setText(userFetchData.getString("Type"));
-                        String expiry = String.valueOf(calculateExpiryDuration(userFetchData.getString("Date of Issue"), userFetchData.getString("Date of Expiry")));
+                        String expiry = String.valueOf(calculateExpiryDuration(userFetchData.getString("Date of Expiry")));
                         reamainingValidityLabel.setText(String.valueOf(expiry + " Days"));
                         bloodGroupLabel.setText(userFetchData.getString("Blood Group"));
                         byte[] imageData = userInfo.fetchImage(userFetchData.get("Image", Binary.class));
@@ -347,7 +348,7 @@ class TestForm {
         }
     }
 
-    private  class MyPrintable implements Printable {
+    private  class MyPrintable implements Printable, ImageObserver {
 
         public int print(Graphics g, PageFormat pf, int pageIndex) throws PrinterException {
             if (pageIndex > 0) {
@@ -359,24 +360,63 @@ class TestForm {
 
             // Draw your content here for printing
             // Header
-            g.drawString("License Test Form", 100, 50);
-
+            Font originalFont = g.getFont();
+            g.setFont(new Font("Arial", Font.BOLD, 20));
+            g.drawString("License Test Form", 200, 50);
+            g.setFont(originalFont);
             // Info Panel content
+            String nameToPrint = nameLabel.getText().length() > 15 ? nameLabel.getText().substring(0, 15) : nameLabel.getText();
             g.drawString("Name: " + nameLabel.getText(), 100, 100);
-            g.drawString("CNIC: " + cnicLabel.getText(), 100, 120);
+            Icon icon = picture.getIcon();
+            if (icon instanceof ImageIcon) {
+                Image image = ((ImageIcon) icon).getImage();
+                int imageWidth = 100;
+                int imageHeight = 100;
+                // Draw the image at coordinates (150, 160)
+                g.drawImage(image, 450, 50, imageWidth, imageHeight,this);
+            } else {
+                // Handle the case when the icon is not an ImageIcon
+                g.drawString("No image available", 150, 160);
+            }
+            g.drawString("CNIC: " + cnicLabel.getText(), 300, 100);
             // Add other fields from the info panel as needed
 
+            g.drawString("Father Name : " + fatherNameLabel.getText(), 100, 130);
+            g.drawString("CNIC : " + fatherCniclabel.getText(), 300, 130);
+            g.drawString("Date of Birth: " + dateOfBirthLabel.getText(), 100, 160);
+            g.drawString("AGE : " + ageLabel.getText(), 300, 160);
+            g.drawString("Phone No : " + phoneNoLabel.getText(), 100, 190);
+            g.drawString("Blood Group : " + bloodGroupLabel.getText(), 300, 190);
+            g.drawString("Type : " + typeLabel.getText(), 100, 220);
+            g.drawString("Validity Remaining : " + reamainingValidityLabel.getText(), 300, 220);
+            g.drawString("Date of Issue : " + dateOfIssueLabel.getText(), 100, 250);
+            g.drawString("Date of Expiry: " + dateOfExpiryLabel.getText(), 300, 250);
             // Separator
-            g.drawLine(100, 150, 500, 150);
+            g.drawLine(100, 270, 500, 270);
 
-            // Test Detail content
-            drawCheckbox(g, 100, 220, symbolPassCheckBox.isSelected());
-            g.drawString("Symbol Test: " + (symbolPassCheckBox.isSelected() ? "Pass" : "Fail"), 100, 180);
+//             Test Detail content
 
-            drawCheckbox(g, 100, 320, drivingPassCheckBox.isSelected());
-            g.drawString("Driving Test: " + (drivingPassCheckBox.isSelected() ? "Pass" : "Fail"), 100, 200);
+            g.drawString("Symbol Test: " ,100, 320);
 
-            g.drawString("Remarks: " + remarksTextArea.getText(), 100, 220);
+            drawCheckbox(g, 230, 308, symbolPassCheckBox.isSelected());
+            g.drawString("Pass " ,260, 320);
+
+            drawCheckbox(g, 310, 308, symbolFailCheckBox.isSelected());
+            g.drawString("Fail" ,340, 320);
+
+            g.drawString("Driving Test: " ,100, 370);
+
+            drawCheckbox(g, 230, 358, drivingPassCheckBox.isSelected());
+            g.drawString("Pass " ,260, 370);
+
+            drawCheckbox(g, 310, 358, drivingFailCheckBox.isSelected());
+            g.drawString("Fail" ,340, 370);
+
+
+            g.drawString("Remarks: " + remarksTextArea.getText(), 100, 410);
+            g.drawLine(130, 440, 500, 440);
+            g.drawLine(110, 470, 500, 470);
+            g.drawLine(110, 500, 500, 500);
 
 
             return Printable.PAGE_EXISTS;
@@ -390,6 +430,11 @@ class TestForm {
                 g.drawLine(x + 2, y + 10, x + 8, y + 18);
                 g.drawLine(x + 8, y + 18, x + 18, y + 2);
             }
+        }
+
+        @Override
+        public boolean imageUpdate(Image img, int infoflags, int x, int y, int width, int height) {
+            return false;
         }
     }
 
