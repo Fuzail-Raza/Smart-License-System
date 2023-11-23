@@ -37,7 +37,7 @@ public class mongoConnect{
 
     }
 
-    public void createDocument( Map<String, Object> documentMap){
+    public boolean createDocument( Map<String, Object> documentMap){
         try {
 //            Document newPerson = new Document("Ide", ide)
 //                    .append("name", name)
@@ -47,9 +47,12 @@ public class mongoConnect{
             Document newPerson = new Document(documentMap);
             collection.insertOne(newPerson);
 //            JOptionPane.showMessageDialog(null,"Document inserted: " + newPerson.toJson());
+            return true;
         }
         catch (Exception e){
-            JOptionPane.showMessageDialog(null,e);
+//            JOptionPane.showMessageDialog(null,e);
+            System.out.println(e);
+            return false;
         }
     }
 
@@ -75,7 +78,7 @@ public class mongoConnect{
 
     }
 
-    public byte[] storeImage(String imageP) throws IOException {
+    public static byte[] storeImage(String imageP) throws IOException {
         // Step 1: Convert image to binary data
 
         Path imagePath = Paths.get(imageP);
