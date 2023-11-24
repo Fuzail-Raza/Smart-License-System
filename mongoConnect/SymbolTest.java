@@ -3,6 +3,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.time.LocalTime;
+import java.util.HashMap;
 
 public class SymbolTest {
 
@@ -15,15 +16,21 @@ public class SymbolTest {
     private JRadioButton option4Label;
 
     private ButtonGroup optionCheck;
-    private JButton submitLabel;
+    private JButton submitButton;
     private JButton nextButton;
+    private JButton prevButton;
     private JPanel sysmbolTest;
     private JLabel questionNoLabel;
     private JLabel timeLabel;
     private JLabel questionLabel;
     private JLabel symbolLabel;
     private LocalTime startTime;
-    private int timeAllow = 10;
+    HashMap<Integer, Boolean> testCheck = new HashMap<>();
+    int score=0;
+    int questionNo=0;
+    private int timeAllow = 100;
+    String correctOption="";
+    String selectedOption="";
     public SymbolTest(){
         iniGUI();
         ImageIcon imageIcon = new ImageIcon("E:\\Programms\\Java\\ACP-Tasks\\JAVA project\\Images\\roundabout.png"); // Replace with the actual path to your image
@@ -56,6 +63,8 @@ public class SymbolTest {
         testArea.add(sysmbolTest);
         testArea.setVisible(true);
 
+        initiallizeTestCheck();
+
         mainFrame.setSize(720,600);
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         mainFrame.setVisible(true);
@@ -63,6 +72,12 @@ public class SymbolTest {
 
 
 
+    }
+
+    private void initiallizeTestCheck() {
+        for (int i=0;i<10;i++) {
+            testCheck.put(i,false);
+        }
     }
 
     JLabel addPicture(){
@@ -82,7 +97,7 @@ public class SymbolTest {
 
         optionCheck=new ButtonGroup();
 
-        questionNoLabel=new JLabel("Question No 0");
+        questionNoLabel=new JLabel("Question No "+ (questionNo+1));
         tempTestPanel.add(questionNoLabel);
 
         timeLabel=new JLabel("Time : 10:00");
@@ -107,22 +122,106 @@ public class SymbolTest {
         option4Label=new JRadioButton("Stop");
         tempTestPanel.add(option4Label);
 
+        correctOption=option3Label.getText();
+
+        option1Label.addActionListener(radioButtonListner);
+        option2Label.addActionListener(radioButtonListner);
+        option3Label.addActionListener(radioButtonListner);
+        option4Label.addActionListener(radioButtonListner);
+
         optionCheck.add(option1Label);
         optionCheck.add(option2Label);
         optionCheck.add(option3Label);
         optionCheck.add(option4Label);
 
+        prevButton=new JButton("Previous");
+        tempTestPanel.add(prevButton);
+
         nextButton=new JButton("Next");
         tempTestPanel.add(nextButton);
 
-        submitLabel=new JButton("Submit");
-        submitLabel.setVisible(false);
-        tempTestPanel.add(submitLabel);
+        submitButton =new JButton("Submit");
+        submitButton.setVisible(false);
+        tempTestPanel.add(submitButton);
 
-
+        nextButton.addActionListener(buttonListner);
+        prevButton.addActionListener(buttonListner);
+        submitButton.addActionListener(buttonListner);
 
         return tempTestPanel;
     }
+
+    ActionListener buttonListner = new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            if(e.getActionCommand().equals("Next")){
+                if (questionNo<10){
+                    questionNo++;
+                    if(questionNo==9) {
+                        nextButton.setEnabled(false);
+                        submitButton.setVisible(true);
+                    }
+                    if(!prevButton.isEnabled()){
+                        prevButton.setEnabled(true);
+                    }
+                }
+
+                if (selectedOption.equals(correctOption)){
+                    JOptionPane.showMessageDialog(null,questionNo);
+                    testCheck.put(questionNo,true);
+                }
+                else{
+                    JOptionPane.showMessageDialog(null,questionNo);
+                    testCheck.put(questionNo,false);
+                }
+            }
+            else if (e.getActionCommand().equals("Previous")) {
+
+                if(questionNo>0){
+                    questionNo--;
+                    if (questionNo==0){
+                        prevButton.setEnabled(false);
+                    }
+                    if(!nextButton.isEnabled()){
+                        nextButton.setEnabled(true);
+                    }
+                }
+                if (selectedOption.equals(correctOption)){
+                    JOptionPane.showMessageDialog(null,questionNo);
+                    testCheck.put(questionNo,true);
+                }
+                else{
+                    JOptionPane.showMessageDialog(null,questionNo);
+                    testCheck.put(questionNo,false);
+                }
+
+            } else if (e.getActionCommand().equals("Submit")) {
+                if (selectedOption.equals(correctOption)){
+                    JOptionPane.showMessageDialog(null,questionNo);
+                    testCheck.put(questionNo,true);
+                }
+                else{
+                    JOptionPane.showMessageDialog(null,questionNo);
+                    testCheck.put(questionNo,false);
+                }
+                for (int i=0;i<10;i++) {
+                    if(testCheck.get(i)){
+                        score++;
+                    }
+                }
+                JOptionPane.showMessageDialog(null,score);
+                score=0;
+            }
+
+            questionNoLabel.setText("Question No "+ (questionNo+1));
+        }
+    };
+    ActionListener radioButtonListner = new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            selectedOption=e.getActionCommand();
+        }
+    };
 
     private void updateElapsedTime() {
         if (startTime == null) {

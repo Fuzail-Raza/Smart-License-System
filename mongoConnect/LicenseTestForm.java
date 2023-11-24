@@ -373,7 +373,7 @@ class TestForm {
                 int imageWidth = 100;
                 int imageHeight = 100;
                 // Draw the image at coordinates (150, 160)
-                g.drawImage(image, 450, 50, imageWidth, imageHeight,this);
+                g.drawImage(image, 480, 50, imageWidth, imageHeight,this);
             } else {
                 // Handle the case when the icon is not an ImageIcon
                 g.drawString("No image available", 150, 160);
@@ -382,7 +382,7 @@ class TestForm {
             // Add other fields from the info panel as needed
 
             g.drawString("Father Name : " + fatherNameLabel.getText(), 100, 130);
-            g.drawString("CNIC : " + fatherCniclabel.getText(), 300, 130);
+            g.drawString("Father CNIC : " + fatherCniclabel.getText(), 300, 130);
             g.drawString("Date of Birth: " + dateOfBirthLabel.getText(), 100, 160);
             g.drawString("AGE : " + ageLabel.getText(), 300, 160);
             g.drawString("Phone No : " + phoneNoLabel.getText(), 100, 190);
