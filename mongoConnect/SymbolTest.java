@@ -155,8 +155,16 @@ public class SymbolTest {
         @Override
         public void actionPerformed(ActionEvent e) {
             if(e.getActionCommand().equals("Next")){
+                if (selectedOption.equals(correctOption)){
+//                    JOptionPane.showMessageDialog(null,questionNo+"True");
+                    testCheck.put(questionNo,true);
+                }
+                else{
+//                    JOptionPane.showMessageDialog(null,questionNo+"False");
+                    testCheck.put(questionNo,false);
+                }
+                questionNo++;
                 if (questionNo<10){
-                    questionNo++;
                     if(questionNo==9) {
                         nextButton.setEnabled(false);
                         submitButton.setVisible(true);
@@ -166,18 +174,19 @@ public class SymbolTest {
                     }
                 }
 
-                if (selectedOption.equals(correctOption)){
-                    JOptionPane.showMessageDialog(null,questionNo);
-                    testCheck.put(questionNo,true);
-                }
-                else{
-                    JOptionPane.showMessageDialog(null,questionNo);
-                    testCheck.put(questionNo,false);
-                }
+
             }
             else if (e.getActionCommand().equals("Previous")) {
 
-                if(questionNo>0){
+                if(questionNo>=0){
+                    if (selectedOption.equals(correctOption)){
+//                    JOptionPane.showMessageDialog(null,questionNo+"True");
+                        testCheck.put(questionNo,true);
+                    }
+                    else{
+//                    JOptionPane.showMessageDialog(null,questionNo+"False");
+                        testCheck.put(questionNo,false);
+                    }
                     questionNo--;
                     if (questionNo==0){
                         prevButton.setEnabled(false);
@@ -186,22 +195,15 @@ public class SymbolTest {
                         nextButton.setEnabled(true);
                     }
                 }
-                if (selectedOption.equals(correctOption)){
-                    JOptionPane.showMessageDialog(null,questionNo);
-                    testCheck.put(questionNo,true);
-                }
-                else{
-                    JOptionPane.showMessageDialog(null,questionNo);
-                    testCheck.put(questionNo,false);
-                }
+
 
             } else if (e.getActionCommand().equals("Submit")) {
                 if (selectedOption.equals(correctOption)){
-                    JOptionPane.showMessageDialog(null,questionNo);
+                    JOptionPane.showMessageDialog(null,questionNo+"True");
                     testCheck.put(questionNo,true);
                 }
                 else{
-                    JOptionPane.showMessageDialog(null,questionNo);
+                    JOptionPane.showMessageDialog(null,questionNo+"False");
                     testCheck.put(questionNo,false);
                 }
                 for (int i=0;i<10;i++) {

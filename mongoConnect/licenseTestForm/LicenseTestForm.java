@@ -1,3 +1,4 @@
+package licenseTestForm;
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
@@ -366,7 +367,7 @@ class TestForm {
             g.setFont(originalFont);
             // Info Panel content
             String nameToPrint = nameLabel.getText().length() > 15 ? nameLabel.getText().substring(0, 15) : nameLabel.getText();
-            g.drawString("Name: " + nameLabel.getText(), 100, 100);
+            g.drawString("Name: " + nameToPrint, 100, 100);
             Icon icon = picture.getIcon();
             if (icon instanceof ImageIcon) {
                 Image image = ((ImageIcon) icon).getImage();
@@ -443,7 +444,7 @@ class TestForm {
 
 
 
-public class LicenseTestForm extends JPanel{
+public class LicenseTestForm {
 
     public static void main(String[] args) {
         TestForm us=new TestForm();

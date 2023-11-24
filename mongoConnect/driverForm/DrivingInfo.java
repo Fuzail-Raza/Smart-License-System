@@ -6,12 +6,21 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.image.ImageObserver;
+import java.awt.print.PageFormat;
+import java.awt.print.Printable;
+import java.awt.print.PrinterException;
+import java.awt.print.PrinterJob;
 import java.time.LocalDate;
+import java.time.Period;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-
+import com.toedter.calendar.JDateChooser;
+import java.text.SimpleDateFormat;
 import mongoPackage.mongoConnect;
+
 
 public class DrivingInfo extends JFrame {
 
@@ -19,7 +28,7 @@ public class DrivingInfo extends JFrame {
     private Container Driving_Form;
     private JPanel driverInfo;
     private JPanel learnerPanel;
-    private JTextField dateOfBirthInput;
+    private JDateChooser  dateOfBirthInput;
     private JTextField phoneNoInput;
     private JLabel cnic;
     private JLabel fatherName;
@@ -120,35 +129,67 @@ public class DrivingInfo extends JFrame {
         mainFrame.setSize(720,600);
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        submitButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-
-                mongoConnect userData=new mongoConnect("Driving_Center","testing");
-                Map<String, Object> documentMap = new HashMap<>();
-                String path="C:\\Users\\Administrator\\Downloads\\Picsart_23-04-22_22-138-37-352.jpg";
-            try {
-                documentMap.put("Name", nameInput.getText());
-                documentMap.put("Cnic", cnicInput.getText());
-                documentMap.put("Father Name", fatherNameInput.getText());
-                documentMap.put("Father Cnic", fatherCnicInput.getText());
-                documentMap.put("Phone No", phoneNoInput.getText());
-                documentMap.put("Blood Group", bloodGroupsList.getSelectedItem());
-                documentMap.put("city", "Lahore");
-                documentMap.put("Image", userData.storeImage(path));
-                documentMap.put("Date of Birth",dateOfBirthInput.getText());
-                documentMap.put("Date of Issue",dateOfIssue1Label.getText());
-                documentMap.put("Date of Expiry",dateOfExpiry1Label.getText());
-                documentMap.put("Type",type1List.getSelectedItem());
-                userData.createDocument(documentMap);
-
-                JOptionPane.showMessageDialog(null,"Form Submitted Successfully");
-            }
-            catch (Exception ex){
-                System.out.println(ex);
-            }
+        dateOfBirthInput.getDateEditor().addPropertyChangeListener(e -> {
+            if ("date".equals(e.getPropertyName())) {
+                handleSelectedDate();
             }
         });
 
+        submitButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                saveData();
+                printDocument();
+            }
+        });
+
+    }
+    private void handleSelectedDate() {
+        Date currentDate = new Date();
+
+        if (Integer.parseInt(calculateAge(selectedDate()))<18) {
+            // The selected date is in the future
+            JOptionPane.showMessageDialog(
+                    null,
+                    "Age must be Greater than 18.",
+                    "Invalid Date",
+                    JOptionPane.ERROR_MESSAGE);
+
+//            dateOfBirthInput.setDate(currentDate);
+        }
+
+    }
+    private void saveData() {
+
+
+        mongoConnect userData=new mongoConnect("Driving_Center","testing");
+        Map<String, Object> documentMap = new HashMap<>();
+        String path="C:\\Users\\Administrator\\Downloads\\Picsart_23-04-22_22-138-37-352.jpg";
+        try {
+            documentMap.put("Name", nameInput.getText());
+            documentMap.put("Cnic", cnicInput.getText());
+            documentMap.put("Father Name", fatherNameInput.getText());
+            documentMap.put("Father Cnic", fatherCnicInput.getText());
+            documentMap.put("Phone No", phoneNoInput.getText());
+            documentMap.put("Blood Group", bloodGroupsList.getSelectedItem());
+            documentMap.put("city", "Lahore");
+            documentMap.put("Image", userData.storeImage(path));
+            documentMap.put("Date of Birth",selectedDate());
+            documentMap.put("Date of Issue",dateOfIssue1Label.getText());
+            documentMap.put("Date of Expiry",dateOfExpiry1Label.getText());
+            documentMap.put("Type",type1List.getSelectedItem());
+            userData.createDocument(documentMap);
+
+            JOptionPane.showMessageDialog(null,"Form Submitted Successfully");
+        }
+        catch (Exception ex){
+            System.out.println(ex);
+        }
+    }
+
+    private String selectedDate() {
+        Date selectedDate = dateOfBirthInput.getDate();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        return dateFormat.format(selectedDate);
     }
     private JLabel addImage(){
         JLabel pic=new JLabel();
@@ -194,7 +235,7 @@ public class DrivingInfo extends JFrame {
         dateofBirth=new JLabel("Date of Birth");
         infoTemp.add(dateofBirth);
 
-        dateOfBirthInput=new JTextField();
+        dateOfBirthInput=new JDateChooser();
         infoTemp.add(dateOfBirthInput);
 
         age=new JLabel("AGE");
@@ -287,6 +328,15 @@ public class DrivingInfo extends JFrame {
         return currentDate.format(formatter);
 
     }
+    public static String  calculateAge(String dateOfBirth) {
+        LocalDate birthDate = LocalDate.parse(dateOfBirth);
+
+        LocalDate currentDate = LocalDate.now();
+
+        Period period = Period.between(birthDate, currentDate);
+
+        return String.valueOf(period.getYears());
+    }
     private JPanel copyPanel(JPanel originalPanel) {
         JPanel copiedPanel = new JPanel();
         copiedPanel.setLayout(new GridLayout());
@@ -314,6 +364,102 @@ public class DrivingInfo extends JFrame {
         }
 
         return copiedPanel;
+    }
+
+    private void printDocument() {
+        PrinterJob printerJob = PrinterJob.getPrinterJob();
+        printerJob.setPrintable(new MyPrintable());
+
+        if (printerJob.printDialog()) {
+            try {
+                printerJob.print();
+            } catch (PrinterException ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
+    private  class MyPrintable implements Printable, ImageObserver {
+
+        public int print(Graphics g, PageFormat pf, int pageIndex) throws PrinterException {
+            if (pageIndex > 0) {
+                return Printable.NO_SUCH_PAGE;
+            }
+
+            Graphics2D g2d = (Graphics2D) g;
+            g2d.translate(pf.getImageableX(), pf.getImageableY());
+
+            Font originalFont = g.getFont();
+            g.setFont(new Font("Arial", Font.BOLD, 20));
+            g.drawString("Learner Form", 200, 50);
+            g.setFont(originalFont);
+            // Info Panel content
+            String nameToPrint = nameInput.getText().length() > 15 ? nameInput.getText().substring(0, 15) : nameInput.getText();
+            g.drawString("Name: " + nameInput.getText(), 100, 100);
+            Icon icon = picture.getIcon();
+            if (icon instanceof ImageIcon) {
+                Image image = ((ImageIcon) icon).getImage();
+                int imageWidth = 100;
+                int imageHeight = 100;
+                // Draw the image at coordinates (150, 160)
+                g.drawImage(image, 480, 50, imageWidth, imageHeight,this);
+            } else {
+                // Handle the case when the icon is not an ImageIcon
+                g.drawString("No image available", 480, 50);
+            }
+            g.drawString("CNIC: " + cnicInput.getText(), 300, 100);
+            // Add other fields from the info panel as needed
+
+            g.drawString("Father Name : " + fatherNameInput.getText(), 100, 130);
+            g.drawString("AGE : " + calculateAge(selectedDate()), 300, 130);
+            g.drawString("Phone No : " + phoneNoInput.getText(), 100, 160);
+            g.drawString("Blood Group : " + bloodGroupsList.getSelectedItem(), 300, 160);
+            g.drawString("Type : " + type1List.getSelectedItem(), 100, 220);
+            g.drawString("Date of Issue : " + dateOfIssue1Label.getText(), 100, 250);
+            g.drawString("Date of Expiry: " + dateOfExpiry1Label.getText(), 300, 250);
+
+            g.drawLine(100, 270, 500, 270);
+
+            int x = 50;
+            int y = 290;
+            int width = 500;
+            int height = 85;
+
+
+            Stroke originalStroke = g2d.getStroke();
+            g2d.setStroke(new BasicStroke(3));
+
+            g2d.drawRect(x, y, width, height);
+
+//        g2d.setStroke(originalStroke);
+
+            String text = "For First Time you can take Driving Test after 41 days of issuing Learner.";
+            Font font = new Font("Arial", Font.PLAIN, 12);
+            g.setFont(font);
+            g.drawString(text, x + 10, y + 30);
+            text="This codition doesn't Apply on Leraner Renewal !";
+            g.drawString(text, x + 10, y + 50);
+            g2d.drawRect(199, 345, 90, 20);
+            text="Eligible For Driving Test :    "+ LocalDate.now().plusDays(41);
+            g.drawString(text, x + 10, y + 70);
+
+
+            return Printable.PAGE_EXISTS;
+        }
+        private void drawCheckbox(Graphics g, int x, int y, boolean checked) {
+            // Draw a square representing the checkbox
+            g.drawRect(x, y, 20, 20);
+
+            // If checked, draw a checkmark
+            if (checked) {
+                g.drawLine(x + 2, y + 10, x + 8, y + 18);
+                g.drawLine(x + 8, y + 18, x + 18, y + 2);
+            }
+        }
+
+        @Override
+        public boolean imageUpdate(Image img, int infoflags, int x, int y, int width, int height) {
+            return false;
+        }
     }
     public static void main(String[] args) {
         DrivingInfo us=new DrivingInfo();

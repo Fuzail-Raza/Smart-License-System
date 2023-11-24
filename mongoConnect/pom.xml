@@ -46,6 +46,12 @@
 			<artifactId>slf4j-api</artifactId>
 			<version>1.7.32</version> <!-- Use the version you need -->
 		</dependency>
+		<dependency>
+			<groupId>com.toedter</groupId>
+			<artifactId>jcalendar</artifactId>
+			<version>1.4</version> <!-- Use the latest version available -->
+		</dependency>
+
 
 		<!-- Logback (Logging Implementation) -->
 		<dependency>
