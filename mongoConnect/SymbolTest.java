@@ -1,4 +1,6 @@
 
+import mongoPackage.mongoConnect;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -8,9 +10,12 @@ import java.awt.print.PageFormat;
 import java.awt.print.Printable;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
+import java.sql.Time;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
+import java.util.Map;
 
 public class SymbolTest {
 
@@ -220,6 +225,8 @@ public class SymbolTest {
                 }
 
                 JOptionPane.showMessageDialog(null,score);
+                mainFrame.dispose();
+//                saveResult();
                 printDocument();
                 score=0;
             }
@@ -227,6 +234,16 @@ public class SymbolTest {
             questionNoLabel.setText("Question No "+ (questionNo+1));
         }
     };
+
+    private void saveResult() {
+        mongoConnect t1=new mongoConnect("Driving_Center","signTestResult");
+        Map<String, Object> documentMap = new HashMap<>();
+        documentMap.put("LearnerNo", "000000");
+        documentMap.put("TestMarks", score);
+        documentMap.put("TestDate", LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+        t1.createDocument(documentMap);
+    }
+
     ActionListener radioButtonListner = new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {

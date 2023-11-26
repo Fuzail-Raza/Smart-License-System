@@ -63,6 +63,7 @@ class AddQuestion{
                 Map<String, Object> documentMap = new HashMap<>();
                 try {
                     Document newQuestion = new Document("Question", questionText.getText())
+                         .append("questionID","00")
                         .append("Option1", optionText[0].getText())
                         .append("Option2", optionText[1].getText())
                         .append("Option3", optionText[2].getText())
