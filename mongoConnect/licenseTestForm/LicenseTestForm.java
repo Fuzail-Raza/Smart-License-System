@@ -364,6 +364,16 @@ class TestForm {
             Font originalFont = g.getFont();
             g.setFont(new Font("Arial", Font.BOLD, 20));
             g.drawString("License Test Form", 200, 50);
+
+            Stroke originalStroke = g2d.getStroke();
+            g2d.setStroke(new BasicStroke(3));
+
+            g2d.drawRect(300, 220, 90, 23);
+            String  text="Learner No :   "+ "999999";
+            g.drawString(text, 180, 240);
+
+            g2d.setStroke(originalStroke);
+
             g.setFont(originalFont);
             // Info Panel content
             String nameToPrint = nameLabel.getText().length() > 15 ? nameLabel.getText().substring(0, 15) : nameLabel.getText();
@@ -382,42 +392,45 @@ class TestForm {
             g.drawString("CNIC: " + cnicLabel.getText(), 300, 100);
             // Add other fields from the info panel as needed
 
+            int gap=50;
+
             g.drawString("Father Name : " + fatherNameLabel.getText(), 100, 130);
             g.drawString("Father CNIC : " + fatherCniclabel.getText(), 300, 130);
             g.drawString("Date of Birth: " + dateOfBirthLabel.getText(), 100, 160);
             g.drawString("AGE : " + ageLabel.getText(), 300, 160);
             g.drawString("Phone No : " + phoneNoLabel.getText(), 100, 190);
             g.drawString("Blood Group : " + bloodGroupLabel.getText(), 300, 190);
-            g.drawString("Type : " + typeLabel.getText(), 100, 220);
-            g.drawString("Validity Remaining : " + reamainingValidityLabel.getText(), 300, 220);
-            g.drawString("Date of Issue : " + dateOfIssueLabel.getText(), 100, 250);
-            g.drawString("Date of Expiry: " + dateOfExpiryLabel.getText(), 300, 250);
+            g.drawLine(100, 210, 500, 210);
+            g.drawString("Type : " + typeLabel.getText(), 100, 220+gap);
+            g.drawString("Validity Remaining : " + reamainingValidityLabel.getText(), 300, 220+gap);
+            g.drawString("Date of Issue : " + dateOfIssueLabel.getText(), 100, 250+gap);
+            g.drawString("Date of Expiry: " + dateOfExpiryLabel.getText(), 300, 250+gap);
             // Separator
-            g.drawLine(100, 270, 500, 270);
+            g.drawLine(100, 270+gap, 500, 270+gap);
 
 //             Test Detail content
 
-            g.drawString("Symbol Test: " ,100, 320);
+            g.drawString("Symbol Test: " ,100, 320+gap);
 
-            drawCheckbox(g, 230, 308, symbolPassCheckBox.isSelected());
-            g.drawString("Pass " ,260, 320);
+            drawCheckbox(g, 230, 308+gap, symbolPassCheckBox.isSelected());
+            g.drawString("Pass " ,260, 320+gap);
 
-            drawCheckbox(g, 310, 308, symbolFailCheckBox.isSelected());
-            g.drawString("Fail" ,340, 320);
+            drawCheckbox(g, 310, 308+gap, symbolFailCheckBox.isSelected());
+            g.drawString("Fail" ,340, 320+gap);
 
-            g.drawString("Driving Test: " ,100, 370);
+            g.drawString("Driving Test: " ,100, 370+gap);
 
-            drawCheckbox(g, 230, 358, drivingPassCheckBox.isSelected());
-            g.drawString("Pass " ,260, 370);
+            drawCheckbox(g, 230, 358+gap, drivingPassCheckBox.isSelected());
+            g.drawString("Pass " ,260, 370+gap);
 
-            drawCheckbox(g, 310, 358, drivingFailCheckBox.isSelected());
-            g.drawString("Fail" ,340, 370);
+            drawCheckbox(g, 310, 358+gap, drivingFailCheckBox.isSelected());
+            g.drawString("Fail" ,340, 370+gap);
 
 
-            g.drawString("Remarks: " + remarksTextArea.getText(), 100, 410);
-            g.drawLine(130, 440, 500, 440);
-            g.drawLine(110, 470, 500, 470);
-            g.drawLine(110, 500, 500, 500);
+            g.drawString("Remarks: " + remarksTextArea.getText(), 100, 410+gap);
+            g.drawLine(130, 440+gap, 500, 440+gap);
+            g.drawLine(110, 470+gap, 500, 470+gap);
+            g.drawLine(110, 500+gap, 500, 500+gap);
 
 
             return Printable.PAGE_EXISTS;

@@ -1,8 +1,6 @@
 package mongoPackage;
-import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoClients;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.*;
+import com.mongodb.client.model.Updates;
 import org.bson.Document;
 import org.bson.types.Binary;
 
@@ -15,7 +13,9 @@ import java.nio.file.Paths;
 import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Updates.set;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class mongoConnect{
@@ -56,9 +56,23 @@ public class mongoConnect{
         }
     }
 
-    public void updateDocument(int id,String name){
+    public void updateDocument(String fieldName,String id,String name){
         collection.updateOne(eq("Ide", id), set("name", name));
         System.out.println("Document updated.");
+    }
+    public int updateId(String recordName,boolean isUpdate){
+        Document documentToUpdate = collection.find().first();
+
+            int currentRollNo = documentToUpdate.getInteger(recordName);
+
+            if (isUpdate) {
+                int newRollNo = currentRollNo + 1;
+                collection.updateOne(eq("learnerNo", currentRollNo),
+                        Updates.set("learnerNo", newRollNo));
+            }
+            System.out.println("Learner updated successfully." );
+            return currentRollNo;
+
     }
     public void deleteDocument(int id){
         collection.deleteOne(eq("Ide", id));
@@ -78,6 +92,13 @@ public class mongoConnect{
 
     }
 
+    public Document[] fetchFirst10Documents() {
+        FindIterable<Document> result = collection.find().limit(10);
+        List<Document> documentList = new ArrayList<>();
+        result.into(documentList);
+        return documentList.toArray(new Document[0]);
+    }
+
     public static byte[] storeImage(String imageP) throws IOException {
         // Step 1: Convert image to binary data
 
@@ -95,7 +116,7 @@ public class mongoConnect{
 
     }
 
-    public byte[] fetchImage(Binary retrievedImageBinary ){
+    public static byte[] fetchImage(Binary retrievedImageBinary){
 
         if (retrievedImageBinary != null) {
 

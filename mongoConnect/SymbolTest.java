@@ -1,5 +1,7 @@
 
 import mongoPackage.mongoConnect;
+import org.bson.Document;
+import org.bson.types.Binary;
 
 import javax.swing.*;
 import java.awt.*;
@@ -42,15 +44,10 @@ public class SymbolTest {
     int questionNo=0;
     private int timeAllow = 100;
     String correctOption="";
+    Document[] questions;
     String selectedOption="";
     public SymbolTest(){
         iniGUI();
-        ImageIcon imageIcon = new ImageIcon("E:\\Programms\\Java\\ACP-Tasks\\JAVA project\\Images\\roundabout.png"); // Replace with the actual path to your image
-        Image image = imageIcon.getImage();
-        Image scaledImage = image.getScaledInstance(200, 150, Image.SCALE_SMOOTH);
-        ImageIcon scaledImageIcon = new ImageIcon(scaledImage);
-        symbolLabel.setIcon(scaledImageIcon);
-
 
         Timer timer = new Timer(1000, new ActionListener() {
 
@@ -71,6 +68,7 @@ public class SymbolTest {
 
         testArea=mainFrame.getContentPane();
 
+        fetchQuestions();
         sysmbolTest=addQuestion();
         testArea.add(sysmbolTest);
         testArea.setVisible(true);
@@ -86,22 +84,20 @@ public class SymbolTest {
 
     }
 
+    private void fetchQuestions() {
+
+        mongoConnect q1=new mongoConnect("Driving_Center","symbolTest");
+        questions=new Document[10];
+        questions=q1.fetchFirst10Documents();
+
+    }
+
     private void initiallizeTestCheck() {
         for (int i=0;i<10;i++) {
             testCheck.put(i,false);
         }
     }
 
-    JLabel addPicture(){
-        JLabel pic=new JLabel();
-        ImageIcon imageIcon = new ImageIcon("E:\\Programms\\Java\\ACP-Tasks\\JAVA project\\Images\\roundabout.png"); // Replace with the actual path to your image
-        Image image = imageIcon.getImage();
-        Image scaledImage = image.getScaledInstance(130, 120, Image.SCALE_SMOOTH);
-        ImageIcon scaledImageIcon = new ImageIcon(scaledImage);
-        pic.setText("");
-        pic.setIcon(scaledImageIcon);
-        return pic;
-    }
 
     private JPanel addQuestion(){
 
@@ -115,26 +111,29 @@ public class SymbolTest {
         timeLabel=new JLabel("Time : 10:00");
         tempTestPanel.add(timeLabel);
 
-        questionLabel=new JLabel("Which Symbols is this ? ");
+        questionLabel=new JLabel(String.valueOf(questions[questionNo].get("Question")));
         tempTestPanel.add(questionLabel);
 
-        symbolLabel=addPicture();
+        symbolLabel=new JLabel();
+        byte[] imageData = mongoConnect.fetchImage(questions[questionNo].get("Symbol", Binary.class));
+        ImageIcon imageIcon = new ImageIcon(imageData);
+        symbolLabel.setIcon(imageIcon);
         tempTestPanel.add(symbolLabel);
 
 
-        option1Label=new JRadioButton("Turn Left");
+        option1Label=new JRadioButton(String.valueOf(questions[questionNo].get("Option1")));
         tempTestPanel.add(option1Label);
 
-        option2Label=new JRadioButton("Turn Right");
+        option2Label=new JRadioButton(String.valueOf(questions[questionNo].get("Option2")));
         tempTestPanel.add(option2Label);
 
-        option3Label=new JRadioButton("Round About");
+        option3Label=new JRadioButton(String.valueOf(questions[questionNo].get("Option3")));
         tempTestPanel.add(option3Label);
 
-        option4Label=new JRadioButton("Stop");
+        option4Label=new JRadioButton(String.valueOf(questions[questionNo].get("Option4")));
         tempTestPanel.add(option4Label);
 
-        correctOption=option3Label.getText();
+        correctOption=String.valueOf(questions[questionNo].get("Correct"));
 
         option1Label.addActionListener(radioButtonListner);
         option2Label.addActionListener(radioButtonListner);
@@ -185,8 +184,7 @@ public class SymbolTest {
                         prevButton.setEnabled(true);
                     }
                 }
-
-
+                updateQuestion();
             }
             else if (e.getActionCommand().equals("Previous")) {
 
@@ -207,7 +205,7 @@ public class SymbolTest {
                         nextButton.setEnabled(true);
                     }
                 }
-
+                updateQuestion();
 
             } else if (e.getActionCommand().equals("Submit")) {
                 if (selectedOption.equals(correctOption)){
@@ -231,9 +229,29 @@ public class SymbolTest {
                 score=0;
             }
 
-            questionNoLabel.setText("Question No "+ (questionNo+1));
         }
     };
+
+    private void updateQuestion() {
+
+//        JOptionPane.showMessageDialog(null,correctOption);
+        questionNoLabel.setText("Question No "+ (questionNo+1));
+
+        questionLabel.setText(String.valueOf(questions[questionNo].get("Question")));
+
+        option1Label.setText(String.valueOf(questions[questionNo].get("Option1")));
+        option2Label.setText(String.valueOf(questions[questionNo].get("Option2")));
+        option3Label.setText(String.valueOf(questions[questionNo].get("Option3")));
+        option4Label.setText(String.valueOf(questions[questionNo].get("Option4")));
+
+        correctOption=String.valueOf(questions[questionNo].get("Correct"));
+
+        byte[] imageData = mongoConnect.fetchImage(questions[questionNo].get("Symbol", Binary.class));
+        ImageIcon imageIcon = new ImageIcon(imageData);
+        symbolLabel.setIcon(imageIcon);
+
+
+    }
 
     private void saveResult() {
         mongoConnect t1=new mongoConnect("Driving_Center","signTestResult");
@@ -308,6 +326,19 @@ public class SymbolTest {
             g2d.setStroke(new BasicStroke(3));
 
             g.setFont(new Font("Arial", Font.BOLD, 20));
+
+
+            Stroke originalStroke = g2d.getStroke();
+            g2d.setStroke(new BasicStroke(3));
+
+            g2d.drawRect(300, 175, 90, 23);
+            String  text="Learner No :   "+ "999999";
+            g.drawString(text, 180, 195);
+
+            g2d.setStroke(originalStroke);
+
+
+
             g.drawString("Test Result", 230, 240);
             if(score>4) {
                 g.drawString("Condition : Pass" , 130, 270);
@@ -358,8 +389,6 @@ public class SymbolTest {
             int height = 40;
 
 
-            Stroke originalStroke = g2d.getStroke();
-
 
             g2d.drawRect(x, y, width, height);
 
@@ -367,7 +396,7 @@ public class SymbolTest {
 
 
 //        g2d.setStroke(originalStroke);
-                String text = "Retake Test After 41 Days Dated : ";
+                text = "Retake Test After 41 Days Dated : ";
                 Font font = new Font("Arial", Font.PLAIN, 12);
                 g.setFont(font);
                 g.drawString(text, x + 10, y + 26);
@@ -377,7 +406,7 @@ public class SymbolTest {
                 g.drawString(text, x + 200 + 13, y + 26);
             }
             else {
-                String text = "Congratulations! You can now take Driving Test";
+                text = "Congratulations! You can now take Driving Test";
                 Font font = new Font("Arial", Font.BOLD, 13);
                 g.setFont(font);
                 g.drawString(text, x + 3, y + 26);

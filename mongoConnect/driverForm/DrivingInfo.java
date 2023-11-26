@@ -137,7 +137,9 @@ public class DrivingInfo extends JFrame {
 
         submitButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                saveData();
+//                saveData();
+                mongoConnect temp=new mongoConnect("Driving_Center","id_Collection");
+                temp.updateId("learnerNo",true);
                 printDocument();
             }
         });
@@ -178,6 +180,9 @@ public class DrivingInfo extends JFrame {
             documentMap.put("Date of Expiry",dateOfExpiry1Label.getText());
             documentMap.put("Type",type1List.getSelectedItem());
             userData.createDocument(documentMap);
+
+            mongoConnect temp=new mongoConnect("Driving_Center","id_Collection");
+            temp.updateId("learnerNo",true);
 
             JOptionPane.showMessageDialog(null,"Form Submitted Successfully");
         }
@@ -271,7 +276,9 @@ public class DrivingInfo extends JFrame {
         learnerNo1=new JLabel("Leaner No : ");
         tempAddLearner.add(learnerNo1);
 
-        learnerNo1Label = new JLabel("00000");
+        mongoConnect temp=new mongoConnect("Driving_Center","id_Collection");
+
+        learnerNo1Label = new JLabel(String.valueOf(temp.updateId("learnerNo",false)));
         tempAddLearner.add(learnerNo1Label);
 
         dateOfIssue1=new JLabel("Date of issue");
@@ -391,6 +398,16 @@ public class DrivingInfo extends JFrame {
             Font originalFont = g.getFont();
             g.setFont(new Font("Arial", Font.BOLD, 20));
             g.drawString("Learner Form", 200, 50);
+
+            Stroke originalStroke = g2d.getStroke();
+            g2d.setStroke(new BasicStroke(3));
+
+            g2d.drawRect(300, 175, 90, 23);
+            String  text="Learner No :  "+ learnerNo1Label.getText();
+            g.drawString(text, 180, 195);
+
+            g2d.setStroke(originalStroke);
+
             g.setFont(originalFont);
             // Info Panel content
             String nameToPrint = nameInput.getText().length() > 15 ? nameInput.getText().substring(0, 15) : nameInput.getText();
@@ -425,14 +442,13 @@ public class DrivingInfo extends JFrame {
             int height = 85;
 
 
-            Stroke originalStroke = g2d.getStroke();
             g2d.setStroke(new BasicStroke(3));
 
             g2d.drawRect(x, y, width, height);
 
 //        g2d.setStroke(originalStroke);
 
-            String text = "For First Time you can take Driving Test after 41 days of issuing Learner.";
+            text = "For First Time you can take Driving Test after 41 days of issuing Learner.";
             Font font = new Font("Arial", Font.PLAIN, 12);
             g.setFont(font);
             g.drawString(text, x + 10, y + 30);
