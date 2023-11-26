@@ -1,7 +1,14 @@
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.ImageObserver;
+import java.awt.print.PageFormat;
+import java.awt.print.Printable;
+import java.awt.print.PrinterException;
+import java.awt.print.PrinterJob;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.HashMap;
 
@@ -211,7 +218,9 @@ public class SymbolTest {
                         score++;
                     }
                 }
+
                 JOptionPane.showMessageDialog(null,score);
+                printDocument();
                 score=0;
             }
 
@@ -224,6 +233,159 @@ public class SymbolTest {
             selectedOption=e.getActionCommand();
         }
     };
+
+
+    private void printDocument() {
+        PrinterJob printerJob = PrinterJob.getPrinterJob();
+        printerJob.setPrintable(new MyPrintable());
+
+        if (printerJob.printDialog()) {
+            try {
+                printerJob.print();
+            } catch (PrinterException ex) {
+                ex.printStackTrace();
+            }
+        }
+
+    }
+
+    private  class MyPrintable implements Printable, ImageObserver {
+
+        public int print(Graphics g, PageFormat pf, int pageIndex) throws PrinterException {
+            if (pageIndex > 0) {
+                return Printable.NO_SUCH_PAGE;
+            }
+
+            Graphics2D g2d = (Graphics2D) g;
+            g2d.translate(pf.getImageableX(), pf.getImageableY());
+
+
+            Font originalFont = g.getFont();
+            g.setFont(new Font("Arial", Font.BOLD, 20));
+            g.drawString("Traffic Signs Test", 200, 50);
+            g.setFont(originalFont);
+            // Info Panel content
+//            String nameToPrint = nameInput.getText().length() > 15 ? nameInput.getText().substring(0, 15) : nameInput.getText();
+            g.drawString("Name: " + "Fuzail", 100, 100);
+            Icon icon = null ;//picture.getIcon();
+            if (icon instanceof ImageIcon) {
+                Image image = ((ImageIcon) icon).getImage();
+                int imageWidth = 100;
+                int imageHeight = 100;
+                // Draw the image at coordinates (150, 160)
+                g.drawImage(image, 480, 50, imageWidth, imageHeight,this);
+            } else {
+                // Handle the case when the icon is not an ImageIcon
+                g.drawString("No image available", 480, 50);
+            }
+            g.drawString("CNIC: " + "3520100000005", 300, 100);
+            // Add other fields from the info panel as needed
+
+            g.drawString("Father Name : " + "Fasial Majeed", 100, 130);
+            g.drawString("AGE : " + "20", 300, 130);
+            g.drawString("Type : " + "Car/Jeep", 100, 160);
+
+
+            g.drawLine(100, 210, 500, 210);
+
+            g2d.setStroke(new BasicStroke(3));
+
+            g.setFont(new Font("Arial", Font.BOLD, 20));
+            g.drawString("Test Result", 230, 240);
+            if(score>4) {
+                g.drawString("Condition : Pass" , 130, 270);
+            }
+            else {
+                g.drawString("Condition : Fail", 130, 270);
+            }
+
+            g.drawString("Marks : " +10+"/"+score, 310, 270);
+            g.setFont(originalFont);
+
+
+
+            int rectangleWidth = 500;
+            int rectangleHeight = 30;
+
+            int squareSize = rectangleWidth / 10;
+
+            int startX = 64;
+            int startY = 285;
+
+            // Draw the rectangle
+//            g.drawRect(startX, startY, rectangleWidth, rectangleHeight);
+
+//             Draw the divided squares
+            for (int i = 0; i < 10; i++) {
+                int x1 = startX + i * squareSize;
+                int y1 = startY;
+                g.drawRect(x1, y1, squareSize, squareSize/2);
+                Font f1=new Font("Arial",Font.BOLD,18);
+                g.setFont(f1);
+                g.drawString("Q"+(i+1),x1+13,y1+18);
+            }
+            for (int i = 0; i < 10; i++) {
+                int x1 = startX + i * squareSize;
+                int y1 = startY+25;
+                g.drawRect(x1, y1, squareSize, squareSize/2);
+                if (testCheck.get(i)) {
+                    drawTick(g, x1, y1, squareSize, squareSize / 2);
+                } else if (!testCheck.get(i)){
+                    drawCross(g, x1, y1, squareSize-10, squareSize / 2);
+                }
+            }
+
+            int x = 150;
+            int y = 355;
+            int width = 300;
+            int height = 40;
+
+
+            Stroke originalStroke = g2d.getStroke();
+
+
+            g2d.drawRect(x, y, width, height);
+
+            if(score<5) {
+
+
+//        g2d.setStroke(originalStroke);
+                String text = "Retake Test After 41 Days Dated : ";
+                Font font = new Font("Arial", Font.PLAIN, 12);
+                g.setFont(font);
+                g.drawString(text, x + 10, y + 26);
+                g2d.drawRect(x + 200, y + 12, 90, 20);
+                g.setFont(new Font("Arial", Font.BOLD, 13));
+                text = String.valueOf(LocalDate.now().plusDays(41));
+                g.drawString(text, x + 200 + 13, y + 26);
+            }
+            else {
+                String text = "Congratulations! You can now take Driving Test";
+                Font font = new Font("Arial", Font.BOLD, 13);
+                g.setFont(font);
+                g.drawString(text, x + 3, y + 26);
+            }
+
+
+
+            return Printable.PAGE_EXISTS;
+        }
+        private void drawTick(Graphics g, int x, int y, int width, int height) {
+            int[] xPoints = {x + width / 4, x + width / 2, x + 3 * width / 4};
+            int[] yPoints = {y + height / 2, y + 3 * height / 4, y + height / 4};
+            g.drawPolyline(xPoints, yPoints, 3);
+        }
+
+        private void drawCross(Graphics g, int x, int y, int width, int height) {
+            g.drawLine(x+10, y, x + width-10, y + height);
+            g.drawLine(x+10, y + height, x + width-10, y);
+        }
+
+
+        public boolean imageUpdate(Image img, int infoflags, int x, int y, int width, int height) {
+            return false;
+        }
+    }
 
     private void updateElapsedTime() {
         if (startTime == null) {
