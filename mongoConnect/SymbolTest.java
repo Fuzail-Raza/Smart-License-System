@@ -42,7 +42,7 @@ public class SymbolTest {
     HashMap<Integer, Boolean> testCheck = new HashMap<>();
     int score=0;
     int questionNo=0;
-    private int timeAllow = 100;
+    private int timeAllow = 10000;
     String correctOption="";
     Document[] questions;
     String selectedOption="";
@@ -75,7 +75,7 @@ public class SymbolTest {
 
         initiallizeTestCheck();
 
-        mainFrame.setSize(720,600);
+        mainFrame.setSize(784, 449);
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         mainFrame.setVisible(true);
 
@@ -101,36 +101,53 @@ public class SymbolTest {
 
     private JPanel addQuestion(){
 
-        JPanel tempTestPanel=new JPanel(new GridLayout(7,2));
+        JPanel tempTestPanel=new JPanel(null);
 
         optionCheck=new ButtonGroup();
 
         questionNoLabel=new JLabel("Question No "+ (questionNo+1));
+        Font f1 = new Font("Arial", Font.BOLD, 15);
+        questionNoLabel.setFont(f1);
+        questionNoLabel.setBounds(190, 40, 230, 65);
         tempTestPanel.add(questionNoLabel);
 
         timeLabel=new JLabel("Time : 10:00");
+        timeLabel.setFont(f1);
+        timeLabel.setBounds(445, 60, 85, 25);
         tempTestPanel.add(timeLabel);
 
         questionLabel=new JLabel(String.valueOf(questions[questionNo].get("Question")));
+        Font f2 = new Font("Arial", Font.BOLD, 13);
+        questionLabel.setFont(f1);
+        questionLabel.setBounds(95, 120, 290, 40);
         tempTestPanel.add(questionLabel);
 
         symbolLabel=new JLabel();
         byte[] imageData = mongoConnect.fetchImage(questions[questionNo].get("Symbol", Binary.class));
         ImageIcon imageIcon = new ImageIcon(imageData);
         symbolLabel.setIcon(imageIcon);
+        symbolLabel.setBounds(500, 110, 265, 235);
         tempTestPanel.add(symbolLabel);
 
 
         option1Label=new JRadioButton(String.valueOf(questions[questionNo].get("Option1")));
+        option1Label.setBounds(80, 175, 175, 55);
+        option1Label.setFont(f2);
         tempTestPanel.add(option1Label);
 
         option2Label=new JRadioButton(String.valueOf(questions[questionNo].get("Option2")));
+        option2Label.setBounds(315, 175, 175, 55);
+        option2Label.setFont(f2);
         tempTestPanel.add(option2Label);
 
         option3Label=new JRadioButton(String.valueOf(questions[questionNo].get("Option3")));
+        option3Label.setBounds(80, 240, 175, 55);
+        option3Label.setFont(f2);
         tempTestPanel.add(option3Label);
 
         option4Label=new JRadioButton(String.valueOf(questions[questionNo].get("Option4")));
+        option4Label.setBounds(315, 240, 175, 55);
+        option4Label.setFont(f2);
         tempTestPanel.add(option4Label);
 
         correctOption=String.valueOf(questions[questionNo].get("Correct"));
@@ -146,12 +163,18 @@ public class SymbolTest {
         optionCheck.add(option4Label);
 
         prevButton=new JButton("Previous");
+        prevButton.setFont(f2);
+        prevButton.setBounds(105, 305, 155, 40);
         tempTestPanel.add(prevButton);
 
         nextButton=new JButton("Next");
+        nextButton.setFont(f2);
+        nextButton.setBounds(285, 305, 155, 40);
         tempTestPanel.add(nextButton);
 
         submitButton =new JButton("Submit");
+        submitButton.setFont(f2);
+        submitButton.setBounds(215, 365, 155, 40);
         submitButton.setVisible(false);
         tempTestPanel.add(submitButton);
 
