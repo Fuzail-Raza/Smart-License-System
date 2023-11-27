@@ -4,6 +4,7 @@ import org.bson.Document;
 import org.bson.types.Binary;
 
 import javax.swing.*;
+import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -108,7 +109,8 @@ public class SymbolTest {
         questionNoLabel=new JLabel("Question No "+ (questionNo+1));
         Font f1 = new Font("Arial", Font.BOLD, 15);
         questionNoLabel.setFont(f1);
-        questionNoLabel.setBounds(190, 40, 230, 65);
+        questionNoLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        questionNoLabel.setBounds(100, 40, 290, 65);
         tempTestPanel.add(questionNoLabel);
 
         timeLabel=new JLabel("Time : 10:00");
@@ -119,6 +121,7 @@ public class SymbolTest {
         questionLabel=new JLabel(String.valueOf(questions[questionNo].get("Question")));
         Font f2 = new Font("Arial", Font.BOLD, 13);
         questionLabel.setFont(f1);
+        questionLabel.setHorizontalAlignment(SwingConstants.CENTER);
         questionLabel.setBounds(95, 120, 290, 40);
         tempTestPanel.add(questionLabel);
 
@@ -127,6 +130,7 @@ public class SymbolTest {
         ImageIcon imageIcon = new ImageIcon(imageData);
         symbolLabel.setIcon(imageIcon);
         symbolLabel.setBounds(500, 110, 265, 235);
+        symbolLabel.setBorder(new LineBorder(Color.gray, 2, true));
         tempTestPanel.add(symbolLabel);
 
 
@@ -165,16 +169,19 @@ public class SymbolTest {
         prevButton=new JButton("Previous");
         prevButton.setFont(f2);
         prevButton.setBounds(105, 305, 155, 40);
+        prevButton.setBorder(new LineBorder(Color.gray, 2, true));
         tempTestPanel.add(prevButton);
 
         nextButton=new JButton("Next");
         nextButton.setFont(f2);
         nextButton.setBounds(285, 305, 155, 40);
+        nextButton.setBorder(new LineBorder(Color.gray, 2, true));
         tempTestPanel.add(nextButton);
 
         submitButton =new JButton("Submit");
         submitButton.setFont(f2);
-        submitButton.setBounds(215, 365, 155, 40);
+        submitButton.setBounds(190, 365, 155, 40);
+        submitButton.setBorder(new LineBorder(Color.gray, 2, true));
         submitButton.setVisible(false);
         tempTestPanel.add(submitButton);
 
