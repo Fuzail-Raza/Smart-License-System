@@ -2,6 +2,8 @@ package licenseTestForm;
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.EtchedBorder;
+import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -40,7 +42,7 @@ class TestForm {
     private JRadioButton drivingPassCheckBox;
     private JRadioButton drivingFailCheckBox;
     private JTextArea remarksTextArea;
-    Container licenseTestForm;
+    JPanel licenseTestForm;
     private JPanel infoPanel;
 
     private JPanel testDetailPanel;
@@ -60,6 +62,7 @@ class TestForm {
     private JLabel reamarks;
     private JLabel picture;
     private JLabel dateOfBirthLabel;
+    private JLabel testHeading;
 
     private JSeparator separator;
 
@@ -75,19 +78,21 @@ class TestForm {
         mainFrame=new JFrame();
         mainFrame.setTitle("License Test Form");
 
-        licenseTestForm=mainFrame.getContentPane();
-        licenseTestForm.setLayout(new GridLayout(3,1));
+        licenseTestForm=new JPanel();
+        licenseTestForm.setLayout(null);
 
-        infoPanel=addInfoPanel();
-        licenseTestForm.add(infoPanel);
+        addInfoPanel();
+
 
         separator=new JSeparator();
         licenseTestForm.add(separator);
 
-        testDetailPanel=testDetail();
-        licenseTestForm.add(testDetailPanel);
+        testDetail();
 
-        mainFrame.setSize(720,600);
+        settlayout();
+
+        mainFrame.setSize(868, 620);
+        mainFrame.add(licenseTestForm);
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         licenseTestForm.setVisible(true);
@@ -95,6 +100,62 @@ class TestForm {
         mainFrame.setVisible(true);
 
         addActionListeners();
+    }
+
+    private void settlayout() {
+
+        Border etchedBorder = BorderFactory.createEtchedBorder(EtchedBorder.LOWERED);
+
+
+        TitledBorder titledBorder = BorderFactory.createTitledBorder(etchedBorder, "Driving License Test Form");
+        titledBorder.setTitleColor(Color.BLACK);
+        Font labelFont = new Font("Arial", Font.BOLD, 18);
+        titledBorder.setTitleJustification(TitledBorder.CENTER);
+        titledBorder.setTitleFont(labelFont);
+
+        licenseTestForm.setBorder(titledBorder);
+
+
+        detailsFetchButton.setBounds (447, 60, 170, 30);
+        learnerInput.setBounds (80, 60, 140, 30);
+        textField1.setBounds (240, 60, 170, 30);
+        name.setBounds (80, 100, 130, 30);
+        nameLabel.setBounds (240, 100, 130, 30);
+        cnic.setBounds (400, 100, 90, 30);
+        cnicLabel.setBounds (535, 100, 130, 30);
+        fatherName.setBounds (80, 130, 130, 30);
+        fatherNameLabel.setBounds (240, 130, 130, 30);
+        dateOfBirthLabel.setBounds (240, 160, 130, 25);
+        age.setBounds (400, 160, 72, 25);
+        fatherCnic.setBounds (400, 130, 97, 30);
+        dateOfBirthLabel.setBounds (80, 160, 130, 30);
+        phoneNoLabel.setBounds (240, 190, 130, 30);
+        bloodGroup.setBounds (400, 190, 90, 30);
+        phoneNo.setBounds (80, 190, 130, 30);
+        type.setBounds (80, 220, 130, 30);
+        typeLabel.setBounds (240, 220, 130, 30);
+        separator.setBounds (70, 305, 610, 35);
+        dateOfIssue.setBounds (400, 220, 89, 30);
+        bloodGroupLabel.setBounds (535, 190, 130, 30);
+        dateOfExpiry.setBounds (80, 250, 130, 30);
+        dateOfIssueLabel.setBounds (535, 220, 130, 30);
+        dateOfExpiryLabel.setBounds (240, 250, 130, 30);
+        ageLabel.setBounds (535, 160, 92, 30);
+        reamainingValidity.setBounds (400, 250, 130, 30);
+        fatherCniclabel.setBounds (535, 130, 130, 30);
+        reamainingValidityLabel.setBounds (535, 250, 130, 30);
+        symbolTest.setBounds (200, 375, 130, 30);
+        drivingTest.setBounds (200, 410, 130, 30);
+        symbolPassCheckBox.setBounds (325, 375, 115, 30);
+        symbolFailCheckBox.setBounds (450, 375, 115, 30);
+        drivingPassCheckBox.setBounds (325, 410, 115, 30);
+        drivingFailCheckBox.setBounds (450, 410, 115, 30);
+        reamarks.setBounds (200, 460, 94, 30);
+        remarksTextArea.setBounds (310, 465, 275, 55);
+        picture.setBounds (680, 55, 175, 160);
+        submitButton.setBounds (440, 530, 160, 30);
+        print.setBounds (260, 530, 160, 30);
+
     }
 
     public static String calculateExpiryDuration( String dateOfExpiry){
@@ -127,162 +188,161 @@ class TestForm {
         return pic;
     }
 
-    JPanel addInfoPanel(){
+    void addInfoPanel(){
 
-        JPanel infoTemp= new JPanel(new GridLayout(7,4));
         learnerInput=new JLabel("Learner No");
-        infoTemp.add(learnerInput);
+        licenseTestForm.add(learnerInput);
 
         textField1=new JTextField();
 
-        infoTemp.add(textField1);
+        licenseTestForm.add(textField1);
 
 
-        infoTemp.add(new JLabel());
+        licenseTestForm.add(new JLabel());
 
         detailsFetchButton =new JButton("Retrieve");
-        infoTemp.add(detailsFetchButton);
+        licenseTestForm.add(detailsFetchButton);
 
         picture=addPicture();
         picture.setSize(300,200);
-        infoTemp.add(picture);
+        licenseTestForm.add(picture);
 
 
         name=new JLabel("Name : ");
-        infoTemp.add(name);
+        licenseTestForm.add(name);
 
         nameLabel=new JLabel("---");
-        infoTemp.add(nameLabel);
+        licenseTestForm.add(nameLabel);
 
         cnic=new JLabel("Cnic No :");
-        infoTemp.add(cnic);
+        licenseTestForm.add(cnic);
 
         cnicLabel=new JLabel("---");
-        infoTemp.add(cnicLabel);
+        licenseTestForm.add(cnicLabel);
 
         fatherName=new JLabel("Father Name");
-        infoTemp.add(fatherName);
+        licenseTestForm.add(fatherName);
 
         fatherNameLabel=new JLabel("---");
-        infoTemp.add(fatherNameLabel);
+        licenseTestForm.add(fatherNameLabel);
 
         fatherCnic=new JLabel("Father CNIC No :");
-        infoTemp.add(fatherCnic);
+        licenseTestForm.add(fatherCnic);
 
         fatherCniclabel=new JLabel("---");
-        infoTemp.add(fatherCniclabel);
+        licenseTestForm.add(fatherCniclabel);
 
         dateofBirth=new JLabel("Date of Birth");
-        infoTemp.add(dateofBirth);
+        licenseTestForm.add(dateofBirth);
 
         dateOfBirthLabel=new JLabel("00-00-0000");
-        infoTemp.add(dateOfBirthLabel);
+        licenseTestForm.add(dateOfBirthLabel);
 
         age=new JLabel("AGE");
-        infoTemp.add(age);
+        licenseTestForm.add(age);
 
         ageLabel=new JLabel("0");
-        infoTemp.add(ageLabel);
+        licenseTestForm.add(ageLabel);
 
         phoneNo=new JLabel("Phone No : ");
-        infoTemp.add(phoneNo);
+        licenseTestForm.add(phoneNo);
 
         phoneNoLabel=new JLabel("0000-0000000");
-        infoTemp.add(phoneNoLabel);
+        licenseTestForm.add(phoneNoLabel);
 
         bloodGroup=new JLabel("Blood Group : ");
-        infoTemp.add(bloodGroup);
+        licenseTestForm.add(bloodGroup);
 
         bloodGroupLabel=new JLabel("--");
-        infoTemp.add(bloodGroupLabel);
+        licenseTestForm.add(bloodGroupLabel);
 
         type=new JLabel("Type");
-        infoTemp.add(type);
+        licenseTestForm.add(type);
 
         typeLabel=new JLabel("---");
-        infoTemp.add(typeLabel);
+        licenseTestForm.add(typeLabel);
 
         dateOfIssue=new JLabel("Date of Issue : ");
-        infoTemp.add(dateOfIssue);
+        licenseTestForm.add(dateOfIssue);
 
         dateOfIssueLabel=new JLabel("0-0-0000");
-        infoTemp.add(dateOfIssueLabel);
+        licenseTestForm.add(dateOfIssueLabel);
 
         dateOfExpiry=new JLabel("Date of Expiry : ");
-        infoTemp.add(dateOfExpiry);
+        licenseTestForm.add(dateOfExpiry);
 
         dateOfExpiryLabel=new JLabel("0-0-0000");
-        infoTemp.add(dateOfExpiryLabel);
+        licenseTestForm.add(dateOfExpiryLabel);
 
         reamainingValidity=new JLabel("Validity Remaining : ");
-        infoTemp.add(reamainingValidity);
+        licenseTestForm.add(reamainingValidity);
 
         reamainingValidityLabel=new JLabel("0 Days");
-        infoTemp.add(reamainingValidityLabel);
+        licenseTestForm.add(reamainingValidityLabel);
 
 
-
-        return infoTemp;
     }
 
 
-    JPanel testDetail(){
+    void testDetail(){
 
-        JPanel testTemp=new JPanel();
-        testTemp.setLayout(new GridLayout(4,3));
 
         symbolTest =new JLabel("Symbol Test : ");
-        testTemp.add(symbolTest);
+        licenseTestForm.add(symbolTest);
 
-        testTemp.add(new JLabel());
+        testHeading=new JLabel("Test Details");
+        Font labelFont = new Font("Arial", Font.BOLD, 18);
+        testHeading.setFont(labelFont);
+        licenseTestForm.add(testHeading);
+
+        licenseTestForm.add(new JLabel());
 
         buttonGroupSymbol=new ButtonGroup();
 
         symbolPassCheckBox=new JRadioButton("Pass");
         buttonGroupSymbol.add(symbolPassCheckBox);
-        testTemp.add(symbolPassCheckBox);
+        licenseTestForm.add(symbolPassCheckBox);
 
         symbolFailCheckBox=new JRadioButton("Fail");
         buttonGroupSymbol.add(symbolFailCheckBox);
-        testTemp.add(symbolFailCheckBox);
+        licenseTestForm.add(symbolFailCheckBox);
 
 
         drivingTest=new JLabel("Driving Test : ");
-        testTemp.add(drivingTest);
+        licenseTestForm.add(drivingTest);
 
-        testTemp.add(new JLabel());
+        licenseTestForm.add(new JLabel());
 
         buttonGroupDriving = new ButtonGroup();
 
         drivingPassCheckBox=new JRadioButton("Pass");
         buttonGroupDriving.add(drivingPassCheckBox);
-        testTemp.add(drivingPassCheckBox);
+        licenseTestForm.add(drivingPassCheckBox);
 
         drivingFailCheckBox=new JRadioButton("Fail");
         buttonGroupDriving.add(drivingFailCheckBox);
-        testTemp.add(drivingFailCheckBox);
+        licenseTestForm.add(drivingFailCheckBox);
 
 
 
         reamarks =new JLabel("Remarks");
-        testTemp.add(reamarks);
+        licenseTestForm.add(reamarks);
 
         remarksTextArea=new JTextArea();
-        testTemp.add(remarksTextArea);
+        licenseTestForm.add(remarksTextArea);
 
-        testTemp.add(new JLabel());
-        testTemp.add(new JLabel());
-        testTemp.add(new JLabel());
-        testTemp.add(new JLabel());
+        licenseTestForm.add(new JLabel());
+        licenseTestForm.add(new JLabel());
+        licenseTestForm.add(new JLabel());
+        licenseTestForm.add(new JLabel());
 
         submitButton=new JButton("Submit");
-        testTemp.add(submitButton);
+        licenseTestForm.add(submitButton);
 
         print=new JButton("Print");
-        testTemp.add(print);
+        licenseTestForm.add(print);
 
 
-        return testTemp;
     }
 
     void addActionListeners() {
