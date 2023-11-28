@@ -4,7 +4,10 @@ import org.bson.Document;
 import org.bson.types.Binary;
 
 import javax.swing.*;
+import javax.swing.border.Border;
+import javax.swing.border.EtchedBorder;
 import javax.swing.border.LineBorder;
+import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -13,7 +16,6 @@ import java.awt.print.PageFormat;
 import java.awt.print.Printable;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
-import java.sql.Time;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -24,7 +26,7 @@ public class SymbolTest {
 
     private JFrame mainFrame;
 
-    private Container testArea;
+    private JPanel testArea;
     private JRadioButton option1Label;
     private JRadioButton option2Label;
     private JRadioButton option3Label;
@@ -43,7 +45,8 @@ public class SymbolTest {
     HashMap<Integer, Boolean> testCheck = new HashMap<>();
     int score=0;
     int questionNo=0;
-    private int timeAllow = 10000;
+    private int timeAllow = 120;
+    int xalign=-40, yalign =-10;
     String correctOption="";
     Document[] questions;
     String selectedOption="";
@@ -67,19 +70,16 @@ public class SymbolTest {
         mainFrame=new JFrame();
         mainFrame.setTitle("Symbol Test");
 
-        testArea=mainFrame.getContentPane();
-
         fetchQuestions();
         sysmbolTest=addQuestion();
-        testArea.add(sysmbolTest);
-        testArea.setVisible(true);
 
         initiallizeTestCheck();
 
-        mainFrame.setSize(784, 449);
+        mainFrame.add(sysmbolTest);
+        mainFrame.setSize(760, 449);
+        mainFrame.setResizable(false);
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         mainFrame.setVisible(true);
-
 
 
 
@@ -106,51 +106,59 @@ public class SymbolTest {
 
         optionCheck=new ButtonGroup();
 
+        Border etchedBorder = BorderFactory.createEtchedBorder(EtchedBorder.LOWERED);
+
+        TitledBorder titledBorder = BorderFactory.createTitledBorder(etchedBorder, "Traffic Sign Test");
+        titledBorder.setTitleColor(Color.BLACK);
+        Font labelFont = new Font("Arial", Font.BOLD, 18);
+        titledBorder.setTitleJustification(TitledBorder.CENTER);
+        titledBorder.setTitleFont(labelFont);
+
+        tempTestPanel.setBorder(titledBorder);
+
         questionNoLabel=new JLabel("Question No "+ (questionNo+1));
         Font f1 = new Font("Arial", Font.BOLD, 15);
         questionNoLabel.setFont(f1);
         questionNoLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        questionNoLabel.setBounds(100, 40, 290, 65);
+        questionNoLabel.setBounds(100+xalign, 40+ yalign, 290, 65);
         tempTestPanel.add(questionNoLabel);
 
-        timeLabel=new JLabel("Time : 10:00");
+        timeLabel=new JLabel("Time :-  02:00");
         timeLabel.setFont(f1);
-        timeLabel.setBounds(445, 60, 85, 25);
+        timeLabel.setBounds(590+xalign, 60+ yalign, 95, 25);
         tempTestPanel.add(timeLabel);
 
         questionLabel=new JLabel(String.valueOf(questions[questionNo].get("Question")));
         Font f2 = new Font("Arial", Font.BOLD, 13);
         questionLabel.setFont(f1);
         questionLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        questionLabel.setBounds(95, 120, 290, 40);
+        questionLabel.setBounds(95+xalign, 120+ yalign, 290, 40);
         tempTestPanel.add(questionLabel);
 
-        symbolLabel=new JLabel();
-        byte[] imageData = mongoConnect.fetchImage(questions[questionNo].get("Symbol", Binary.class));
-        ImageIcon imageIcon = new ImageIcon(imageData);
-        symbolLabel.setIcon(imageIcon);
-        symbolLabel.setBounds(500, 110, 265, 235);
+        symbolLabel = new JLabel();
+        setImage();
+        symbolLabel.setBounds(500+xalign, 110+ yalign, 265, 235);
         symbolLabel.setBorder(new LineBorder(Color.gray, 2, true));
         tempTestPanel.add(symbolLabel);
 
 
         option1Label=new JRadioButton(String.valueOf(questions[questionNo].get("Option1")));
-        option1Label.setBounds(80, 175, 175, 55);
+        option1Label.setBounds(80+xalign, 175+ yalign, 175, 55);
         option1Label.setFont(f2);
         tempTestPanel.add(option1Label);
 
         option2Label=new JRadioButton(String.valueOf(questions[questionNo].get("Option2")));
-        option2Label.setBounds(315, 175, 175, 55);
+        option2Label.setBounds(315+xalign, 175+ yalign, 175, 55);
         option2Label.setFont(f2);
         tempTestPanel.add(option2Label);
 
         option3Label=new JRadioButton(String.valueOf(questions[questionNo].get("Option3")));
-        option3Label.setBounds(80, 240, 175, 55);
+        option3Label.setBounds(80+xalign, 240+ yalign, 175, 55);
         option3Label.setFont(f2);
         tempTestPanel.add(option3Label);
 
         option4Label=new JRadioButton(String.valueOf(questions[questionNo].get("Option4")));
-        option4Label.setBounds(315, 240, 175, 55);
+        option4Label.setBounds(315+xalign, 240+ yalign, 175, 55);
         option4Label.setFont(f2);
         tempTestPanel.add(option4Label);
 
@@ -168,19 +176,19 @@ public class SymbolTest {
 
         prevButton=new JButton("Previous");
         prevButton.setFont(f2);
-        prevButton.setBounds(105, 305, 155, 40);
+        prevButton.setBounds(105+xalign, 305+ yalign, 155, 40);
         prevButton.setBorder(new LineBorder(Color.gray, 2, true));
         tempTestPanel.add(prevButton);
 
         nextButton=new JButton("Next");
         nextButton.setFont(f2);
-        nextButton.setBounds(285, 305, 155, 40);
+        nextButton.setBounds(285+xalign, 305+ yalign, 155, 40);
         nextButton.setBorder(new LineBorder(Color.gray, 2, true));
         tempTestPanel.add(nextButton);
 
         submitButton =new JButton("Submit");
         submitButton.setFont(f2);
-        submitButton.setBounds(190, 365, 155, 40);
+        submitButton.setBounds(190+xalign, 365+ yalign, 155, 40);
         submitButton.setBorder(new LineBorder(Color.gray, 2, true));
         submitButton.setVisible(false);
         tempTestPanel.add(submitButton);
@@ -238,29 +246,33 @@ public class SymbolTest {
                 updateQuestion();
 
             } else if (e.getActionCommand().equals("Submit")) {
-                if (selectedOption.equals(correctOption)){
-                    JOptionPane.showMessageDialog(null,questionNo+"True");
-                    testCheck.put(questionNo,true);
-                }
-                else{
-                    JOptionPane.showMessageDialog(null,questionNo+"False");
-                    testCheck.put(questionNo,false);
-                }
-                for (int i=0;i<10;i++) {
-                    if(testCheck.get(i)){
-                        score++;
-                    }
-                }
-
-                JOptionPane.showMessageDialog(null,score);
-                mainFrame.dispose();
-//                saveResult();
-                printDocument();
-                score=0;
+                perfomeSubmission();
             }
 
         }
     };
+
+    private void perfomeSubmission() {
+        if (selectedOption.equals(correctOption)){
+            JOptionPane.showMessageDialog(null,questionNo+"True");
+            testCheck.put(questionNo,true);
+        }
+        else{
+            JOptionPane.showMessageDialog(null,questionNo+"False");
+            testCheck.put(questionNo,false);
+        }
+        for (int i=0;i<10;i++) {
+            if(testCheck.get(i)){
+                score++;
+            }
+        }
+
+        JOptionPane.showMessageDialog(null,score);
+        mainFrame.dispose();
+//                saveResult();
+        printDocument();
+        score=0;
+    }
 
     private void updateQuestion() {
 
@@ -276,11 +288,17 @@ public class SymbolTest {
 
         correctOption=String.valueOf(questions[questionNo].get("Correct"));
 
+
+        setImage();
+
+    }
+
+    void setImage(){
         byte[] imageData = mongoConnect.fetchImage(questions[questionNo].get("Symbol", Binary.class));
         ImageIcon imageIcon = new ImageIcon(imageData);
-        symbolLabel.setIcon(imageIcon);
-
-
+        Image scaledImage = imageIcon.getImage().getScaledInstance(265, 235, Image.SCALE_SMOOTH);
+        ImageIcon scaledImageIcon = new ImageIcon(scaledImage);
+        symbolLabel.setIcon(scaledImageIcon);
     }
 
     private void saveResult() {
@@ -474,14 +492,14 @@ public class SymbolTest {
 
         if (remaining <= 0) {
             remaining = 0;
-            sysmbolTest.setVisible(false);
+            perfomeSubmission();
         }
 
         int minutes = remaining / 60;
         int seconds = remaining % 60;
 
         // Update the timeLabel
-        timeLabel.setText(String.format("%02d:%02d", minutes, seconds));
+        timeLabel.setText("Time :-  "+String.format("%02d:%02d", minutes, seconds));
     }
 
     public static void main(String[] args) {

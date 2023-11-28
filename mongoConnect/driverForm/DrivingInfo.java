@@ -1,11 +1,13 @@
 package driverForm;
 
 import javax.swing.*;
+import javax.swing.border.Border;
+import javax.swing.border.EtchedBorder;
+import javax.swing.border.LineBorder;
+import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.awt.image.ImageObserver;
 import java.awt.print.PageFormat;
 import java.awt.print.Printable;
@@ -25,7 +27,7 @@ import mongoPackage.mongoConnect;
 public class DrivingInfo extends JFrame {
 
     private JFrame mainFrame;
-    private Container Driving_Form;
+    private JPanel Driving_Form;
     private JPanel driverInfo;
     private JPanel learnerPanel;
     private JDateChooser  dateOfBirthInput;
@@ -78,9 +80,10 @@ public class DrivingInfo extends JFrame {
     private JSeparator separator2;
     private JCheckBox checkBox1;
     private JPanel learnerSelectPanel;
+    private JLabel learnerHeading;
     JPanel addType;
-
-
+    int xalignD =0, yalignD =0;
+    int xalignL=0, yalignL =0;
     public DrivingInfo() {
 
 //        checkBox1.addItemListener(new ItemListener() {
@@ -106,27 +109,34 @@ public class DrivingInfo extends JFrame {
         mainFrame=new JFrame();
         mainFrame.setTitle("Driver Info");
 
-        Driving_Form=mainFrame.getContentPane();
-        Driving_Form.setLayout(new GridLayout(5,1));
+        xalignL=-20;
+        xalignD=-20;
+        yalignL=-20;
+        yalignD=-50;
 
-        driverInfo=addDriverInfo();
+        Driving_Form=new JPanel();
+        Driving_Form.setLayout(null);
 
-        Driving_Form.add(driverInfo);
+        addDriverInfo();
 
-        Driving_Form.add(new JLabel());
+//        Driving_Form.add(driverInfo);
+
 
         separator1=new JSeparator();
+        separator1.setBounds (50+ xalignD, 330+yalignD, 725, 20);
         Driving_Form.add(separator1);
 
-        learnerPanel=addLearner();
-        Driving_Form.add(learnerPanel);
+//        learnerPanel=addLearner();
+        addLearner();
+//        Driving_Form.add(learnerPanel);
 
         submitButton=new JButton("Submit Now");
-
+        submitButton.setBounds (165+ xalignL, 515+ yalignL, 540, 35);
         Driving_Form.add(submitButton);
 
+        mainFrame.add(Driving_Form);
         mainFrame.setVisible(true);
-        mainFrame.setSize(720,600);
+        mainFrame.setSize(899, 592);
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         dateOfBirthInput.getDateEditor().addPropertyChangeListener(e -> {
@@ -200,111 +210,147 @@ public class DrivingInfo extends JFrame {
         JLabel pic=new JLabel();
         ImageIcon imageIcon = new ImageIcon("E:\\Programms\\Java\\ACP-Tasks\\JAVA project\\Images\\1675105387954.jpeg"); // Replace with the actual path to your image
         Image image = imageIcon.getImage();
-        Image scaledImage = image.getScaledInstance(130, 120, Image.SCALE_SMOOTH);
+        Image scaledImage = image.getScaledInstance(170, 160, Image.SCALE_SMOOTH);
         ImageIcon scaledImageIcon = new ImageIcon(scaledImage);
         pic.setText("");
         pic.setIcon(scaledImageIcon);
         return pic;
     }
-    private JPanel addDriverInfo(){
+    private void addDriverInfo(){
 
-        JPanel infoTemp= new JPanel(new GridLayout(4,4));
 
         name=new JLabel("Name");
-        infoTemp.add(name);
+        name.setBounds (65+ xalignD, 110+ yalignD, 100, 30);
+        Driving_Form.add(name);
 
         nameInput=new JTextField();
-        infoTemp.add(nameInput);
+        nameInput.setBounds (210+ xalignD, 110+ yalignD, 170, 30);
+        Driving_Form.add(nameInput);
 
         picture=addImage();
-        infoTemp.add(picture);
+        picture.setBounds (720+ xalignD, 65-10, 170, 160);
+        picture.setBorder(new LineBorder(Color.gray, 2, true));
+        Driving_Form.add(picture);
 
         cnic=new JLabel("Cnic No :");
-        infoTemp.add(cnic);
+        cnic.setBounds (415+ xalignD, 110+ yalignD, 100, 25);
+        Driving_Form.add(cnic);
 
         cnicInput=new JTextField();
-        infoTemp.add(cnicInput);
+        cnicInput.setBounds (540+ xalignD, 110+ yalignD, 170, 30);
+        Driving_Form.add(cnicInput);
 
         fatherName=new JLabel("Father Name");
-        infoTemp.add(fatherName);
+        fatherName.setBounds (65+ xalignD, 155+ yalignD, 100, 30);
+        Driving_Form.add(fatherName);
 
         fatherNameInput=new JTextField();
-        infoTemp.add(fatherNameInput);
+        fatherNameInput.setBounds (210+ xalignD, 155+ yalignD, 170, 30);
+        Driving_Form.add(fatherNameInput);
 
         fatherCnic=new JLabel("Father CNIC No :");
-        infoTemp.add(fatherCnic);
+        fatherCnic.setBounds (415+ xalignD, 155+ yalignD, 100, 30);
+        Driving_Form.add(fatherCnic);
 
         fatherCnicInput=new JTextField();
-        infoTemp.add(fatherCnicInput);
+        fatherCnicInput.setBounds (540+ xalignD, 155+ yalignD, 170, 30);
+        Driving_Form.add(fatherCnicInput);
 
         dateofBirth=new JLabel("Date of Birth");
-        infoTemp.add(dateofBirth);
+        dateofBirth.setBounds (65+ xalignD, 200+ yalignD, 100, 30);
+        Driving_Form.add(dateofBirth);
 
         dateOfBirthInput=new JDateChooser();
-        infoTemp.add(dateOfBirthInput);
+        dateOfBirthInput.setBounds (210+ xalignD, 200+ yalignD, 170, 30);
+        Driving_Form.add(dateOfBirthInput);
 
         age=new JLabel("AGE");
-        infoTemp.add(age);
+        age.setBounds (415+ xalignD, 200+ yalignD, 100, 25);
+        Driving_Form.add(age);
 
         ageLabel=new JLabel("0");
-        infoTemp.add(ageLabel);
+        ageLabel.setBounds (540+ xalignD, 200+ yalignD, 170, 30);
+        Driving_Form.add(ageLabel);
 
         phoneNo=new JLabel("Phone No : ");
-        infoTemp.add(phoneNo);
+        phoneNo.setBounds (415+ xalignD, 245+ yalignD, 100, 25);
+        Driving_Form.add(phoneNo);
 
-        infoTemp.add(phoneNoInput=new JTextField());
+        phoneNoInput=new JTextField();
+        phoneNoInput.setBounds (540+ xalignD, 245+ yalignD, 170, 30);
+        Driving_Form.add(phoneNoInput);
 
         bloodGroup=new JLabel("Blood Group : ");
-        infoTemp.add(bloodGroup);
+        bloodGroup.setBounds (65+ xalignD, 245+ yalignD, 100, 25);
+        Driving_Form.add(bloodGroup);
 
         String[] items = {"A+", "A-", "B+","B-","O+","O-","AB+","AB-"};
 
          bloodGroupsList= new JComboBox<>(items);
+        bloodGroupsList.setBounds (210+ xalignD, 245+ yalignD, 170, 30);
+        Driving_Form.add(bloodGroupsList);
 
-        infoTemp.add(bloodGroupsList);
+        Border etchedBorder = BorderFactory.createEtchedBorder(EtchedBorder.LOWERED);
 
 
+        TitledBorder titledBorder = BorderFactory.createTitledBorder(etchedBorder, "Learner Holder Information");
+        titledBorder.setTitleColor(Color.BLACK);
+        Font labelFont = new Font("Arial", Font.BOLD, 18);
+        titledBorder.setTitleJustification(TitledBorder.CENTER);
+        titledBorder.setTitleFont(labelFont);
 
-        return infoTemp;
+        Driving_Form.setBorder(titledBorder);
+
+
 
     }
 
     private JPanel addLearner(){
 
-        JPanel tempAddLearner=new JPanel(new GridLayout(2,4));
+
+        learnerHeading=new JLabel("Leaner Information");
+        learnerHeading.setBounds (270+xalignL, 335+ yalignL, 290, 40);
+        Font labelFont = new Font("Arial", Font.BOLD, 18);
+        learnerHeading.setFont(labelFont);
+        learnerHeading.setHorizontalAlignment(SwingConstants.CENTER);
+        Driving_Form.add(learnerHeading);
 
         learnerNo1=new JLabel("Leaner No : ");
-        tempAddLearner.add(learnerNo1);
+        learnerNo1.setBounds (115+xalignL, 390+ yalignL, 100, 30);
+        Driving_Form.add(learnerNo1);
 
         mongoConnect temp=new mongoConnect("Driving_Center","id_Collection");
 
         learnerNo1Label = new JLabel(String.valueOf(temp.updateId("learnerNo",false)));
-        tempAddLearner.add(learnerNo1Label);
+        learnerNo1Label.setBounds (260+xalignL, 390+ yalignL, 100, 30);
+        Driving_Form.add(learnerNo1Label);
 
         dateOfIssue1=new JLabel("Date of issue");
-        tempAddLearner.add(dateOfIssue1);
+        dateOfIssue1.setBounds (420+xalignL, 390+ yalignL, 100, 30);
+        Driving_Form.add(dateOfIssue1);
 
         dateOfIssue1Label=new JLabel(currentDate(false));
-        tempAddLearner.add(dateOfIssue1Label);
+        dateOfIssue1Label.setBounds (565+xalignL, 390+ yalignL, 100, 30);
+        Driving_Form.add(dateOfIssue1Label);
 
         type1=new JLabel("Type");
-        tempAddLearner.add(type1);
+        type1.setBounds (115+xalignL, 445+ yalignL, 100, 30);
+        Driving_Form.add(type1);
 
         String[] types = {"M.Cycle","Car/Jeep","LTV","HTV"};
         type1List=new JComboBox<>(types);
-        tempAddLearner.add(type1List);
+        type1List.setBounds (260+xalignL, 445+ yalignL, 100, 30);
+        Driving_Form.add(type1List);
 
         dateOfExpiry1=new JLabel("Date of Expiry");
-        tempAddLearner.add(dateOfExpiry1);
+        dateOfExpiry1.setBounds (420+xalignL, 445+ yalignL, 100, 30);
+        Driving_Form.add(dateOfExpiry1);
 
         dateOfExpiry1Label=new JLabel(currentDate(true));
-        tempAddLearner.add(dateOfExpiry1Label);
+        dateOfExpiry1Label.setBounds(565+xalignL, 445+ yalignL, 100, 30);
+        Driving_Form.add(dateOfExpiry1Label);
 
-        checkBox1=new JCheckBox("Add");
-//        tempAddLearner.add(checkBox1);
-
-
-        return tempAddLearner;
+        return Driving_Form;
 
     }
 
