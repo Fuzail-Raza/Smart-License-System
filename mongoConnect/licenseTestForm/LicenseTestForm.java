@@ -128,7 +128,7 @@ class TestForm {
         dateOfBirthLabel.setBounds (240, 160, 130, 25);
         age.setBounds (400, 160, 72, 25);
         fatherCnic.setBounds (400, 130, 97, 30);
-        dateOfBirthLabel.setBounds (80, 160, 130, 30);
+        dateofBirth.setBounds (80, 160, 130, 30);
         phoneNoLabel.setBounds (240, 190, 130, 30);
         bloodGroup.setBounds (400, 190, 90, 30);
         phoneNo.setBounds (80, 190, 130, 30);
@@ -177,15 +177,14 @@ class TestForm {
 
         return String.valueOf(period.getYears());
     }
-    JLabel addPicture(){
+    ImageIcon addImage(byte[] imageData){
         JLabel pic=new JLabel();
-        ImageIcon imageIcon = new ImageIcon("E:\\Programms\\Java\\ACP-Tasks\\JAVA project\\Images\\1675105387954.jpeg"); // Replace with the actual path to your image
+        pic.setText("");
+        ImageIcon imageIcon = new ImageIcon(imageData);
         Image image = imageIcon.getImage();
         Image scaledImage = image.getScaledInstance(130, 120, Image.SCALE_SMOOTH);
         ImageIcon scaledImageIcon = new ImageIcon(scaledImage);
-        pic.setText("");
-        pic.setIcon(scaledImageIcon);
-        return pic;
+        return scaledImageIcon;
     }
 
     void addInfoPanel(){
@@ -203,7 +202,7 @@ class TestForm {
         detailsFetchButton =new JButton("Retrieve");
         licenseTestForm.add(detailsFetchButton);
 
-        picture=addPicture();
+        picture=new JLabel("");
         picture.setSize(300,200);
         licenseTestForm.add(picture);
 
@@ -368,9 +367,9 @@ class TestForm {
                         String expiry = String.valueOf(calculateExpiryDuration(userFetchData.getString("Date of Expiry")));
                         reamainingValidityLabel.setText(String.valueOf(expiry + " Days"));
                         bloodGroupLabel.setText(userFetchData.getString("Blood Group"));
+
                         byte[] imageData = userInfo.fetchImage(userFetchData.get("Image", Binary.class));
-                        ImageIcon imageIcon = new ImageIcon(imageData);
-                        picture.setIcon(imageIcon);
+                        picture.setIcon(addImage(imageData));
                     }
                     catch (Exception ex){
                         System.out.println("User Not Found");
