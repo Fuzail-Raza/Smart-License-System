@@ -19,9 +19,12 @@ import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+
+import com.infobip.sms.SendSMS;
 import com.toedter.calendar.JDateChooser;
 import java.text.SimpleDateFormat;
 import mongoPackage.mongoConnect;
+import com.infobip.sms.SendSMS.*;
 
 
 public class DrivingInfo extends JFrame {
@@ -143,6 +146,7 @@ public class DrivingInfo extends JFrame {
             if ("date".equals(e.getPropertyName())) {
                 handleSelectedDate();
             }
+
         });
 
         submitButton.addActionListener(new ActionListener() {
@@ -150,6 +154,8 @@ public class DrivingInfo extends JFrame {
 //                saveData();
                 mongoConnect temp=new mongoConnect("Driving_Center","id_Collection");
                 temp.updateId("learnerNo",true);
+                String message="Dear " + nameInput.getText() + ",\nRegistration Confirmed .Your Learner has been issued.";
+                SendSMS.send(message);
                 printDocument();
             }
         });
@@ -167,6 +173,9 @@ public class DrivingInfo extends JFrame {
                     JOptionPane.ERROR_MESSAGE);
 
 //            dateOfBirthInput.setDate(currentDate);
+        }
+        else {
+           ageLabel.setText(calculateAge(selectedDate()));
         }
 
     }
@@ -261,6 +270,7 @@ public class DrivingInfo extends JFrame {
         Driving_Form.add(dateofBirth);
 
         dateOfBirthInput=new JDateChooser();
+        dateOfBirthInput.getDateEditor().setEnabled(false);
         dateOfBirthInput.setBounds (210+ xalignD, 200+ yalignD, 170, 30);
         Driving_Form.add(dateOfBirthInput);
 

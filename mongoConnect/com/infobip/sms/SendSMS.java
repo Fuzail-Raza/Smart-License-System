@@ -19,7 +19,7 @@ public class SendSMS {
     private static final String API_KEY = "b40faa0d2e7a08ce4eb41067b589e1e6-e4685a16-26a5-420a-b412-12324caafb6f";
     private static final String RECIPIENT = "923014384681";
 
-    public static void main(String[] args) {
+    public static void send(String message){
         // Create the API client and the Send SMS API instances.
         ApiClient apiClient = ApiClient.forApiKey(ApiKey.from(API_KEY))
                 .withBaseUrl(BaseUrl.from(BASE_URL))
@@ -29,7 +29,7 @@ public class SendSMS {
         // Create a message to send.
         SmsTextualMessage smsMessage = new SmsTextualMessage()
                 .addDestinationsItem(new SmsDestination().to(RECIPIENT))
-                .text("This message is for API Testing");
+                .text(message);
 
         // Create a send message request.
         SmsAdvancedTextualRequest smsMessageRequest = new SmsAdvancedTextualRequest()
@@ -47,5 +47,9 @@ public class SendSMS {
             System.out.println("HTTP status code: " + e.responseStatusCode());
             System.out.println("Response body: " + e.rawResponseBody());
         }
+    }
+
+    public static void main(String[] args) {
+
     }
 }
