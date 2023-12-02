@@ -151,33 +151,64 @@ public class DrivingInfo extends JFrame {
 
         submitButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+
+                if (isFormValid()) {
 //                saveData();
-                mongoConnect temp=new mongoConnect("Driving_Center","id_Collection");
-                temp.updateId("learnerNo",true);
-                String message="Dear " + nameInput.getText() + ",\nRegistration Confirmed .Your Learner has been issued.";
-                SendSMS.send(message);
-                printDocument();
+//                    mongoConnect temp = new mongoConnect("Driving_Center", "id_Collection");
+//                    temp.updateId("learnerNo", true);
+                    String message = "Dear " + nameInput.getText() + ",\nRegistration Confirmed .Your Learner has been issued.";
+                    SendSMS.send(message);
+                    printDocument();
+                }
             }
         });
 
     }
-    private void handleSelectedDate() {
+    private boolean handleSelectedDate() {
         Date currentDate = new Date();
 
         if (Integer.parseInt(calculateAge(selectedDate()))<18) {
             // The selected date is in the future
             JOptionPane.showMessageDialog(
-                    null,
+                    mainFrame,
                     "Age must be Greater than 18.",
                     "Invalid Date",
                     JOptionPane.ERROR_MESSAGE);
-
+                    return false;
 //            dateOfBirthInput.setDate(currentDate);
         }
         else {
            ageLabel.setText(calculateAge(selectedDate()));
+           return true;
         }
 
+    }
+
+    private boolean isFormValid() {
+        if (nameInput.getText().trim().isEmpty() || cnicInput.getText().trim().isEmpty() ||
+                fatherNameInput.getText().trim().isEmpty() || phoneNoInput.getText().trim().isEmpty() ||
+                dateOfBirthInput.getDate() == null) {
+            JOptionPane.showMessageDialog(mainFrame, "Please fill in all the required fields.", "Form Validation Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+
+        String cnicPattern = "^[0-9]{13}$";
+        if (!cnicInput.getText().matches(cnicPattern)) {
+            JOptionPane.showMessageDialog(mainFrame, "CNIC must be 13 digits long.", "Form Validation Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+
+
+        String phonePattern = "^(030[1-9]|031[0-9]|032[0-9]|033[0-5])[0-9]{7}$";
+        if (!phoneNoInput.getText().matches(phonePattern)) {
+            JOptionPane.showMessageDialog(mainFrame, "Invalid phone number. Please use the format: 03XXXXXXXXX.", "Form Validation Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+        if(!handleSelectedDate()){
+            return false;
+        }
+
+        return true;
     }
     private void saveData() {
 
