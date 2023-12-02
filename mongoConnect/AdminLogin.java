@@ -90,7 +90,7 @@ class Login{
         LogIN.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent e) {
-
+                if (isFormValid()) {
                 try {
                     mongoConnect adminFetch = new mongoConnect("Driving_Center", "AdminInfo");
 //                    Map<String, Object> adminDataSave = new HashMap<>() ;
@@ -117,12 +117,23 @@ class Login{
                     System.out.println(ex);
                     JOptionPane.showMessageDialog(innerPanel, "Failed to LOGIN");
                 }
+                }
             }
 
         });
 
     }
-
+    private boolean isFormValid() {
+        if(userName.getText().trim().isEmpty()){
+            JOptionPane.showMessageDialog(innerPanel, "Please fill out username.");
+            return false;
+        }
+        else if(!(password.getPassword().length > 0)){
+            JOptionPane.showMessageDialog(innerPanel, "Please Enter User Password.");
+            return false;
+        }
+        return true;
+    }
 }
 
 

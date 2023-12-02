@@ -95,6 +95,9 @@ class AddQuestion{
             @Override
             public void actionPerformed(ActionEvent e) {
 
+                if (!isFormValid()) {
+                    return;
+                }
                 mongoConnect admin=new mongoConnect("Driving_Center","symbolTest");
                 Map<String, Object> documentMap = new HashMap<>();
                 try {
@@ -179,6 +182,29 @@ class AddQuestion{
         correctOptionText.setBounds (322, 145, 195, 30);
     }
 
+    private boolean isFormValid() {
+        if (questionText.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(mainFrame, "Please fill out Question Description.");
+            return false;
+        }
+        for (int i = 0; i < 4; i++) {
+            if (optionText[i].getText().trim().isEmpty()) {
+                JOptionPane.showMessageDialog(mainFrame, "Please fill out Option "+(i+1)+".");
+                return false;
+            }
+        }
+
+        if (selectedFilePath == null || selectedFilePath.trim().isEmpty()) {
+            JOptionPane.showMessageDialog(mainFrame, "Please Add Symbol Picture.");
+            return false;
+        }
+        if (correctAnswer == null || correctAnswer.trim().isEmpty()) {
+            JOptionPane.showMessageDialog(mainFrame, "Please Select Correct Answer of the Question.");
+            return false;
+        }
+
+        return true;
+    }
     private static boolean isImageFile(String filePath) {
         String lowercaseFilePath = filePath.toLowerCase();
         return lowercaseFilePath.endsWith(".png") || lowercaseFilePath.endsWith(".jpg");
