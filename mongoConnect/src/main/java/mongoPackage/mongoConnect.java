@@ -56,9 +56,17 @@ public class mongoConnect{
         }
     }
 
-    public void updateDocument(String fieldName,String id,String name){
-        collection.updateOne(eq("Ide", id), set("name", name));
+    public boolean updateDocument(String fieldName,String prevData,String updateField,String UpdateFieldData){
+        try {
+        collection.updateOne(eq("Ide", prevData), set(updateField,UpdateFieldData ));
         System.out.println("Document updated.");
+            return true;
+        }
+        catch (Exception e){
+            System.out.println("Document updated.");
+            return false;
+        }
+
     }
     public int updateId(String recordName,boolean isUpdate){
         Document documentToUpdate = collection.find().first();
@@ -67,9 +75,10 @@ public class mongoConnect{
 
             if (isUpdate) {
                 int newRollNo = currentRollNo + 1;
-                collection.updateOne(eq("learnerNo", currentRollNo),
-                        Updates.set("learnerNo", newRollNo));
+                collection.updateOne(eq(recordName, currentRollNo),
+                        Updates.set(recordName, newRollNo));
             }
+
             System.out.println("Learner updated successfully." );
             return currentRollNo;
 

@@ -31,6 +31,8 @@ class AddQuestion{
     JLabel heading;
     JLabel correctOptionLabel;
     JLabel correctOptionText;
+    JLabel questionID;
+
     AddQuestion(){
         initGUI();
     }
@@ -56,12 +58,19 @@ class AddQuestion{
         heading = new JLabel ("Question Addition for Test");
         heading.setFont(labelFont);
         questionPanel.add(heading);
+
         questionLabel=new JLabel("Question :-");
         questionLabel.setFont(f2);
         questionText=new JTextField(10);
         questionPanel.add(questionLabel);
         questionPanel.add(questionText);
-        questionPanel.add(new JLabel("Correct Option"));
+
+        mongoConnect temp=new mongoConnect("Driving_Center","id_Collection");
+        questionID=new JLabel("  Question ID : "+ temp.updateId("questionNo",false));
+        questionID.setFont(f2);
+        questionID.setBorder(new LineBorder(Color.gray, 2, true));
+        questionPanel.add(questionID);
+
         symbolLabel=new JLabel("");
         questionPanel.add(symbolLabel);
         optionText=new JTextField[5];
@@ -101,8 +110,10 @@ class AddQuestion{
                 mongoConnect admin=new mongoConnect("Driving_Center","symbolTest");
                 Map<String, Object> documentMap = new HashMap<>();
                 try {
+                    mongoConnect temp=new mongoConnect("Driving_Center","id_Collection");
+                    int id=temp.updateId("questionNo",true);
                     Document newQuestion = new Document("Question", questionText.getText())
-                         .append("questionID","00")
+                         .append("questionID",id)
                         .append("Option1", optionText[0].getText())
                         .append("Option2", optionText[1].getText())
                         .append("Option3", optionText[2].getText())
@@ -110,7 +121,7 @@ class AddQuestion{
                         .append("Symbol",mongoConnect.storeImage(selectedFilePath))
                         .append("Correct",correctAnswer);
                     if( admin.createDocument(newQuestion)) {
-                        JOptionPane.showMessageDialog(mainFrame, "Symbol Added Successfully");
+                        JOptionPane.showMessageDialog(mainFrame, "Symbol Added Successfully Again ID : "+ id);
                     }
                     else {
                         JOptionPane.showMessageDialog(mainFrame, "Symbol Not Added Successfully");
@@ -180,6 +191,7 @@ class AddQuestion{
         correctOptionText.setBorder(new LineBorder(Color.gray, 2, true));
         correctOptionText.setHorizontalAlignment(SwingConstants.CENTER);
         correctOptionText.setBounds (322, 145, 195, 30);
+        questionID.setBounds(110,40,130,30);
     }
 
     private boolean isFormValid() {

@@ -11,6 +11,9 @@ import java.awt.image.ImageObserver;
 import java.awt.print.*;
 import java.time.LocalDate;
 import java.time.Period;
+import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.Map;
 
 import mongoPackage.mongoConnect;
 import org.bson.Document;
@@ -65,6 +68,7 @@ class TestForm {
     private JLabel testHeading;
 
     private JSeparator separator;
+    private boolean isRetrieved;
 
     private ButtonGroup buttonGroupSymbol = new ButtonGroup();
 
@@ -89,7 +93,7 @@ class TestForm {
 
         testDetail();
 
-        settlayout();
+        setlayout();
 
         mainFrame.setSize(868, 620);
         mainFrame.add(licenseTestForm);
@@ -102,7 +106,7 @@ class TestForm {
         addActionListeners();
     }
 
-    private void settlayout() {
+    private void setlayout() {
 
         Border etchedBorder = BorderFactory.createEtchedBorder(EtchedBorder.LOWERED);
 
@@ -155,6 +159,7 @@ class TestForm {
         picture.setBounds (680, 55, 175, 160);
         submitButton.setBounds (440, 530, 160, 30);
         print.setBounds (260, 530, 160, 30);
+        testHeading.setBounds (285, 325, 170, 30);
 
     }
 
@@ -206,6 +211,7 @@ class TestForm {
         picture.setSize(300,200);
         licenseTestForm.add(picture);
 
+        isRetrieved=false;
 
         name=new JLabel("Name : ");
         licenseTestForm.add(name);
@@ -279,7 +285,6 @@ class TestForm {
         reamainingValidityLabel=new JLabel("0 Days");
         licenseTestForm.add(reamainingValidityLabel);
 
-
     }
 
 
@@ -290,7 +295,7 @@ class TestForm {
         licenseTestForm.add(symbolTest);
 
         testHeading=new JLabel("Test Details");
-        Font labelFont = new Font("Arial", Font.BOLD, 18);
+        Font labelFont = new Font("Arial", Font.BOLD, 24);
         testHeading.setFont(labelFont);
         licenseTestForm.add(testHeading);
 
@@ -351,33 +356,80 @@ class TestForm {
 
                 if(e.getActionCommand().equals("Retrieve")){
 
-                    mongoConnect userInfo=new mongoConnect("Driving_Center","testing");
-                    try {
-                        Document userFetchData = userInfo.readDocument("Cnic", textField1.getText().trim());
-                        nameLabel.setText(userFetchData.getString("Name"));
-                        cnicLabel.setText(userFetchData.getString("Cnic"));
-                        fatherNameLabel.setText(userFetchData.getString("Father Name"));
-                        fatherCniclabel.setText(userFetchData.getString("Father Cnic"));
-                        dateOfBirthLabel.setText(userFetchData.getString("Date of Birth"));
-                        dateOfIssueLabel.setText(userFetchData.getString("Date of Issue"));
-                        dateOfExpiryLabel.setText(userFetchData.getString("Date of Expiry"));
-                        phoneNoLabel.setText(userFetchData.getString("Phone No"));
-                        ageLabel.setText(calculateAge(userFetchData.getString("Date of Birth")));
-                        typeLabel.setText(userFetchData.getString("Type"));
-                        String expiry = String.valueOf(calculateExpiryDuration(userFetchData.getString("Date of Expiry")));
-                        reamainingValidityLabel.setText(String.valueOf(expiry + " Days"));
-                        bloodGroupLabel.setText(userFetchData.getString("Blood Group"));
-
-                        byte[] imageData = userInfo.fetchImage(userFetchData.get("Image", Binary.class));
-                        picture.setIcon(addImage(imageData));
+                    if(textField1.getText().trim().isEmpty()) {
+                        JOptionPane.showMessageDialog(mainFrame,"Please Enter Learner No","Learner No not Provide",JOptionPane.ERROR_MESSAGE);
                     }
-                    catch (Exception ex){
-                        System.out.println("User Not Found");
+                    else {
+                        mongoConnect userInfo = new mongoConnect("Driving_Center", "testing");
+                        try {
+                            Document userFetchData = userInfo.readDocument("Cnic", textField1.getText().trim());
+                            nameLabel.setText(userFetchData.getString("Name"));
+                            cnicLabel.setText(userFetchData.getString("Cnic"));
+                            fatherNameLabel.setText(userFetchData.getString("Father Name"));
+                            fatherCniclabel.setText(userFetchData.getString("Father Cnic"));
+                            dateOfBirthLabel.setText(userFetchData.getString("Date of Birth"));
+                            dateOfIssueLabel.setText(userFetchData.getString("Date of Issue"));
+                            dateOfExpiryLabel.setText(userFetchData.getString("Date of Expiry"));
+                            phoneNoLabel.setText(userFetchData.getString("Phone No"));
+                            ageLabel.setText(calculateAge(userFetchData.getString("Date of Birth")));
+                            typeLabel.setText(userFetchData.getString("Type"));
+                            String expiry = String.valueOf(calculateExpiryDuration(userFetchData.getString("Date of Expiry")));
+                            reamainingValidityLabel.setText(String.valueOf(expiry + " Days"));
+                            bloodGroupLabel.setText(userFetchData.getString("Blood Group"));
+
+                            byte[] imageData = userInfo.fetchImage(userFetchData.get("Image", Binary.class));
+                            picture.setIcon(addImage(imageData));
+                            isRetrieved = true;
+                        } catch (Exception ex) {
+                            JOptionPane.showMessageDialog(mainFrame, "User Not Found", "User Not Fund", JOptionPane.ERROR_MESSAGE);
+                        }
                     }
 
                 }
                 else if (e.getActionCommand().equals("Submit")){
-                    JOptionPane.showMessageDialog(mainFrame, "Form Submitted!");
+
+                    if(!isRetrieved){
+                        JOptionPane.showMessageDialog(mainFrame,"No information provided to Submit","Information not Provided",JOptionPane.ERROR_MESSAGE);
+                    }
+
+                    else if (!symbolPassCheckBox.isSelected() && !symbolFailCheckBox.isSelected()) {
+                        JOptionPane.showMessageDialog(mainFrame, "Please Select Symbol Test Condtion Pass/Fail", "Test Result", JOptionPane.INFORMATION_MESSAGE);
+                    }
+                    else if (!drivingPassCheckBox.isSelected() && !drivingFailCheckBox.isSelected()) {
+                        JOptionPane.showMessageDialog(mainFrame, "Please Select Driving Test Condtion Pass/Fail", "Test Result", JOptionPane.INFORMATION_MESSAGE);
+                    }
+
+                    else {
+                        LocalDate dateOfIssue = LocalDate.parse(dateOfIssueLabel.getText(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+
+                        Period period = Period.between(dateOfIssue, LocalDate.now());
+
+                        if (period.getDays() < 41) {
+                            JOptionPane.showMessageDialog(mainFrame, "Days after issuing Learner is " + period.getDays() + " days.Cannot GIve Test before 41 Days.");
+                        } else {
+                            mongoConnect temp = new mongoConnect("Driving_Center", "Test_Results");
+                            Map<String, Object> documentMap = new HashMap<>();
+                            documentMap.put("Name", textField1.getText());
+                            if (symbolPassCheckBox.isSelected()) {
+                                documentMap.put("SymbolTest", true);
+                            } else if (!symbolFailCheckBox.isSelected()) {
+                                documentMap.put("SymbolTest", false);
+                            }
+
+                            if (drivingPassCheckBox.isSelected()) {
+                                documentMap.put("Driving Test", true);
+                            } else if (!drivingFailCheckBox.isSelected()) {
+                                documentMap.put("Driving Test", false);
+                            }
+
+                            if (temp.createDocument(documentMap)) {
+                                JOptionPane.showMessageDialog(mainFrame, "Form Submitted!", "Submitted", JOptionPane.INFORMATION_MESSAGE);
+                            } else {
+                                JOptionPane.showMessageDialog(mainFrame, "Form Submission Error", "Not Submitted", JOptionPane.ERROR_MESSAGE);
+                            }
+                        }
+                    }
+
                 }
                 else if(e.getActionCommand().equals("Print")){
 
