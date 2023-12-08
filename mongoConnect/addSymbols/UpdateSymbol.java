@@ -38,6 +38,7 @@ public class UpdateSymbol {
     JLabel correctOptionLabel;
     JLabel correctOptionText;
     JLabel questionID;
+    JButton delete;
     boolean isImageUpdate;
 
 
@@ -109,9 +110,13 @@ public class UpdateSymbol {
         addSymbol = new JButton("Upload Symbol");
         addSymbol.setBorder(new LineBorder(Color.gray, 2, true));
         questionPanel.add(addSymbol);
-        submitButton = new JButton("Submit");
+        submitButton = new JButton("Update");
         submitButton.setBorder(new LineBorder(Color.gray, 2, true));
         questionPanel.add(submitButton);
+
+         delete= new JButton("Delete");
+        delete.setBorder(new LineBorder(Color.gray, 2, true));
+        questionPanel.add(delete);
 
         setPositions();
         setEnable(false);
@@ -169,33 +174,52 @@ public class UpdateSymbol {
                     JOptionPane.showMessageDialog(mainFrame,"Please Enter Question ID","No Input Enter",JOptionPane.ERROR_MESSAGE);
                 }
                 else {
-                    mongoConnect temp = new mongoConnect("Driving_Center", "symbolTest");
-                    Document symbolData = temp.searchDocument("questionID", Integer.parseInt(questionIDInputText.getText()));
-                    questionText.setText(symbolData.getString("Question"));
-                    optionText[0].setText(symbolData.getString("Option1"));
-                    optionText[1].setText(symbolData.getString("Option2"));
-                    optionText[2].setText(symbolData.getString("Option3"));
-                    optionText[3].setText(symbolData.getString("Option4"));
+                    try {
+                        mongoConnect temp = new mongoConnect("Driving_Center", "symbolTest");
+                        Document symbolData = temp.searchDocument("questionID", Integer.parseInt(questionIDInputText.getText()));
+                        questionText.setText(symbolData.getString("Question"));
+                        optionText[0].setText(symbolData.getString("Option1"));
+                        optionText[1].setText(symbolData.getString("Option2"));
+                        optionText[2].setText(symbolData.getString("Option3"));
+                        optionText[3].setText(symbolData.getString("Option4"));
 
-                    byte[] imageData = mongoConnect.fetchImage(symbolData.get("Symbol", Binary.class));
-                    ImageIcon imageIcon = new ImageIcon(imageData);
-                    Image scaledImage = imageIcon.getImage().getScaledInstance(190, 165, Image.SCALE_SMOOTH);
-                    ImageIcon scaledImageIcon = new ImageIcon(scaledImage);
-                    symbolLabel.setBorder(new LineBorder(Color.gray, 2, true));
-                    symbolLabel.setIcon(scaledImageIcon);
+                        byte[] imageData = mongoConnect.fetchImage(symbolData.get("Symbol", Binary.class));
+                        ImageIcon imageIcon = new ImageIcon(imageData);
+                        Image scaledImage = imageIcon.getImage().getScaledInstance(190, 165, Image.SCALE_SMOOTH);
+                        ImageIcon scaledImageIcon = new ImageIcon(scaledImage);
+                        symbolLabel.setBorder(new LineBorder(Color.gray, 2, true));
+                        symbolLabel.setIcon(scaledImageIcon);
 
-                    correctAnswer = symbolData.getString("Correct");
-                    correctOptionText.setText(correctAnswer);
-                    if (correctAnswer.equals(optionText[0].getText())) {
-                        correctOption[0].setSelected(true);
-                    } else if (correctAnswer.equals(optionText[1].getText())) {
-                        correctOption[1].setSelected(true);
-                    } else if (correctAnswer.equals(optionText[2].getText())) {
-                        correctOption[2].setSelected(true);
-                    } else if (correctAnswer.equals(optionText[3].getText())) {
-                        correctOption[3].setSelected(true);
+                        correctAnswer = symbolData.getString("Correct");
+                        correctOptionText.setText(correctAnswer);
+                        if (correctAnswer.equals(optionText[0].getText())) {
+                            correctOption[0].setSelected(true);
+                        } else if (correctAnswer.equals(optionText[1].getText())) {
+                            correctOption[1].setSelected(true);
+                        } else if (correctAnswer.equals(optionText[2].getText())) {
+                            correctOption[2].setSelected(true);
+                        } else if (correctAnswer.equals(optionText[3].getText())) {
+                            correctOption[3].setSelected(true);
+                        }
+                        setEnable(true);
                     }
-                    setEnable(true);
+                    catch (Exception ex){
+                        System.out.println(ex.getStackTrace());
+                        JOptionPane.showMessageDialog(mainFrame,"No Data Found! Wrong ID","No Smbol Founded",JOptionPane.ERROR_MESSAGE);
+                    }
+                }
+            }
+        });
+
+        delete.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                mongoConnect temp = new mongoConnect("Driving_Center", "symbolTest");
+                if(temp.deleteDocument("questionID",Integer.parseInt(questionIDInputText.getText()))){
+                    JOptionPane.showMessageDialog(mainFrame,"Document Deleted Successfully");
+                }
+                else{
+                    JOptionPane.showMessageDialog(mainFrame,"Error While Deleting Symbol");
                 }
             }
         });
@@ -245,6 +269,7 @@ public class UpdateSymbol {
             questionText.setEnabled(is);
             addSymbol.setEnabled(is);
             submitButton.setEnabled(is);
+            delete.setEnabled(is);
     }
 
     private boolean isNumeric(String str) {
@@ -263,7 +288,8 @@ public class UpdateSymbol {
     private void setPositions() {
 
         addSymbol.setBounds(575, 325, 170, 30);
-        submitButton.setBounds(213, 385, 240, 40);
+        submitButton.setBounds (370, 385, 180, 40);
+        delete.setBounds (130, 385, 180, 40);
         correctOption[0].setBounds(105, 195, 170, 30);
         correctOption[1].setBounds(105, 245, 170, 30);
         correctOption[2].setBounds(105, 290, 170, 30);
@@ -284,6 +310,7 @@ public class UpdateSymbol {
         questionIDInputLabel.setBounds(110,70,130, 30);
         questionIDInputText.setBounds(270,70,100, 25);
         retrieveSymbol.setBounds(400,70,90,25);
+
 
     }
 

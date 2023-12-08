@@ -118,9 +118,17 @@ public class mongoConnect{
     }
 
 
-    public void deleteDocument(int id){
-        collection.deleteOne(eq("Ide", id));
-        System.out.println("Document deleted.");
+    public boolean deleteDocument(String fieldName, int id){
+        try {
+            collection.deleteOne(eq(fieldName, id));
+            System.out.println("Document deleted.");
+            return true;
+        }
+        catch (Exception e){
+            System.out.println(e.getStackTrace());
+            return false;
+        }
+
     }
     public Document readDocument(String fieldName,String ide){
         Document readDoc = collection.find(eq(fieldName, ide)).first();
