@@ -1,3 +1,5 @@
+package addSymbols;
+
 import mongoPackage.mongoConnect;
 import org.bson.Document;
 
@@ -14,7 +16,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-class AddQuestion{
+public class AddQuestion {
 
     JFrame mainFrame;
     JPanel questionPanel;
@@ -32,15 +34,16 @@ class AddQuestion{
     JLabel correctOptionLabel;
     JLabel correctOptionText;
     JLabel questionID;
-
-    AddQuestion(){
+    mongoConnect admin;
+    public AddQuestion() {
         initGUI();
     }
-    void initGUI(){
 
-        mainFrame =new JFrame();
+    void initGUI() {
+
+        mainFrame = new JFrame();
         mainFrame.setTitle("Driving License");
-        questionPanel =new JPanel(null);
+        questionPanel = new JPanel(null);
 
         Border etchedBorder = BorderFactory.createEtchedBorder(EtchedBorder.LOWERED);
 
@@ -55,41 +58,41 @@ class AddQuestion{
 
         Font f2 = new Font("Arial", Font.BOLD, 14);
 
-        heading = new JLabel ("Question Addition for Test");
+        heading = new JLabel("Question Addition for Test");
         heading.setFont(labelFont);
         questionPanel.add(heading);
 
-        questionLabel=new JLabel("Question :-");
+        questionLabel = new JLabel("Question :-");
         questionLabel.setFont(f2);
-        questionText=new JTextField(10);
+        questionText = new JTextField(10);
         questionPanel.add(questionLabel);
         questionPanel.add(questionText);
 
-        mongoConnect temp=new mongoConnect("Driving_Center","id_Collection");
-        questionID=new JLabel("  Question ID : "+ temp.updateId("questionNo",false));
+        mongoConnect temp = new mongoConnect("Driving_Center", "id_Collection");
+        questionID = new JLabel("  Question ID : " + temp.updateId("questionNo", false));
         questionID.setFont(f2);
         questionID.setBorder(new LineBorder(Color.gray, 2, true));
         questionPanel.add(questionID);
 
-        symbolLabel=new JLabel("");
+        symbolLabel = new JLabel("");
         questionPanel.add(symbolLabel);
-        optionText=new JTextField[5];
-        correctOption=new JRadioButton[4];
-        correct=new ButtonGroup();
-        correctOptionLabel = new JLabel ("Correct option");
+        optionText = new JTextField[5];
+        correctOption = new JRadioButton[4];
+        correct = new ButtonGroup();
+        correctOptionLabel = new JLabel("Correct option");
         correctOptionLabel.setFont(f2);
-        correctOptionText = new JLabel ("---");
+        correctOptionText = new JLabel("---");
         correctOptionText.setFont(f2);
         questionPanel.add(correctOptionLabel);
         questionPanel.add(correctOptionText);
         addOptions();
 
-        correctAnswer="";
+        correctAnswer = "";
 
-        addSymbol=new JButton("Upload Symbol");
+        addSymbol = new JButton("Upload Symbol");
         addSymbol.setBorder(new LineBorder(Color.gray, 2, true));
         questionPanel.add(addSymbol);
-        submitButton=new JButton("Submit");
+        submitButton = new JButton("Submit");
         submitButton.setBorder(new LineBorder(Color.gray, 2, true));
         questionPanel.add(submitButton);
 
@@ -107,27 +110,25 @@ class AddQuestion{
                 if (!isFormValid()) {
                     return;
                 }
-                mongoConnect admin=new mongoConnect("Driving_Center","symbolTest");
+                admin = new mongoConnect("Driving_Center", "symbolTest");
                 Map<String, Object> documentMap = new HashMap<>();
                 try {
-                    mongoConnect temp=new mongoConnect("Driving_Center","id_Collection");
-                    int id=temp.updateId("questionNo",true);
+                    mongoConnect temp = new mongoConnect("Driving_Center", "id_Collection");
+                    int id = temp.updateId("questionNo", true);
                     Document newQuestion = new Document("Question", questionText.getText())
-                         .append("questionID",id)
-                        .append("Option1", optionText[0].getText())
-                        .append("Option2", optionText[1].getText())
-                        .append("Option3", optionText[2].getText())
-                        .append("Option4",optionText[3].getText())
-                        .append("Symbol",mongoConnect.storeImage(selectedFilePath))
-                        .append("Correct",correctAnswer);
-                    if( admin.createDocument(newQuestion)) {
-                        JOptionPane.showMessageDialog(mainFrame, "Symbol Added Successfully Again ID : "+ id);
-                    }
-                    else {
+                            .append("questionID", id)
+                            .append("Option1", optionText[0].getText())
+                            .append("Option2", optionText[1].getText())
+                            .append("Option3", optionText[2].getText())
+                            .append("Option4", optionText[3].getText())
+                            .append("Symbol", mongoConnect.storeImage(selectedFilePath))
+                            .append("Correct", correctAnswer);
+                    if (admin.createDocument(newQuestion)) {
+                        JOptionPane.showMessageDialog(mainFrame, "Symbol Added Successfully Again ID : " + id);
+                    } else {
                         JOptionPane.showMessageDialog(mainFrame, "Symbol Not Added Successfully");
                     }
-                }
-                catch (IOException ex) {
+                } catch (IOException ex) {
                     throw new RuntimeException(ex);
                 }
 
@@ -143,7 +144,6 @@ class AddQuestion{
                 fileChooser.setFileFilter(filter);
 
                 int result = fileChooser.showOpenDialog(mainFrame);
-
 
 
                 if (result == JFileChooser.APPROVE_OPTION) {
@@ -173,25 +173,25 @@ class AddQuestion{
 
     private void setPositions() {
 
-        addSymbol.setBounds (575, 325, 170, 30);
-        submitButton.setBounds (213, 385, 240, 40);
-        correctOption[0].setBounds (105, 195, 170, 30);
-        correctOption[1].setBounds (105, 245, 170, 30);
-        correctOption[2].setBounds (105, 290, 170, 30);
-        correctOption[3].setBounds (105, 335, 170, 30);
-        optionText[0].setBounds (335, 195, 170, 30);
-        optionText[1].setBounds (335, 245, 170, 30);
-        optionText[2].setBounds (335, 290, 170, 30);
-        optionText[3].setBounds (335, 335, 170, 30);
-        questionLabel.setBounds (105, 105, 133, 30);
-        questionText.setBounds (260, 105, 300, 30);
-        symbolLabel.setBounds (565, 155, 190, 165);
-        heading.setBounds (270, 30, 350, 50);
-        correctOptionLabel.setBounds (130, 150, 130, 25);
+        addSymbol.setBounds(575, 325, 170, 30);
+        submitButton.setBounds(213, 385, 240, 40);
+        correctOption[0].setBounds(105, 195, 170, 30);
+        correctOption[1].setBounds(105, 245, 170, 30);
+        correctOption[2].setBounds(105, 290, 170, 30);
+        correctOption[3].setBounds(105, 335, 170, 30);
+        optionText[0].setBounds(335, 195, 170, 30);
+        optionText[1].setBounds(335, 245, 170, 30);
+        optionText[2].setBounds(335, 290, 170, 30);
+        optionText[3].setBounds(335, 335, 170, 30);
+        questionLabel.setBounds(105, 105, 133, 30);
+        questionText.setBounds(260, 105, 300, 30);
+        symbolLabel.setBounds(565, 155, 190, 165);
+        heading.setBounds(270, 30, 350, 50);
+        correctOptionLabel.setBounds(130, 150, 130, 25);
         correctOptionText.setBorder(new LineBorder(Color.gray, 2, true));
         correctOptionText.setHorizontalAlignment(SwingConstants.CENTER);
-        correctOptionText.setBounds (322, 145, 195, 30);
-        questionID.setBounds(110,40,130,30);
+        correctOptionText.setBounds(322, 145, 195, 30);
+        questionID.setBounds(110, 40, 130, 30);
     }
 
     private boolean isFormValid() {
@@ -201,7 +201,7 @@ class AddQuestion{
         }
         for (int i = 0; i < 4; i++) {
             if (optionText[i].getText().trim().isEmpty()) {
-                JOptionPane.showMessageDialog(mainFrame, "Please fill out Option "+(i+1)+".");
+                JOptionPane.showMessageDialog(mainFrame, "Please fill out Option " + (i + 1) + ".");
                 return false;
             }
         }
@@ -217,18 +217,20 @@ class AddQuestion{
 
         return true;
     }
+
     private static boolean isImageFile(String filePath) {
         String lowercaseFilePath = filePath.toLowerCase();
         return lowercaseFilePath.endsWith(".png") || lowercaseFilePath.endsWith(".jpg");
     }
 
-    void addOptions(){
-        for(int i=0;i<4;i++) {
+    void addOptions() {
+        for (int i = 0; i < 4; i++) {
             optionText[i] = new JTextField(20);
-            correctOption[i]=new JRadioButton("Option "+(i+1));
+            correctOption[i] = new JRadioButton("Option " + (i + 1));
             Font f2 = new Font("Arial", Font.BOLD, 13);
             correctOption[i].addActionListener(buttonListener);
-            correctOption[i].setFont(f2);;
+            correctOption[i].setFont(f2);
+            ;
             questionPanel.add(correctOption[i]);
             questionPanel.add(optionText[i]);
             correct.add(correctOption[i]);
@@ -242,7 +244,7 @@ class AddQuestion{
         public void actionPerformed(ActionEvent e) {
             String actionCommand = e.getActionCommand();
             System.out.println("Action Command: " + actionCommand);
-            correctAnswer=actionCommand;
+            correctAnswer = actionCommand;
 
             switch (actionCommand) {
                 case "Option 1":
@@ -263,17 +265,5 @@ class AddQuestion{
         }
     };
 
-
-
-
-}
-
-
-public class addSymbolquestion {
-
-    public static void main(String[] args) {
-        new AddQuestion();
-
-    }
 
 }

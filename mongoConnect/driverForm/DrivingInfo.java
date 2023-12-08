@@ -31,8 +31,6 @@ public class DrivingInfo extends JFrame {
 
     private JFrame mainFrame;
     private JPanel Driving_Form;
-    private JPanel driverInfo;
-    private JPanel learnerPanel;
     private JDateChooser  dateOfBirthInput;
     private JTextField phoneNoInput;
     private JLabel cnic;
@@ -40,10 +38,8 @@ public class DrivingInfo extends JFrame {
     private JLabel fatherCnic;
     private JTextField fatherCnicInput;
     private JTextField cnicInput;
-
     private JTextField nameInput;
     private JTextField fatherNameInput;
-
     private JLabel dateofBirth;
     private JLabel name;
     private JLabel age;
@@ -51,24 +47,6 @@ public class DrivingInfo extends JFrame {
     private JLabel phoneNo;
     private JLabel bloodGroup;
     JComboBox<String> bloodGroupsList;
-    private JLabel learnerNo2;
-    private JLabel learnerNo2label;
-    private JLabel learnerNo3;
-    private JLabel learnerNo3label;
-    private JLabel dateOfIssue2;
-    private JLabel dateOfIssue3;
-    private JLabel dateOfIssue2Label;
-    private JLabel dateOfIssue3Label;
-    private JLabel dateOfExpiry2;
-    private JLabel dateOfExpiry3;
-    private JLabel dateOfExpiry2Label;
-    private JLabel dateOfExpiry3Label;
-    private JLabel type2;
-    private JLabel type3;
-    private JList type2List;
-    private JList type3List;
-    private JSeparator separator3;
-    private JCheckBox checkBox2;
     private JButton submitButton;
     private JLabel picture;
     private JSeparator separator1;
@@ -80,8 +58,6 @@ public class DrivingInfo extends JFrame {
     private JLabel type1;
     private JComboBox<String> type1List;
     private JLabel learnerNo1Label;
-    private JSeparator separator2;
-    private JCheckBox checkBox1;
     private JPanel learnerSelectPanel;
     private JLabel learnerHeading;
     JPanel addType;

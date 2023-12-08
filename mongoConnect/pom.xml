@@ -47,6 +47,19 @@
 			<artifactId>okhttp</artifactId>
 			<version>${okhttp-version}</version>
 		</dependency>
+
+		<dependency>
+			<groupId>org.openjfx</groupId>
+			<artifactId>javafx-controls</artifactId>
+			<version>17</version>
+		</dependency>
+		<dependency>
+			<groupId>org.openjfx</groupId>
+			<artifactId>javafx-fxml</artifactId>
+			<version>17</version>
+		</dependency>
+
+
 		<dependency>
 			<groupId>com.infobip</groupId>
 			<artifactId>infobip-api-java-client</artifactId>

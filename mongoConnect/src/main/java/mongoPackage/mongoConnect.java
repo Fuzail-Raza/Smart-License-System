@@ -14,7 +14,6 @@ import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Updates.set;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -83,6 +82,42 @@ public class mongoConnect{
             return currentRollNo;
 
     }
+
+    public boolean updateSymbol(Map<String, Object> documentMap,boolean isImage) {
+        try {
+            // Assuming "collection" is your MongoCollection instance
+            Document filter = new Document("questionID", documentMap.get("questionID"));
+            Document update;
+            if(isImage){
+            update = new Document("$set", new Document()
+                    .append("Question", documentMap.get("Question"))
+                    .append("Option1", documentMap.get("Option1"))
+                    .append("Option2", documentMap.get("Option2"))
+                    .append("Option3", documentMap.get("Option3"))
+                    .append("Option4", documentMap.get("Option4"))
+                    .append("Symbol", documentMap.get("Symbol"))
+                    .append("Correct", documentMap.get("Correct"))
+            );
+            }
+            else {
+                update = new Document("$set", new Document()
+                        .append("Option1", documentMap.get("Option1"))
+                        .append("Option2", documentMap.get("Option2"))
+                        .append("Option3", documentMap.get("Option3"))
+                        .append("Option4", documentMap.get("Option4"))
+                        .append("Correct", documentMap.get("Correct"))
+                );
+            }
+
+            collection.updateOne(filter, update);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace(); // Handle the exception appropriately in your application
+            return false;
+        }
+    }
+
+
     public void deleteDocument(int id){
         collection.deleteOne(eq("Ide", id));
         System.out.println("Document deleted.");
@@ -146,8 +181,8 @@ public class mongoConnect{
 
     }
 
-    Document searchDocument(){
-        return collection.find(eq("name", "Image1")).first();
+    public Document searchDocument(String fieldname,int value){
+        return collection.find(eq(fieldname, value)).first();
 
     }
 
