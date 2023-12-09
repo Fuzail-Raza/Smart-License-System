@@ -50,6 +50,6 @@ public class SendSMS {
     }
 
     public static void main(String[] args) {
-
+send("hi");
     }
 }

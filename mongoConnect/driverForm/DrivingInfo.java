@@ -371,19 +371,6 @@ public class DrivingInfo extends JFrame {
 
     }
 
-    private void performFunction(boolean isEnabled) {
-        // Your functionality based on checkbox state
-        if (isEnabled) {
-
-            JPanel addType=copyPanel(learnerSelectPanel);
-            addType.setVisible(true);
-            Driving_Form.add(addType);
-
-
-        } else {
-            addType.setVisible(false);
-        }
-    }
 
     String currentDate(Boolean interval){
 
@@ -406,34 +393,6 @@ public class DrivingInfo extends JFrame {
         Period period = Period.between(birthDate, currentDate);
 
         return String.valueOf(period.getYears());
-    }
-    private JPanel copyPanel(JPanel originalPanel) {
-        JPanel copiedPanel = new JPanel();
-        copiedPanel.setLayout(new GridLayout());
-        copiedPanel.setBorder(BorderFactory.createTitledBorder("Copied Panel"));
-
-        // Copy components from the original panel to the copied panel
-        for (Component component : originalPanel.getComponents()) {
-            if (component instanceof JLabel) {
-                // Example: Copy JLabel
-                JLabel originalLabel = (JLabel) component;
-                JLabel copiedLabel = new JLabel(originalLabel.getText());
-                copiedPanel.add(copiedLabel);
-            } else if (component instanceof JTextField) {
-                // Example: Copy JTextField
-                JTextField originalTextField = (JTextField) component;
-                JTextField copiedTextField = new JTextField(originalTextField.getText(), originalTextField.getColumns());
-                copiedPanel.add(copiedTextField);
-            } else if (component instanceof JButton) {
-                // Example: Copy JButton
-                JButton originalButton = (JButton) component;
-                JButton copiedButton = new JButton(originalButton.getText());
-                copiedPanel.add(copiedButton);
-            }
-            // Add more cases for other types of components if needed
-        }
-
-        return copiedPanel;
     }
 
     private void printDocument() {
