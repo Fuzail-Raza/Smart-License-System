@@ -8,6 +8,8 @@ import java.awt.event.ActionListener;
 
 import addSymbols.AddQuestion;
 import addSymbols.UpdateSymbol;
+import users.UpdateUser;
+import users.Users;
 
 public class AdminPannel {
     private JFrame mainFrame;
@@ -144,11 +146,11 @@ public class AdminPannel {
     }
 
     private void updateSignF() {
-        new UpdateSymbol();
+        new UpdateSymbol(false);
     }
 
     private void deleteSignF() {
-
+        new UpdateSymbol(true);
     }
 
     private void addSignF() {
@@ -156,12 +158,15 @@ public class AdminPannel {
     }
 
     private void updateUserInfoF() {
+        new UpdateUser(false);
     }
 
     private void deleteUserF() {
+        new UpdateUser(true);
     }
 
     private void addUserF() {
+        new Users();
     }
 
     public static void main(String[] args) {

@@ -1,8 +1,8 @@
 package users;
 
-import com.infobip.sms.SendSMS;
 import com.toedter.calendar.JDateChooser;
 import mongoPackage.mongoConnect;
+import org.bson.Document;
 import org.mindrot.jbcrypt.BCrypt;
 
 import javax.swing.*;
@@ -13,16 +13,16 @@ import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Users {
+public class UpdateUser {
     private JFrame mainFrame;
     private JPanel User_Form;
     private JDateChooser dateOfBirthInput;
@@ -53,15 +53,19 @@ public class Users {
     private JLabel rePassword;
     private JPasswordField passwordText;
     private JPasswordField rePasswordText;
-    private JLabel userID;
-    private JLabel userIDText;
+    private JLabel previousPassword;
+    private JPasswordField previousPasswordInput;
     int xalignD =0, yalignD =0;
     int xalignL=0, yalignL =0;
     mongoConnect conncetionUsers;
     mongoConnect conncetionids;
-
-    public Users(){
-
+    private JLabel userID;
+    private JTextField userIdInput;
+    private JButton retrieve;
+    private String prevPassword;
+    private boolean isDelete;
+    public UpdateUser(boolean isDelete){
+        this.isDelete=isDelete;
         initGUI();
 
     }
@@ -80,22 +84,26 @@ public class Users {
         xalignL=-20;
         xalignD=-20;
         yalignL=-20;
-        yalignD=-50;
+        yalignD=-20;
 
         User_Form =new JPanel();
         User_Form.setLayout(null);
 
         addDriverInfo();
-
         separator1=new JSeparator();
-        separator1.setBounds (50+ xalignD, 330+yalignD, 725, 20);
+        separator1.setBounds (50+ xalignD, 310+yalignD, 725, 20);
         User_Form.add(separator1);
 
 
-        submitButton=new JButton("Submit Now");
+        if(isDelete) {
+            submitButton = new JButton("Delete Now");
+        }
+        else {
+            submitButton = new JButton("Update Now");
+        }
         submitButton.setBounds (165+ xalignL, 515+ yalignL, 540, 35);
         User_Form.add(submitButton);
-
+        setEnabled(false);
         mainFrame.add(User_Form);
         mainFrame.setVisible(true);
         mainFrame.setSize(899, 592);
@@ -126,12 +134,43 @@ public class Users {
 
         submitButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                if (isDelete) {
+                    conncetionUsers.deleteDocument("userID", Integer.parseInt(userIdInput.getText()));
+                } else {
+                    if (isFormValid()) {
+                    updateData();
 
-                if (isFormValid()) {
-                saveData();
-                    conncetionids.updateId("learnerNo", true);
 //                    String message = "Dear " + nameInput.getText() + ",\nRegistration Confirmed .Your User ID is "+userIDText.getText()+".";
 //                    SendSMS.send(message);
+                    }
+                }
+            }
+        });
+
+        retrieve.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(!isNumeric(userIdInput.getText())){
+                    JOptionPane.showMessageDialog(mainFrame,"Please Enter Question ID","No Input Enter",JOptionPane.ERROR_MESSAGE);
+                }
+                else {
+                    Document userData = conncetionUsers.searchDocument("userID", Integer.parseInt(userIdInput.getText()));
+                    nameInput.setText(userData.getString("Name"));
+                    cnicInput.setText(userData.getString("Cnic"));
+                    fatherNameInput.setText(userData.getString("Father Name"));
+                    fatherCnicInput.setText(userData.getString("Father Cnic"));
+                    phoneNoInput.setText(userData.getString("Phone No"));
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                    try {
+                        dateOfBirthInput.setDate(dateFormat.parse(userData.getString("Date of Birth")));
+                        dateOfJoining.setDate(dateFormat.parse(userData.getString("Date of Joining")));
+                    } catch (ParseException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                    prevPassword=userData.getString("password");
+                    if(!isDelete) {
+                        setEnabled(true);
+                    }
                 }
             }
         });
@@ -150,7 +189,6 @@ public class Users {
                     "Invalid Date",
                     JOptionPane.ERROR_MESSAGE);
             return false;
-//            dateOfBirthInput.setDate(currentDate);
         }
         else {
             ageLabel.setText(calculateAge(selectedDate(true)));
@@ -158,6 +196,40 @@ public class Users {
         }
 
     }
+
+    private boolean isNumeric(String str) {
+        if (str == null || str.isEmpty()) {
+            return false;
+        }
+
+        try {
+            Integer.parseInt(str);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
+    void setEnabled(boolean isEnable){
+
+        nameInput.setEnabled(isEnable);
+        cnicInput.setEnabled(isEnable);
+        fatherCnicInput.setEnabled(isEnable);
+        fatherNameInput.setEnabled(isEnable);
+        dateOfBirthInput.setEnabled(isEnable);
+        ageLabel.setEnabled(isEnable);
+        bloodGroupsList.setEnabled(isEnable);
+        phoneNoInput.setEnabled(isEnable);
+        passwordText.setEnabled(isEnable);
+        rePasswordText.setEnabled(isEnable);
+        submitButton.setEnabled(isEnable);
+        dateOfJoining.setEnabled(isEnable);
+
+
+
+    }
+
+
 
     private boolean isFormValid() {
 
@@ -184,16 +256,20 @@ public class Users {
             return false;
         }
 
-        if(!Arrays.equals(passwordText.getPassword(),rePasswordText.getPassword())){
-            JOptionPane.showMessageDialog(mainFrame, "IIInvalid phone number. Please use the format: 03XXXXXXXXX.", "Form Validation Error", JOptionPane.ERROR_MESSAGE);
+        if(!BCrypt.checkpw(String.valueOf(previousPasswordInput.getPassword()), prevPassword)){
 
+            JOptionPane.showMessageDialog(mainFrame, "Previous Password Doesnot Match", "Form Validation Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+    }
+
+        if(!String.valueOf(passwordText.getPassword()).equals(String.valueOf(rePasswordText.getPassword()))){
+            JOptionPane.showMessageDialog(mainFrame, "Password Does Not Match", "Form Validation Error", JOptionPane.ERROR_MESSAGE);
             return false;
         }
-
         return true;
     }
 
-    private void saveData() {
+    private void updateData() {
 
         Map<String, Object> documentMap = new HashMap<>();
         String path="C:\\Users\\Administrator\\Downloads\\Picsart_23-04-22_22-138-37-352.jpg";
@@ -207,13 +283,14 @@ public class Users {
             documentMap.put("city", "Lahore");
             documentMap.put("Image", mongoConnect.storeImage(path));
             documentMap.put("Date of Birth",selectedDate(true));
-            documentMap.put("userID",Integer.parseInt(userIDText.getText()));
+            documentMap.put("userID",Integer.parseInt(userIdInput.getText()));
             documentMap.put("password", BCrypt.hashpw(String.valueOf(passwordText.getPassword()), BCrypt.gensalt()));
             documentMap.put("Date of Joining", selectedDate(false));
-            conncetionUsers.createDocument(documentMap);
-            conncetionUsers.updateId("userID",true);
+            if( conncetionUsers.updateUser(documentMap,false)){
+                JOptionPane.showMessageDialog(null,"Form Submitted Successfully");
+            }
 
-            JOptionPane.showMessageDialog(null,"Form Submitted Successfully");
+
         }
         catch (Exception ex){
             JOptionPane.showMessageDialog(null,"Form ");
@@ -247,6 +324,20 @@ public class Users {
 
     private void addDriverInfo(){
 
+        userID = new JLabel ("User ID:");
+        Font f2 = new Font("Arial", Font.BOLD, 16);
+        userID.setFont(f2);
+        userIdInput = new JTextField (5);
+        retrieve = new JButton ("Retrieve");
+
+
+        User_Form.add (userID);
+        User_Form.add (userIdInput);
+        User_Form.add (retrieve);
+
+        userID.setBounds (180+ xalignD, 60+ yalignD, 80, 30);
+        userIdInput.setBounds (265+ xalignD, 60+ yalignD, 140, 30);
+        retrieve.setBounds (435+ xalignD, 60+ yalignD, 130, 30);
 
         name=new JLabel("Name");
         name.setBounds (65+ xalignD, 110+ yalignD, 100, 30);
@@ -321,19 +412,19 @@ public class Users {
         User_Form.add(bloodGroupsList);
 
 
-        password = new JLabel ("Enter Password : ");
-        rePassword = new JLabel ("Re-Enter Your Password : ");
+        password = new JLabel ("Enter New Password : ");
+        rePassword = new JLabel ("Re-Enter New Password : ");
         passwordText = new JPasswordField (5);
         rePasswordText = new JPasswordField (5);
-        userID = new JLabel ("User ID :");
-        userIDText = new JLabel (String.valueOf(conncetionids.updateId("userID",true)));
+        previousPassword = new JLabel ("Previous Password");
+        previousPasswordInput = new JPasswordField(5);
 
         User_Form.add (password);
         User_Form.add (rePassword);
         User_Form.add (passwordText);
         User_Form.add (rePasswordText);
-        User_Form.add (userID);
-        User_Form.add (userIDText);
+        User_Form.add (previousPassword);
+        User_Form.add (previousPasswordInput);
 
         dateOfIssue1=new JLabel("Date of Joining");
         User_Form.add(dateOfIssue1);
@@ -346,12 +437,8 @@ public class Users {
         rePassword.setBounds (230, 390, 150, 30);
         passwordText.setBounds (445, 350, 130, 30);
         rePasswordText.setBounds (445, 390, 130, 30);
-        userID.setBounds (230, 310, 100, 25);
-        userIDText.setBounds (445, 310, 100, 25);
-        userIDText.setBorder(new LineBorder(Color.gray, 2, true));
-        Font f2 = new Font("Arial", Font.BOLD, 16);
-        userIDText.setFont(f2);
-        userIDText.setHorizontalAlignment(SwingConstants.CENTER);
+        previousPassword.setBounds (230, 310, 130, 25);
+        previousPasswordInput.setBounds (445, 310, 130, 25);
         dateOfIssue1.setBounds (230, 430, 100, 30);
         dateOfJoining.setBounds(445, 430, 130, 30);
 
@@ -395,6 +482,5 @@ public class Users {
 
         return String.valueOf(period.getYears());
     }
-
 
 }

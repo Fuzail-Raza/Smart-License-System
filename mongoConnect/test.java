@@ -1,131 +1,116 @@
-
 import javax.swing.*;
+import javax.swing.border.Border;
+import javax.swing.border.EtchedBorder;
+import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.image.ImageObserver;
-import java.awt.print.*;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.time.LocalDate;
+import mongoPackage.mongoConnect;
+import org.bson.Document;
+import org.bson.types.Binary;
 
-class test{
-    JFrame mainFrame;
-    JPanel mainPanel;
-    JButton print;
+import java.util.HashMap;
+import java.util.Map;
+import org.mindrot.jbcrypt.BCrypt;
+public  class test{
+
+    private JPanel innerPanel;
+    private JLabel heading;
+    private JLabel userNameLabel;
+    private JTextField userName;
+    private JLabel passwordLabel;
+    private JPasswordField password;
+    private JButton LogIN;
+
     public test(){
-//        mainFrame=new JFrame();
-//        mainPanel=new JPanel();
-//        print=new JButton("Print");
-//
-//        mainPanel.add(print);
-//        mainFrame.add(mainPanel);
-//        mainFrame.setVisible(true);
-        printDocument();
-//        print.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                System.out.println("Print Call");
-//                printDocument();
-//            }
-//        });
-    }
-    private void printDocument() {
-        PrinterJob printerJob = PrinterJob.getPrinterJob();
-        PageFormat pageFormat = printerJob.defaultPage();
-        Paper paper = pageFormat.getPaper();
-        paper.setSize(1011.0 / 72.0, 639.0 / 72.0); // 1 inch = 72 points
-        pageFormat.setPaper(paper);
 
-        printerJob.setPrintable(new MyPrintable(), pageFormat);
+        initGUI();
 
-        if (printerJob.printDialog()) {
-            try {
-                printerJob.print();
-            } catch (PrinterException ex) {
-                ex.printStackTrace();
-            }
-        }
+        addListner();
     }
 
-    private  class MyPrintable implements Printable, ImageObserver {
+    void initGUI(){
 
-        public int print(Graphics g, PageFormat pf, int pageIndex) throws PrinterException {
-            if (pageIndex > 0) {
-                return Printable.NO_SUCH_PAGE;
+        JFrame mainFrame = new JFrame();
+
+        innerPanel=new JPanel(null);
+
+        Border etchedBorder = BorderFactory.createEtchedBorder(EtchedBorder.LOWERED);
+
+
+        TitledBorder titledBorder = BorderFactory.createTitledBorder(etchedBorder, "Driving License User LOGIN");
+        titledBorder.setTitleColor(Color.BLACK);
+        Font labelFont = new Font("Arial", Font.BOLD, 28);
+        titledBorder.setTitleJustification(TitledBorder.CENTER);
+        titledBorder.setTitleFont(labelFont);
+
+        innerPanel.setBorder(titledBorder);
+
+        heading=new JLabel("User LOGIN");
+        heading.setHorizontalTextPosition(SwingConstants.CENTER);
+        heading.setFont(labelFont);
+        innerPanel.add(heading);
+
+        innerPanel.add(new JLabel());
+
+        Font font = new Font("Arial", Font.BOLD, 16);
+        userNameLabel=new JLabel("User Name : ");
+        userNameLabel.setFont(font);
+        innerPanel.add(userNameLabel);
+
+        userName=new JTextField();
+        innerPanel.add(userName);
+
+        passwordLabel=new JLabel("Password");
+        passwordLabel.setFont(font);
+        innerPanel.add(passwordLabel);
+
+        password=new JPasswordField();
+        innerPanel.add(password);
+
+        LogIN=new JButton("LOGIN");
+        LogIN.setFont(font);
+
+        innerPanel.add(LogIN);
+
+        LogIN.setBounds (270, 285, 170, 30);
+        userNameLabel.setBounds (190, 150, 130, 30);
+        passwordLabel.setBounds (190, 200, 130, 30);
+        password.setBounds (335, 200, 170, 30);
+        userName.setBounds (335, 150, 170, 30);
+        heading.setBounds (245, 80, 205, 40);
+
+        mainFrame.add(innerPanel);
+        mainFrame.setVisible(true);
+        mainFrame.setSize(720,580);
+        mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    }
+
+    void addListner(){
+
+        LogIN.addActionListener(new ActionListener() {
+
+            public void actionPerformed(ActionEvent e) {
+                String hashedPassword = BCrypt.hashpw("123", BCrypt.gensalt());
+                JOptionPane.showMessageDialog(null,hashedPassword);
+
+                if (BCrypt.checkpw(String.valueOf(password.getPassword()), hashedPassword)) {
+                    System.out.println("Password Matched!");
+                } else {
+                    System.out.println("Invalid Password!");
+                }
+
             }
 
-            Graphics2D g2d = (Graphics2D) g;
-            g2d.translate(pf.getImageableX(), pf.getImageableY());
+        });
 
-            Font originalFont = g.getFont();
-            g.setFont(new Font("Arial", Font.BOLD, 20));
-            g.drawString("Learner Form", 200, 50);
-
-            Stroke originalStroke = g2d.getStroke();
-            g2d.setStroke(new BasicStroke(3));
-
-
-            g2d.setStroke(originalStroke);
-
-            g.setFont(originalFont);
-            // Info Panel content
-            String nameToPrint = "nameInput.getText()".length() > 15 ? "nameInput.getText()".substring(0, 15) : "nameInput.getText()";
-            g.drawString("nameInput.getText()", 100, 100);
-            Icon icon = null;
-            try {
-                icon = imageReturn();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-            if (icon instanceof ImageIcon) {
-                Image image = ((ImageIcon) icon).getImage();
-                int imageWidth = 1011;
-                int imageHeight = 639;
-                // Draw the image at coordinates (150, 160)
-                g.drawImage(image, 0, 0, imageWidth, imageHeight, this);
-            } else {
-                // Handle the case when the icon is not an ImageIcon
-                g.drawString("No image available", 480, 50);
-            }
-            g.drawString("3520101367325", 300, 100);
-            // Add other fields from the info panel as needed
-
-            g.drawString("25-12-2002", 100, 250);
-            g.drawString( "25-12-2002", 300, 250);
-
-
-            int x = 50;
-            int y = 290;
-            int width = 500;
-            int height = 85;
-
-
-            g2d.setStroke(new BasicStroke(3));
-
-            g2d.drawRect(x, y, width, height);
-
-
-
-            return Printable.PAGE_EXISTS;
-        }
-
-        private Icon imageReturn() throws IOException {
-            Path imagePath = Paths.get("E:\\Programms\\Java\\ACP-Tasks\\mongo\\mongoConnect\\symbolImages\\License print.png");
-
-            byte[] imageBytes=Files.readAllBytes(imagePath);
-            return new ImageIcon(imageBytes);
-        }
-
-        @Override
-        public boolean imageUpdate(Image img, int infoflags, int x, int y, int width, int height) {
-            return false;
-        }
     }
 
     public static void main(String[] args) {
-        new test();
+            test user=new test();
+
     }
+
 }
+
+

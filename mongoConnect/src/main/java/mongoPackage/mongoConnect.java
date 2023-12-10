@@ -14,6 +14,7 @@ import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Updates.set;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -49,8 +50,10 @@ public class mongoConnect{
             return true;
         }
         catch (Exception e){
-//            JOptionPane.showMessageDialog(null,e);
-            System.out.println(e);
+            JOptionPane.showMessageDialog(null,e);
+            System.out.println(e.getStackTrace());
+
+//            System.out.println(e);
             return false;
         }
     }
@@ -116,6 +119,44 @@ public class mongoConnect{
             return false;
         }
     }
+
+    public boolean updateUser(Map<String, Object> documentMap,boolean isImage) {
+        try {
+
+            Document filter = new Document("userID", documentMap.get("userID"));
+//            if(!isImage){
+//
+//                for(Map.Entry<String, Object> entry : documentMap.entrySet()){
+//                    if(!entry.getKey().equals("Date of Joining")){
+//                        update.append(entry.getKey(),"$set", entry.getValue());
+//                    }
+//                }
+//            }
+//            Document update = new Document("$set", new Document()
+//                    .append("Name", documentMap.get("Name"))
+//                    .append("Cnic", documentMap.get("Cnic"))
+//                    .append("Father Name", documentMap.get("Father Name"))
+//                    .append("Father Cnic", documentMap.get("Father Cnic"))
+//                    .append("Date of Birth", documentMap.get("Date of Birth"))
+//                    .append("Phone No", documentMap.get("Phone No"))
+//                    .append("Date of Joining", documentMap.get("Date of Joining"))
+//                    .append("password", documentMap.get("password"))
+//            );
+            Document s1=new Document();
+            for(Map.Entry<String, Object> entry : documentMap.entrySet()){
+                s1.append(entry.getKey(),entry.getValue());
+            }
+            Document update = new Document("$set", s1);
+
+            collection.updateOne(filter, update);
+            return true;
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null,e);
+            e.printStackTrace();
+            return false;
+        }
+    }
+
 
 
     public boolean deleteDocument(String fieldName, int id){

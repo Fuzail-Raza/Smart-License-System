@@ -40,9 +40,11 @@ public class UpdateSymbol {
     JLabel questionID;
     JButton delete;
     boolean isImageUpdate;
+    boolean isDeleteCall;
 
 
-    public UpdateSymbol() {
+    public UpdateSymbol(boolean isDeleteCall) {
+        this.isDeleteCall=isDeleteCall;
         initGUI();
     }
 
@@ -268,8 +270,14 @@ public class UpdateSymbol {
             }
             questionText.setEnabled(is);
             addSymbol.setEnabled(is);
-            submitButton.setEnabled(is);
-            delete.setEnabled(is);
+            if(!isDeleteCall) {
+                submitButton.setEnabled(is);
+                delete.setVisible(false);
+            }
+            else {
+                delete.setEnabled(is);
+                submitButton.setVisible(false);
+            }
     }
 
     private boolean isNumeric(String str) {
