@@ -72,7 +72,6 @@ public class UpdateUser {
 
     void createConnection(){
         conncetionUsers=new mongoConnect("Driving_Center","usersInfo");
-        conncetionids=new mongoConnect("Driving_Center","id_Collection");
     }
 
     private void initGUI(){
@@ -197,13 +196,13 @@ public class UpdateUser {
 
     }
 
-    private boolean isNumeric(String str) {
+    public static boolean isNumeric(String str) {
         if (str == null || str.isEmpty()) {
             return false;
         }
 
         try {
-            Integer.parseInt(str);
+            Double.parseDouble(str);
             return true;
         } catch (NumberFormatException e) {
             return false;
@@ -286,7 +285,7 @@ public class UpdateUser {
             documentMap.put("userID",Integer.parseInt(userIdInput.getText()));
             documentMap.put("password", BCrypt.hashpw(String.valueOf(passwordText.getPassword()), BCrypt.gensalt()));
             documentMap.put("Date of Joining", selectedDate(false));
-            if( conncetionUsers.updateUser(documentMap,false)){
+            if( conncetionUsers.updateUser(documentMap,false,"userID","userID")){
                 JOptionPane.showMessageDialog(null,"Form Submitted Successfully");
             }
 

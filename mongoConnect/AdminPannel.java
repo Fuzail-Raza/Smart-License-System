@@ -8,6 +8,7 @@ import java.awt.event.ActionListener;
 
 import addSymbols.AddQuestion;
 import addSymbols.UpdateSymbol;
+import driverForm.UpdateDriverinfo;
 import users.UpdateUser;
 import users.Users;
 
@@ -133,8 +134,7 @@ public class AdminPannel {
 
             }
             else if(e.getActionCommand().equals("Update Driver Data")){
-                System.out.println("9");
-
+                new UpdateDriverinfo(false);
             }
         }
     };

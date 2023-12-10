@@ -120,10 +120,10 @@ public class mongoConnect{
         }
     }
 
-    public boolean updateUser(Map<String, Object> documentMap,boolean isImage) {
+    public boolean updateUser(Map<String, Object> documentMap,boolean isImage,String fieldName,String mappingName) {
         try {
 
-            Document filter = new Document("userID", documentMap.get("userID"));
+            Document filter = new Document(fieldName, documentMap.get(mappingName));
 //            if(!isImage){
 //
 //                for(Map.Entry<String, Object> entry : documentMap.entrySet()){
@@ -160,6 +160,19 @@ public class mongoConnect{
 
 
     public boolean deleteDocument(String fieldName, int id){
+        try {
+            collection.deleteOne(eq(fieldName, id));
+            System.out.println("Document deleted.");
+            return true;
+        }
+        catch (Exception e){
+            System.out.println(e.getStackTrace());
+            return false;
+        }
+
+    }
+
+    public boolean deleteDocument(String fieldName, String id){
         try {
             collection.deleteOne(eq(fieldName, id));
             System.out.println("Document deleted.");
@@ -231,6 +244,10 @@ public class mongoConnect{
     }
 
     public Document searchDocument(String fieldname,int value){
+        return collection.find(eq(fieldname, value)).first();
+
+    }
+    public Document searchDocument(String fieldname,String value){
         return collection.find(eq(fieldname, value)).first();
 
     }
