@@ -129,7 +129,7 @@ public class DrivingInfo extends JFrame {
             public void actionPerformed(ActionEvent e) {
 
                 if (isFormValid()) {
-//                saveData();
+                    saveData();
                     mongoConnect temp = new mongoConnect("Driving_Center", "id_Collection");
                     temp.updateId("learnerNo", true);
                     String message = "Dear " + nameInput.getText() + ",\nRegistration Confirmed .Your Learner has been issued.";

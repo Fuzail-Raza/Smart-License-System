@@ -23,7 +23,9 @@ public class mongoConnect{
     MongoDatabase database;
     MongoCollection<Document> collection;
     public mongoConnect(String databaseName,String collectionName){
+//        uri = "mongodb://localhost:27017";
         uri = "mongodb+srv://Fuzail:Fuzailraza111@cluster0.belxlmj.mongodb.net/?retryWrites=true&w=majority";
+
 
         try {
             MongoClient mongoClient = MongoClients.create(uri);

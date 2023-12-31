@@ -22,7 +22,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-public class UpdateUser {
+public class UpdateUser implements Runnable {
     private JFrame mainFrame;
     private JPanel User_Form;
     private JDateChooser dateOfBirthInput;
@@ -66,16 +66,19 @@ public class UpdateUser {
     private boolean isDelete;
     public UpdateUser(boolean isDelete){
         this.isDelete=isDelete;
-        initGUI();
-
+        Thread t1 = new Thread(this);
+        t1.run();
     }
 
     void createConnection(){
         conncetionUsers=new mongoConnect("Driving_Center","usersInfo");
     }
 
-    private void initGUI(){
+    public void run() {
+        initGUI();
         createConnection();
+    }
+    private void initGUI(){
 
         mainFrame=new JFrame();
         mainFrame.setTitle("Driver Info");

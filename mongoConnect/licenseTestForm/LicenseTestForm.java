@@ -1,7 +1,6 @@
 package licenseTestForm;
 import javax.swing.*;
 import javax.swing.border.Border;
-import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
@@ -19,7 +18,7 @@ import mongoPackage.mongoConnect;
 import org.bson.Document;
 import org.bson.types.Binary;
 
-class TestForm {
+class TestForm implements Runnable {
 
     private JFrame mainFrame;
 
@@ -69,13 +68,24 @@ class TestForm {
 
     private JSeparator separator;
     private boolean isRetrieved;
-
+    private mongoConnect conncetionUsers;
+    private mongoConnect connectionSaveResult;
     private ButtonGroup buttonGroupSymbol = new ButtonGroup();
 
     private ButtonGroup buttonGroupDriving = new ButtonGroup();
     public TestForm() {
+        Thread t1 = new Thread(this);
+        t1.run();
 
+    }
+    void createConnection(){
+         connectionSaveResult= new mongoConnect("Driving_Center", "Test_Results");
+        conncetionUsers=new mongoConnect("Driving_Center", "testing");
+    }
+    @Override
+    public void run() {
         initGUI();
+        createConnection();
     }
 
     void initGUI() {
@@ -360,9 +370,8 @@ class TestForm {
                         JOptionPane.showMessageDialog(mainFrame,"Please Enter Learner No","Learner No not Provide",JOptionPane.ERROR_MESSAGE);
                     }
                     else {
-                        mongoConnect userInfo = new mongoConnect("Driving_Center", "testing");
                         try {
-                            Document userFetchData = userInfo.readDocument("Cnic", textField1.getText().trim());
+                            Document userFetchData = conncetionUsers.readDocument("Cnic", textField1.getText().trim());
                             nameLabel.setText(userFetchData.getString("Name"));
                             cnicLabel.setText(userFetchData.getString("Cnic"));
                             fatherNameLabel.setText(userFetchData.getString("Father Name"));
@@ -377,7 +386,7 @@ class TestForm {
                             reamainingValidityLabel.setText(String.valueOf(expiry + " Days"));
                             bloodGroupLabel.setText(userFetchData.getString("Blood Group"));
 
-                            byte[] imageData = userInfo.fetchImage(userFetchData.get("Image", Binary.class));
+                            byte[] imageData = conncetionUsers.fetchImage(userFetchData.get("Image", Binary.class));
                             picture.setIcon(addImage(imageData));
                             isRetrieved = true;
                         } catch (Exception ex) {
@@ -407,7 +416,6 @@ class TestForm {
                         if (period.getDays() < 41) {
                             JOptionPane.showMessageDialog(mainFrame, "Days after issuing Learner is " + period.getDays() + " days.Cannot GIve Test before 41 Days.");
                         } else {
-                            mongoConnect temp = new mongoConnect("Driving_Center", "Test_Results");
                             Map<String, Object> documentMap = new HashMap<>();
                             documentMap.put("Name", textField1.getText());
                             if (symbolPassCheckBox.isSelected()) {
@@ -422,7 +430,7 @@ class TestForm {
                                 documentMap.put("Driving Test", false);
                             }
 
-                            if (temp.createDocument(documentMap)) {
+                            if (connectionSaveResult.createDocument(documentMap)) {
                                 JOptionPane.showMessageDialog(mainFrame, "Form Submitted!", "Submitted", JOptionPane.INFORMATION_MESSAGE);
                             } else {
                                 JOptionPane.showMessageDialog(mainFrame, "Form Submission Error", "Not Submitted", JOptionPane.ERROR_MESSAGE);
@@ -459,6 +467,7 @@ class TestForm {
             }
         }
     }
+
 
     private  class MyPrintable implements Printable, ImageObserver {
 
