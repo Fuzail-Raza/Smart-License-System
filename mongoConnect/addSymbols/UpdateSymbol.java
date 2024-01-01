@@ -184,7 +184,7 @@ public class UpdateSymbol {
                         optionText[1].setText(symbolData.getString("Option2"));
                         optionText[2].setText(symbolData.getString("Option3"));
                         optionText[3].setText(symbolData.getString("Option4"));
-
+                        questionID.setText("Question Id : "+ Integer.parseInt(questionIDInputText.getText()));
                         byte[] imageData = mongoConnect.fetchImage(symbolData.get("Symbol", Binary.class));
                         ImageIcon imageIcon = new ImageIcon(imageData);
                         Image scaledImage = imageIcon.getImage().getScaledInstance(190, 165, Image.SCALE_SMOOTH);
@@ -203,7 +203,7 @@ public class UpdateSymbol {
                         } else if (correctAnswer.equals(optionText[3].getText())) {
                             correctOption[3].setSelected(true);
                         }
-                        setEnable(true);
+                        setEnable(!isDeleteCall);
                     }
                     catch (Exception ex){
                         System.out.println(ex.getStackTrace());
@@ -315,7 +315,7 @@ public class UpdateSymbol {
         correctOptionText.setHorizontalAlignment(SwingConstants.CENTER);
         correctOptionText.setBounds(322, 145, 195, 30);
         questionID.setBounds(110, 40, 130, 30);
-        questionIDInputLabel.setBounds(110,70,130, 30);
+        questionIDInputLabel.setBounds(110,70,150, 30);
         questionIDInputText.setBounds(270,70,100, 25);
         retrieveSymbol.setBounds(400,70,90,25);
 

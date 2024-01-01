@@ -69,6 +69,25 @@
 			<version>17</version>
 		</dependency>
 
+		<dependency>
+			<groupId>org.openpnp</groupId>
+			<artifactId>opencv</artifactId>
+			<version>4.5.1-1</version> <!-- Adjust the version according to your OpenCV version -->
+		</dependency>
+
+		<!-- JavaCV Core -->
+		<dependency>
+			<groupId>org.bytedeco</groupId>
+			<artifactId>javacv</artifactId>
+			<version>1.5.5</version>
+		</dependency>
+
+		<!-- OpenCV -->
+		<dependency>
+			<groupId>org.bytedeco</groupId>
+			<artifactId>javacv-platform</artifactId>
+			<version>1.5.5</version>
+		</dependency>
 
 		<dependency>
 			<groupId>com.infobip</groupId>
@@ -85,7 +104,12 @@
 			<artifactId>jcalendar</artifactId>
 			<version>1.4</version> <!-- Use the latest version available -->
 		</dependency>
-
+		<dependency>
+			<groupId>org.openpnp</groupId>
+			<artifactId>opencv</artifactId>
+			<version>4.5.1-1</version> <!-- Adjust the version according to your OpenCV version -->
+			<classifier>natives</classifier>
+		</dependency>
 
 		<!-- Logback (Logging Implementation) -->
 		<dependency>

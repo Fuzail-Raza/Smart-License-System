@@ -1,3 +1,5 @@
+package Admin;
+
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.EtchedBorder;
@@ -6,6 +8,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import DisplayInformation.DisplayDrivers;
 import addSymbols.AddQuestion;
 import addSymbols.UpdateSymbol;
 import driverForm.UpdateDriverinfo;
@@ -140,9 +143,11 @@ public class AdminPannel {
     };
 
     private void displayDriversF() {
+        new DisplayDrivers(true);
     }
 
     private void displayUsersF() {
+        new DisplayDrivers(false);
     }
 
     private void updateSignF() {

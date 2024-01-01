@@ -79,8 +79,8 @@ class TestForm implements Runnable {
 
     }
     void createConnection(){
-         connectionSaveResult= new mongoConnect("Driving_Center", "Test_Results");
-        conncetionUsers=new mongoConnect("Driving_Center", "testing");
+        connectionSaveResult= new mongoConnect("Driving_Center", "Test_Results");
+        conncetionUsers=new mongoConnect("Driving_Center", "Drivers");
     }
     @Override
     public void run() {
@@ -371,7 +371,7 @@ class TestForm implements Runnable {
                     }
                     else {
                         try {
-                            Document userFetchData = conncetionUsers.readDocument("Cnic", textField1.getText().trim());
+                            Document userFetchData = conncetionUsers.readDocument("LearnerNo", textField1.getText().trim());
                             nameLabel.setText(userFetchData.getString("Name"));
                             cnicLabel.setText(userFetchData.getString("Cnic"));
                             fatherNameLabel.setText(userFetchData.getString("Father Name"));
@@ -417,16 +417,16 @@ class TestForm implements Runnable {
                             JOptionPane.showMessageDialog(mainFrame, "Days after issuing Learner is " + period.getDays() + " days.Cannot GIve Test before 41 Days.");
                         } else {
                             Map<String, Object> documentMap = new HashMap<>();
-                            documentMap.put("Name", textField1.getText());
+                            documentMap.put("Cnic", textField1.getText());
                             if (symbolPassCheckBox.isSelected()) {
                                 documentMap.put("SymbolTest", true);
-                            } else if (!symbolFailCheckBox.isSelected()) {
+                            } else if (symbolFailCheckBox.isSelected()) {
                                 documentMap.put("SymbolTest", false);
                             }
 
                             if (drivingPassCheckBox.isSelected()) {
                                 documentMap.put("Driving Test", true);
-                            } else if (!drivingFailCheckBox.isSelected()) {
+                            } else if (drivingFailCheckBox.isSelected()) {
                                 documentMap.put("Driving Test", false);
                             }
 
@@ -489,7 +489,7 @@ class TestForm implements Runnable {
             g2d.setStroke(new BasicStroke(3));
 
             g2d.drawRect(300, 220, 90, 23);
-            String  text="Learner No :   "+ "999999";
+            String  text="Learner No :   "+ textField1.getText();
             g.drawString(text, 180, 240);
 
             g2d.setStroke(originalStroke);

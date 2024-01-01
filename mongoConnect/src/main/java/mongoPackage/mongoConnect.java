@@ -14,7 +14,6 @@ import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Updates.set;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -23,8 +22,8 @@ public class mongoConnect{
     MongoDatabase database;
     MongoCollection<Document> collection;
     public mongoConnect(String databaseName,String collectionName){
-//        uri = "mongodb://localhost:27017";
-        uri = "mongodb+srv://Fuzail:Fuzailraza111@cluster0.belxlmj.mongodb.net/?retryWrites=true&w=majority";
+        uri = "mongodb://localhost:27017";
+//        uri = "mongodb+srv://Fuzail:Fuzailraza111@cluster0.belxlmj.mongodb.net/?retryWrites=true&w=majority";
 
 
         try {
@@ -205,6 +204,13 @@ public class mongoConnect{
         List<Document> documentList = new ArrayList<>();
         result.into(documentList);
         return documentList.toArray(new Document[0]);
+    }
+
+    public ArrayList<Document> fetchAllDocuments() {
+        FindIterable<Document> result = collection.find();
+        ArrayList<Document> documentList = new ArrayList<>();
+        return result.into(documentList);
+
     }
 
     public static byte[] storeImage(String imageP) throws IOException {

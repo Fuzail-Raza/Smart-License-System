@@ -132,9 +132,11 @@ public class DrivingInfo extends JFrame {
                     saveData();
                     mongoConnect temp = new mongoConnect("Driving_Center", "id_Collection");
                     temp.updateId("learnerNo", true);
-                    String message = "Dear " + nameInput.getText() + ",\nRegistration Confirmed .Your Learner has been issued.";
+                    String message = "Dear " + nameInput.getText() + ",\nRegistration Confirmed .Your Learner has been issued.\nLearner No: "+learnerNo1Label.getText();
                     SendSMS.send(message);
+                    learnerNo1Label.setText(String.valueOf(temp.updateId("learnerNo",false)));
                     printDocument();
+
                 }
             }
         });
@@ -189,7 +191,7 @@ public class DrivingInfo extends JFrame {
     private void saveData() {
 
 
-        mongoConnect userData=new mongoConnect("Driving_Center","testing");
+        mongoConnect userData=new mongoConnect("Driving_Center","Drivers");
         Map<String, Object> documentMap = new HashMap<>();
         String path="C:\\Users\\Administrator\\Downloads\\Picsart_23-04-22_22-138-37-352.jpg";
         try {
@@ -205,10 +207,8 @@ public class DrivingInfo extends JFrame {
             documentMap.put("Date of Issue",dateOfIssue1Label.getText());
             documentMap.put("Date of Expiry",dateOfExpiry1Label.getText());
             documentMap.put("Type",type1List.getSelectedItem());
+            documentMap.put("LearnerNo",learnerNo1Label.getText());
             userData.createDocument(documentMap);
-
-            mongoConnect temp=new mongoConnect("Driving_Center","id_Collection");
-            temp.updateId("learnerNo",true);
 
             JOptionPane.showMessageDialog(null,"Form Submitted Successfully");
         }

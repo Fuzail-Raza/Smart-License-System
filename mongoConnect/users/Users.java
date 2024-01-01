@@ -129,8 +129,7 @@ public class Users {
 
                 if (isFormValid()) {
                 saveData();
-                    conncetionids.updateId("learnerNo", true);
-//                    String message = "Dear " + nameInput.getText() + ",\nRegistration Confirmed .Your User ID is "+userIDText.getText()+".";
+                    String message = "Dear " + nameInput.getText() + ",\nRegistration Confirmed .\nYour User ID is :"+userIDText.getText()+"\nYour Password is :"+ Arrays.toString(passwordText.getPassword()) +".";
 //                    SendSMS.send(message);
                 }
             }
@@ -185,7 +184,7 @@ public class Users {
         }
 
         if(!Arrays.equals(passwordText.getPassword(),rePasswordText.getPassword())){
-            JOptionPane.showMessageDialog(mainFrame, "IIInvalid phone number. Please use the format: 03XXXXXXXXX.", "Form Validation Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(mainFrame, "Enter Password and Re-Enter Password are not Same", "Form Validation Error", JOptionPane.ERROR_MESSAGE);
 
             return false;
         }
@@ -212,7 +211,7 @@ public class Users {
             documentMap.put("Date of Joining", selectedDate(false));
             conncetionUsers.createDocument(documentMap);
             conncetionUsers.updateId("userID",true);
-
+            userIDText.setText(String.valueOf(conncetionUsers.updateId("userID",false)));
             JOptionPane.showMessageDialog(null,"Form Submitted Successfully");
         }
         catch (Exception ex){

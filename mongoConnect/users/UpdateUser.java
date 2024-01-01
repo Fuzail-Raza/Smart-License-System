@@ -137,7 +137,13 @@ public class UpdateUser implements Runnable {
         submitButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if (isDelete) {
-                    conncetionUsers.deleteDocument("userID", Integer.parseInt(userIdInput.getText()));
+                    try {
+                        conncetionUsers.deleteDocument("userID", Integer.parseInt(userIdInput.getText()));
+                        JOptionPane.showMessageDialog(null,"User Deleted Successfully");
+                    }
+                    catch (Exception ex){
+                        JOptionPane.showMessageDialog(null,"User Not Deleted Successfully");
+                    }
                 } else {
                     if (isFormValid()) {
                     updateData();
@@ -173,6 +179,7 @@ public class UpdateUser implements Runnable {
                     if(!isDelete) {
                         setEnabled(true);
                     }
+                    submitButton.setEnabled(true);
                 }
             }
         });
@@ -224,7 +231,6 @@ public class UpdateUser implements Runnable {
         phoneNoInput.setEnabled(isEnable);
         passwordText.setEnabled(isEnable);
         rePasswordText.setEnabled(isEnable);
-        submitButton.setEnabled(isEnable);
         dateOfJoining.setEnabled(isEnable);
 
 
@@ -257,16 +263,18 @@ public class UpdateUser implements Runnable {
         if(!handleSelectedDate()){
             return false;
         }
+        if (!(previousPasswordInput.getPassword().length==0)) {
 
-        if(!BCrypt.checkpw(String.valueOf(previousPasswordInput.getPassword()), prevPassword)){
+            if (!BCrypt.checkpw(String.valueOf(previousPasswordInput.getPassword()), prevPassword)) {
 
-            JOptionPane.showMessageDialog(mainFrame, "Previous Password Doesnot Match", "Form Validation Error", JOptionPane.ERROR_MESSAGE);
-            return false;
-    }
+                JOptionPane.showMessageDialog(mainFrame, "Previous Password Doesnot Match", "Form Validation Error", JOptionPane.ERROR_MESSAGE);
+                return false;
+            }
 
-        if(!String.valueOf(passwordText.getPassword()).equals(String.valueOf(rePasswordText.getPassword()))){
-            JOptionPane.showMessageDialog(mainFrame, "Password Does Not Match", "Form Validation Error", JOptionPane.ERROR_MESSAGE);
-            return false;
+            if (!String.valueOf(passwordText.getPassword()).equals(String.valueOf(rePasswordText.getPassword()))) {
+                JOptionPane.showMessageDialog(mainFrame, "Password Does Not Match", "Form Validation Error", JOptionPane.ERROR_MESSAGE);
+                return false;
+            }
         }
         return true;
     }
@@ -286,10 +294,12 @@ public class UpdateUser implements Runnable {
             documentMap.put("Image", mongoConnect.storeImage(path));
             documentMap.put("Date of Birth",selectedDate(true));
             documentMap.put("userID",Integer.parseInt(userIdInput.getText()));
-            documentMap.put("password", BCrypt.hashpw(String.valueOf(passwordText.getPassword()), BCrypt.gensalt()));
+            if(previousPasswordInput.getPassword() != null) {
+                documentMap.put("password", BCrypt.hashpw(String.valueOf(passwordText.getPassword()), BCrypt.gensalt()));
+            }
             documentMap.put("Date of Joining", selectedDate(false));
             if( conncetionUsers.updateUser(documentMap,false,"userID","userID")){
-                JOptionPane.showMessageDialog(null,"Form Submitted Successfully");
+                JOptionPane.showMessageDialog(null,"User Updated Successfully");
             }
 
 
