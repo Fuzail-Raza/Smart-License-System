@@ -18,7 +18,7 @@ import mongoPackage.mongoConnect;
 import org.bson.Document;
 import org.bson.types.Binary;
 
-class TestForm implements Runnable {
+public class LicenseTestForm implements Runnable {
 
     private JFrame mainFrame;
 
@@ -73,7 +73,7 @@ class TestForm implements Runnable {
     private ButtonGroup buttonGroupSymbol = new ButtonGroup();
 
     private ButtonGroup buttonGroupDriving = new ButtonGroup();
-    public TestForm() {
+    public LicenseTestForm() {
         Thread t1 = new Thread(this);
         t1.run();
 
@@ -572,15 +572,11 @@ class TestForm implements Runnable {
         }
     }
 
-}
 
 
-
-
-public class LicenseTestForm {
 
     public static void main(String[] args) {
-        TestForm us=new TestForm();
+        LicenseTestForm us=new LicenseTestForm();
 
 
     }

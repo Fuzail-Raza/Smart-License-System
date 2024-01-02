@@ -4,6 +4,7 @@ import Admin.AdminPannel;
 import driverForm.DrivingInfo;
 import mongoPackage.mongoConnect;
 import org.bson.Document;
+import org.bson.types.Binary;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -133,12 +134,13 @@ public class DisplayDrivers {
         model.addColumn("Phone No");
         model.addColumn("City");
         model.addColumn("Blood Group");
+        model.addColumn("PIC");
 
 
 
 
         for (Document d:drivers) {
-            Vector<String> row = new Vector<>();
+            Vector<Object> row = new Vector<>();
             row.add(String.valueOf(d.get("Name")));
             row.add(String.valueOf(d.get("Cnic")));
             row.add(String.valueOf(d.get("Father Name")));
@@ -148,6 +150,10 @@ public class DisplayDrivers {
             row.add(String.valueOf(d.get("Phone No")));
             row.add(String.valueOf(d.get("city")));
             row.add(String.valueOf(d.get("Blood Group")));
+            JLabel j1=new JLabel("");
+            j1.setIcon(new ImageIcon(mongoConnect.fetchImage((Binary) d.get("Image"))));
+
+            row.add(j1);
 
             model.addRow(row);
         }
@@ -156,5 +162,8 @@ public class DisplayDrivers {
         return scrollBar;
     }
 
+    public static void main(String[] args) {
+        new DisplayDrivers(true);
+    }
 
 }

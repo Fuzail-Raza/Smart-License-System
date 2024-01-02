@@ -8,12 +8,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import mongoPackage.mongoConnect;
 import org.bson.Document;
-import org.bson.types.Binary;
+import org.mindrot.jbcrypt.BCrypt;
 
-import java.util.HashMap;
-import java.util.Map;
-class Login{
-
+public class AdminLogin{
+    JFrame mainFrame;
     private JPanel innerPanel;
     private JLabel heading;
     private JLabel userNameLabel;
@@ -22,7 +20,7 @@ class Login{
     private JPasswordField password;
     private JButton LogIN;
 
-    public Login(){
+    public AdminLogin(){
 
         initGUI();
 
@@ -31,7 +29,7 @@ class Login{
 
     void initGUI(){
 
-        JFrame mainFrame = new JFrame();
+        mainFrame= new JFrame();
 
         innerPanel=new JPanel(null);
 
@@ -100,15 +98,23 @@ class Login{
 //                    adminFetch.createDocument(adminDataSave);
                     Document admin = adminFetch.readDocument("Name",userName.getText().trim());
                     if (admin == null) {
+                        adminFetch = new mongoConnect("Driving_Center", "usersInfo");
+                        admin = adminFetch.readDocument("userID",userName.getText().trim());
+
+                    }
+                    if (admin == null) {
                         JOptionPane.showMessageDialog(innerPanel, "User Not Found");
                     }
                     else {
                         String enteredPassword = String.valueOf(password.getPassword());
-                        if (enteredPassword.equals(admin.getString("Password"))){
-                            JOptionPane.showMessageDialog(innerPanel, "LogIN Successfully");
-
+                        if (enteredPassword.equals(admin.getString("password"))){
+                            JOptionPane.showMessageDialog(innerPanel, "LogIN Successfully ");
+                            mainFrame.dispose();
+                            new AdminPannel();
                         }
-
+                        else if(BCrypt.checkpw(enteredPassword, admin.getString("password"))){
+                            JOptionPane.showMessageDialog(innerPanel, "LogIN Successfully ");
+                        }
                         else {
                             JOptionPane.showMessageDialog(innerPanel, "User Not Found");
                         }
@@ -135,15 +141,13 @@ class Login{
         }
         return true;
     }
-}
 
 
 
 
-public class AdminLogin {
     public static void main(String[] args) {
 
-        Login user=new Login();
+        AdminLogin user=new AdminLogin();
 
     }
 }

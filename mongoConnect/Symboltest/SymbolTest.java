@@ -1,8 +1,11 @@
+package Symboltest;
 
+import driverForm.DrivingInfo;
 import mongoPackage.mongoConnect;
 import org.bson.Document;
 import org.bson.types.Binary;
 
+import javax.print.Doc;
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.EtchedBorder;
@@ -16,9 +19,11 @@ import java.awt.print.PageFormat;
 import java.awt.print.Printable;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
+import java.security.PrivateKey;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -50,17 +55,16 @@ public class SymbolTest {
     String correctOption="";
     Document[] questions;
     String selectedOption="";
+    String cnic;
+    Document userInfo;
+
+    JButton checkButton;
+    JTextField cnicInput;
+    JLabel cnicLabel;
+    JLabel message;
+    String date;
     public SymbolTest(){
         iniGUI();
-
-        Timer timer = new Timer(1000, new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-                updateElapsedTime();
-            }
-        });
-        timer.start();
-
 
     }
 
@@ -70,12 +74,10 @@ public class SymbolTest {
         mainFrame=new JFrame();
         mainFrame.setTitle("Symbol Test");
 
-        fetchQuestions();
-        sysmbolTest=addQuestion();
+        mainFrame.add(checkUser());
 
-        initiallizeTestCheck();
 
-        mainFrame.add(sysmbolTest);
+
         mainFrame.setSize(760, 449);
         mainFrame.setResizable(false);
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -83,6 +85,102 @@ public class SymbolTest {
 
 
 
+    }
+
+    private JPanel checkUser() {
+
+        JPanel temp=new JPanel(null);
+
+
+        checkButton = new JButton ("Check");
+        cnicInput = new JTextField (5);
+        cnicLabel = new JLabel ("Enter Cnic");
+        message = new JLabel ("Already Passed");
+
+        temp.add (checkButton);
+        temp.add (cnicInput);
+        temp.add (cnicLabel);
+        temp.add (message);
+
+        checkButton.setBounds (440, 140, 120, 30);
+        cnicInput.setBounds (235, 140, 195, 30);
+        cnicLabel.setBounds (120, 140, 100, 25);
+        message.setBounds (230, 200, 300, 35);
+        message.setVisible(false);
+
+        checkButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                cnic=cnicInput.getText();
+
+                if(cnic.isEmpty()){
+                    JOptionPane.showMessageDialog(mainFrame,"Enter Cnic No","No Input",JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                if(isTakeTest()) {
+                    mainFrame.getContentPane().removeAll();
+                    fetchQuestions();
+                    sysmbolTest = addQuestion();
+
+                    initiallizeTestCheck();
+                    mainFrame.add(sysmbolTest);
+                    mainFrame.revalidate();
+                    mainFrame.repaint();
+                    Timer timer = new Timer(1000, new ActionListener() {
+
+                        public void actionPerformed(ActionEvent e) {
+                            updateElapsedTime();
+                        }
+                    });
+                    timer.start();
+                }
+                else{
+                    if(score!=0){
+                        printDocument();
+                    }
+                }
+            }
+        });
+        return temp;
+
+    }
+
+    private boolean isTakeTest() {
+
+        mongoConnect user=new mongoConnect("Driving_Center","Drivers");
+        userInfo=user.readDocument("Cnic",cnic);
+        if(userInfo==null){
+            message.setText("No Learner License Found  Against this Cnic.");
+            message.setVisible(true);
+            return false;
+        }
+
+        user=new mongoConnect("Driving_Center","signTestResult");
+        Document userTestInfo=user.readDocument("cnic",cnic);
+
+        if(userTestInfo!=null && (userTestInfo.getInteger("TestMarks")>4)){
+            score=userTestInfo.getInteger("TestMarks");
+            date=userTestInfo.getString("TestDate");
+            String sequence=userTestInfo.getString("scoreSequence");
+            for(int i=0;i<10;i++) {
+                if (String.valueOf(sequence.charAt(i)).equals("1")) {
+                    testCheck.put(i, true);
+                } else {
+                    testCheck.put(i, false);
+                }
+            }
+            message.setText("Test Already Passed...");
+            message.setVisible(true);
+
+            return false;
+        }
+
+//        if(userTestInfo!=null && (userTestInfo.getInteger("TestMarks")<5)){
+//            return true;
+//        }
+        return true;
     }
 
     private void fetchQuestions() {
@@ -269,7 +367,7 @@ public class SymbolTest {
 
         JOptionPane.showMessageDialog(null,score);
         mainFrame.dispose();
-//                saveResult();
+                saveResult();
         printDocument();
         score=0;
     }
@@ -304,8 +402,18 @@ public class SymbolTest {
     private void saveResult() {
         mongoConnect t1=new mongoConnect("Driving_Center","signTestResult");
         Map<String, Object> documentMap = new HashMap<>();
-        documentMap.put("LearnerNo", "000000");
+        documentMap.put("cnic", cnic);
         documentMap.put("TestMarks", score);
+        String seqeuence="";
+        for(int i=0;i<10;i++){
+            if(testCheck.get(i)) {
+                seqeuence+="1";
+            }
+            else{
+                seqeuence+="0";
+            }
+        }
+        documentMap.put("scoreSequence",seqeuence );
         documentMap.put("TestDate", LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
         t1.createDocument(documentMap);
     }
@@ -349,7 +457,7 @@ public class SymbolTest {
             g.setFont(originalFont);
             // Info Panel content
 //            String nameToPrint = nameInput.getText().length() > 15 ? nameInput.getText().substring(0, 15) : nameInput.getText();
-            g.drawString("Name: " + "Fuzail", 100, 100);
+            g.drawString("Name: " + userInfo.getString("Name"), 100, 100);
             Icon icon = null ;//picture.getIcon();
             if (icon instanceof ImageIcon) {
                 Image image = ((ImageIcon) icon).getImage();
@@ -361,13 +469,13 @@ public class SymbolTest {
                 // Handle the case when the icon is not an ImageIcon
                 g.drawString("No image available", 480, 50);
             }
-            g.drawString("CNIC: " + "3520100000005", 300, 100);
+            g.drawString("CNIC: " + cnic, 300, 100);
             // Add other fields from the info panel as needed
 
-            g.drawString("Father Name : " + "Fasial Majeed", 100, 130);
-            g.drawString("AGE : " + "20", 300, 130);
-            g.drawString("Type : " + "Car/Jeep", 100, 160);
-
+            g.drawString("Father Name : " + userInfo.getString("Father Name"), 100, 130);
+            g.drawString("AGE : " + DrivingInfo.calculateAge(userInfo.getString("Date of Birth")), 300, 130);
+            g.drawString("Type : " + userInfo.getString("Type"), 100, 160);
+            g.drawString("Date : " + date, 300, 160);
 
             g.drawLine(100, 210, 500, 210);
 
@@ -380,7 +488,7 @@ public class SymbolTest {
             g2d.setStroke(new BasicStroke(3));
 
             g2d.drawRect(300, 175, 90, 23);
-            String  text="Learner No :   "+ "999999";
+            String  text="Learner No :   "+ userInfo.getString("LearnerNo");
             g.drawString(text, 180, 195);
 
             g2d.setStroke(originalStroke);
