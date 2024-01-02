@@ -9,6 +9,7 @@ import java.awt.event.ActionListener;
 import mongoPackage.mongoConnect;
 import org.bson.Document;
 import org.mindrot.jbcrypt.BCrypt;
+import users.UserPannel;
 
 public class AdminLogin{
     JFrame mainFrame;
@@ -114,6 +115,8 @@ public class AdminLogin{
                         }
                         else if(BCrypt.checkpw(enteredPassword, admin.getString("password"))){
                             JOptionPane.showMessageDialog(innerPanel, "LogIN Successfully ");
+                            mainFrame.dispose();
+                            new UserPannel();
                         }
                         else {
                             JOptionPane.showMessageDialog(innerPanel, "User Not Found");

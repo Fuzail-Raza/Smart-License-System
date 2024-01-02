@@ -2,6 +2,7 @@ package licenseTestForm;
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.EtchedBorder;
+import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -17,6 +18,7 @@ import java.util.Map;
 import mongoPackage.mongoConnect;
 import org.bson.Document;
 import org.bson.types.Binary;
+import users.UserPannel;
 
 public class LicenseTestForm implements Runnable {
 
@@ -71,7 +73,7 @@ public class LicenseTestForm implements Runnable {
     private mongoConnect conncetionUsers;
     private mongoConnect connectionSaveResult;
     private ButtonGroup buttonGroupSymbol = new ButtonGroup();
-
+    private JButton backButton;
     private ButtonGroup buttonGroupDriving = new ButtonGroup();
     public LicenseTestForm() {
         Thread t1 = new Thread(this);
@@ -170,6 +172,7 @@ public class LicenseTestForm implements Runnable {
         submitButton.setBounds (440, 530, 160, 30);
         print.setBounds (260, 530, 160, 30);
         testHeading.setBounds (285, 325, 170, 30);
+        backButton.setBounds(120,530,120,30);
 
     }
 
@@ -350,6 +353,10 @@ public class LicenseTestForm implements Runnable {
         licenseTestForm.add(new JLabel());
         licenseTestForm.add(new JLabel());
 
+        backButton=new JButton("Back");
+        backButton.setBorder(new LineBorder(Color.gray, 2, true));
+        licenseTestForm.add(backButton);
+
         submitButton=new JButton("Submit");
         licenseTestForm.add(submitButton);
 
@@ -443,15 +450,17 @@ public class LicenseTestForm implements Runnable {
 
                         printDocument();
 
+                } else if (e.getActionCommand().equals("Back")) {
+                    mainFrame.dispose();
+                    new UserPannel();
                 }
-
             }
 
         };
         detailsFetchButton.addActionListener(buttonListener);
         print.addActionListener(buttonListener);
         submitButton.addActionListener(buttonListener);
-
+        backButton.addActionListener(buttonListener);
 
     }
 

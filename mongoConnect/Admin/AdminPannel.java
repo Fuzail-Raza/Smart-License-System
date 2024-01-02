@@ -137,40 +137,49 @@ public class AdminPannel {
 
             }
             else if(e.getActionCommand().equals("Update Driver Data")){
+                mainFrame.dispose();
                 new UpdateDriverinfo(false);
             }
         }
     };
 
     private void displayDriversF() {
+        mainFrame.dispose();
         new DisplayDrivers(true);
     }
 
     private void displayUsersF() {
+        mainFrame.dispose();
         new DisplayDrivers(false);
     }
 
     private void updateSignF() {
+        mainFrame.dispose();
         new UpdateSymbol(false);
     }
 
     private void deleteSignF() {
+        mainFrame.dispose();
         new UpdateSymbol(true);
     }
 
     private void addSignF() {
+        mainFrame.dispose();
         new AddQuestion();
     }
 
     private void updateUserInfoF() {
+        mainFrame.dispose();
         new UpdateUser(false);
     }
 
     private void deleteUserF() {
+        mainFrame.dispose();
         new UpdateUser(true);
     }
 
     private void addUserF() {
+        mainFrame.dispose();
         new Users();
     }
 

@@ -1,5 +1,6 @@
 package users;
 
+import Admin.AdminPannel;
 import com.infobip.sms.SendSMS;
 import com.toedter.calendar.JDateChooser;
 import mongoPackage.mongoConnect;
@@ -55,6 +56,7 @@ public class Users {
     private JPasswordField rePasswordText;
     private JLabel userID;
     private JLabel userIDText;
+    private JButton backButton;
     int xalignD =0, yalignD =0;
     int xalignL=0, yalignL =0;
     mongoConnect conncetionUsers;
@@ -96,6 +98,11 @@ public class Users {
         submitButton.setBounds (165+ xalignL, 515+ yalignL, 540, 35);
         User_Form.add(submitButton);
 
+        backButton=new JButton("Back");
+        backButton.setBorder(new LineBorder(Color.gray, 2, true));
+        User_Form.add(backButton);
+        backButton.setBounds(720+xalignL,515+yalignL,120,35);
+
         mainFrame.add(User_Form);
         mainFrame.setVisible(true);
         mainFrame.setSize(899, 592);
@@ -124,6 +131,13 @@ public class Users {
 
         });
 
+        backButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                mainFrame.dispose();
+                new AdminPannel();
+            }
+        });
         submitButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
 
@@ -131,6 +145,8 @@ public class Users {
                 saveData();
                     String message = "Dear " + nameInput.getText() + ",\nRegistration Confirmed .\nYour User ID is :"+userIDText.getText()+"\nYour Password is :"+ Arrays.toString(passwordText.getPassword()) +".";
 //                    SendSMS.send(message);
+                    mainFrame.dispose();
+                    new AdminPannel();
                 }
             }
         });

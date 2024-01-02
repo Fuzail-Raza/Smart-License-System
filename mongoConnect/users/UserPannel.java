@@ -21,7 +21,7 @@ public class UserPannel {
     private JButton addDriverInfo;
     private JButton symbolTest;
     private JButton logout;
-    UserPannel(){
+    public UserPannel(){
         initGUI();
     }
 
@@ -79,21 +79,21 @@ public class UserPannel {
         addDriverInfo.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //                mainFrame.dispose();
+                mainFrame.dispose();
                 new DrivingInfo();
             }
         });
         symbolTest.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //                mainFrame.dispose();
+                mainFrame.dispose();
                 new SymbolTest();
             }
         });
         licenseTestForm.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-//                mainFrame.dispose();
+                mainFrame.dispose();
                 new LicenseTestForm();
             }
         });

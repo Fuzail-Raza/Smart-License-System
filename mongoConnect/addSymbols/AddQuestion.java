@@ -1,5 +1,6 @@
 package addSymbols;
 
+import Admin.AdminPannel;
 import mongoPackage.mongoConnect;
 import org.bson.Document;
 
@@ -34,6 +35,7 @@ public class AddQuestion {
     JLabel correctOptionLabel;
     JLabel correctOptionText;
     JLabel questionID;
+    JButton backButton;
     mongoConnect admin;
     public AddQuestion() {
         initGUI();
@@ -92,6 +94,9 @@ public class AddQuestion {
         addSymbol = new JButton("Upload Symbol");
         addSymbol.setBorder(new LineBorder(Color.gray, 2, true));
         questionPanel.add(addSymbol);
+        backButton=new JButton("Back");
+        backButton.setBorder(new LineBorder(Color.gray, 2, true));
+        questionPanel.add(backButton);
         submitButton = new JButton("Submit");
         submitButton.setBorder(new LineBorder(Color.gray, 2, true));
         questionPanel.add(submitButton);
@@ -169,12 +174,21 @@ public class AddQuestion {
             }
         });
 
+        backButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                mainFrame.dispose();
+                new AdminPannel();
+            }
+        });
+
     }
 
     private void setPositions() {
 
         addSymbol.setBounds(575, 325, 170, 30);
-        submitButton.setBounds(213, 385, 240, 40);
+        submitButton.setBounds(240, 385, 240, 40);
+        backButton.setBounds(120,385,100,40);
         correctOption[0].setBounds(105, 195, 170, 30);
         correctOption[1].setBounds(105, 245, 170, 30);
         correctOption[2].setBounds(105, 290, 170, 30);

@@ -1,5 +1,6 @@
 package users;
 
+import Admin.AdminPannel;
 import com.toedter.calendar.JDateChooser;
 import mongoPackage.mongoConnect;
 import org.bson.Document;
@@ -64,6 +65,7 @@ public class UpdateUser implements Runnable {
     private JButton retrieve;
     private String prevPassword;
     private boolean isDelete;
+    private JButton backButton;
     public UpdateUser(boolean isDelete){
         this.isDelete=isDelete;
         Thread t1 = new Thread(this);
@@ -105,6 +107,10 @@ public class UpdateUser implements Runnable {
         }
         submitButton.setBounds (165+ xalignL, 515+ yalignL, 540, 35);
         User_Form.add(submitButton);
+        backButton=new JButton("Back");
+        backButton.setBorder(new LineBorder(Color.gray, 2, true));
+        User_Form.add(backButton);
+        backButton.setBounds(720+xalignL,515+yalignL,120,35);
         setEnabled(false);
         mainFrame.add(User_Form);
         mainFrame.setVisible(true);
@@ -140,6 +146,8 @@ public class UpdateUser implements Runnable {
                     try {
                         conncetionUsers.deleteDocument("userID", Integer.parseInt(userIdInput.getText()));
                         JOptionPane.showMessageDialog(null,"User Deleted Successfully");
+                        mainFrame.dispose();
+                        new AdminPannel();
                     }
                     catch (Exception ex){
                         JOptionPane.showMessageDialog(null,"User Not Deleted Successfully");
@@ -150,8 +158,18 @@ public class UpdateUser implements Runnable {
 
 //                    String message = "Dear " + nameInput.getText() + ",\nRegistration Confirmed .Your User ID is "+userIDText.getText()+".";
 //                    SendSMS.send(message);
+                        mainFrame.dispose();
+                        new AdminPannel();
                     }
                 }
+            }
+        });
+
+        backButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                mainFrame.dispose();
+                new AdminPannel();
             }
         });
 

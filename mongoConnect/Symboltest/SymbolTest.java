@@ -4,6 +4,7 @@ import driverForm.DrivingInfo;
 import mongoPackage.mongoConnect;
 import org.bson.Document;
 import org.bson.types.Binary;
+import users.UserPannel;
 
 import javax.print.Doc;
 import javax.swing.*;
@@ -63,6 +64,7 @@ public class SymbolTest {
     JLabel cnicLabel;
     JLabel message;
     String date;
+    JButton backButton;
     public SymbolTest(){
         iniGUI();
 
@@ -96,17 +98,29 @@ public class SymbolTest {
         cnicInput = new JTextField (5);
         cnicLabel = new JLabel ("Enter Cnic");
         message = new JLabel ("Already Passed");
+        backButton=new JButton("Back");
+        backButton.setBorder(new LineBorder(Color.gray, 2, true));
 
         temp.add (checkButton);
         temp.add (cnicInput);
         temp.add (cnicLabel);
         temp.add (message);
+        temp.add(backButton);
 
         checkButton.setBounds (440, 140, 120, 30);
         cnicInput.setBounds (235, 140, 195, 30);
         cnicLabel.setBounds (120, 140, 100, 25);
         message.setBounds (230, 200, 300, 35);
+        backButton.setBounds(570,140,120,30);
         message.setVisible(false);
+
+        backButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                mainFrame.dispose();
+                new UserPannel();
+            }
+        });
 
         checkButton.addActionListener(new ActionListener() {
             @Override
@@ -458,7 +472,14 @@ public class SymbolTest {
             // Info Panel content
 //            String nameToPrint = nameInput.getText().length() > 15 ? nameInput.getText().substring(0, 15) : nameInput.getText();
             g.drawString("Name: " + userInfo.getString("Name"), 100, 100);
-            Icon icon = null ;//picture.getIcon();
+
+            byte[] imageData = mongoConnect.fetchImage(userInfo.get("Image", Binary.class));
+            ImageIcon imageIcon = new ImageIcon(imageData);
+            Image imaage = imageIcon.getImage();
+            Image scaledImage = imaage.getScaledInstance(130, 120, Image.SCALE_SMOOTH);
+            ImageIcon scaledImageIcon = new ImageIcon(scaledImage);;
+
+            Icon icon = scaledImageIcon;
             if (icon instanceof ImageIcon) {
                 Image image = ((ImageIcon) icon).getImage();
                 int imageWidth = 100;

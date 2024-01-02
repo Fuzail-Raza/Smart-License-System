@@ -1,5 +1,6 @@
 package addSymbols;
 
+import Admin.AdminPannel;
 import mongoPackage.mongoConnect;
 import org.bson.Document;
 import org.bson.types.Binary;
@@ -41,7 +42,7 @@ public class UpdateSymbol {
     JButton delete;
     boolean isImageUpdate;
     boolean isDeleteCall;
-
+    JButton backButton;
 
     public UpdateSymbol(boolean isDeleteCall) {
         this.isDeleteCall=isDeleteCall;
@@ -109,6 +110,10 @@ public class UpdateSymbol {
 
         correctAnswer = "";
 
+        backButton=new JButton("Back");
+        backButton.setBorder(new LineBorder(Color.gray, 2, true));
+        questionPanel.add(backButton);
+
         addSymbol = new JButton("Upload Symbol");
         addSymbol.setBorder(new LineBorder(Color.gray, 2, true));
         questionPanel.add(addSymbol);
@@ -166,6 +171,14 @@ public class UpdateSymbol {
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
                 }
+            }
+        });
+
+        backButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                mainFrame.dispose();
+                new AdminPannel();
             }
         });
 
@@ -298,6 +311,7 @@ public class UpdateSymbol {
         addSymbol.setBounds(575, 325, 170, 30);
         submitButton.setBounds (370, 385, 180, 40);
         delete.setBounds (130, 385, 180, 40);
+        backButton.setBounds(575,375,140,35);
         correctOption[0].setBounds(105, 195, 170, 30);
         correctOption[1].setBounds(105, 245, 170, 30);
         correctOption[2].setBounds(105, 290, 170, 30);

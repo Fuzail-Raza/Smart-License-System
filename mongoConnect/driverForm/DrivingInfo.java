@@ -25,6 +25,7 @@ import com.toedter.calendar.JDateChooser;
 import java.text.SimpleDateFormat;
 import mongoPackage.mongoConnect;
 import com.infobip.sms.SendSMS.*;
+import users.UserPannel;
 
 
 public class DrivingInfo extends JFrame {
@@ -60,6 +61,7 @@ public class DrivingInfo extends JFrame {
     private JLabel learnerNo1Label;
     private JPanel learnerSelectPanel;
     private JLabel learnerHeading;
+    private JButton backButton;
     JPanel addType;
     int xalignD =0, yalignD =0;
     int xalignL=0, yalignL =0;
@@ -113,6 +115,12 @@ public class DrivingInfo extends JFrame {
         submitButton.setBounds (165+ xalignL, 515+ yalignL, 540, 35);
         Driving_Form.add(submitButton);
 
+        backButton=new JButton("Back");
+        backButton.setBorder(new LineBorder(Color.gray, 2, true));
+
+        backButton.setBounds(720+xalignL,515+yalignL,120,35);
+        Driving_Form.add(backButton);
+
         mainFrame.add(Driving_Form);
         mainFrame.setVisible(true);
         mainFrame.setSize(899, 592);
@@ -138,6 +146,14 @@ public class DrivingInfo extends JFrame {
                     printDocument();
 
                 }
+            }
+        });
+
+        backButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                mainFrame.dispose();
+                new UserPannel();
             }
         });
 
