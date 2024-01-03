@@ -34,7 +34,7 @@ import org.mindrot.jbcrypt.BCrypt;
 import static users.UpdateUser.isNumeric;
 
 
-public class UpdateDriverinfo extends JFrame {
+public class UpdateDriverinfo implements Runnable{
 
     private JFrame mainFrame;
     private JPanel Driving_Form;
@@ -74,13 +74,13 @@ public class UpdateDriverinfo extends JFrame {
     boolean isDelete;
     JButton backButton;
     mongoConnect conncetionUsers;
-    mongoConnect conncetionids;
     int xalignD =0, yalignD =0;
     int xalignL=0, yalignL =0;
     public UpdateDriverinfo(boolean isDelete) {
 
         this.isDelete=isDelete;
-        initGUI();
+        Thread t1=new Thread(this);
+        t1.start();
     }
 
     void createConnection(){
@@ -88,10 +88,13 @@ public class UpdateDriverinfo extends JFrame {
     }
 
 
-
+    @Override
+    public void run() {
+        initGUI();
+        createConnection();
+    }
     void initGUI(){
 
-        createConnection();
         mainFrame=new JFrame();
         mainFrame.setTitle("Driver Info");
 
@@ -496,6 +499,9 @@ public class UpdateDriverinfo extends JFrame {
             }
         }
     }
+
+
+
     private  class MyPrintable implements Printable, ImageObserver {
 
         public int print(Graphics g, PageFormat pf, int pageIndex) throws PrinterException {

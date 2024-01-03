@@ -23,7 +23,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Users {
+public class Users implements Runnable{
     private JFrame mainFrame;
     private JPanel User_Form;
     private JDateChooser dateOfBirthInput;
@@ -64,8 +64,15 @@ public class Users {
 
     public Users(){
 
-        initGUI();
+        Thread t1=new Thread(this);
+        t1.start();
 
+    }
+
+    @Override
+    public void run() {
+        createConnection();
+        initGUI();
     }
 
     void createConnection(){
@@ -410,6 +417,7 @@ public class Users {
 
         return String.valueOf(period.getYears());
     }
+
 
 
 }

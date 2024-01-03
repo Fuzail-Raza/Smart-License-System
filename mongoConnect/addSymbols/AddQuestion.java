@@ -17,7 +17,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class AddQuestion {
+public class AddQuestion implements Runnable {
 
     JFrame mainFrame;
     JPanel questionPanel;
@@ -37,8 +37,22 @@ public class AddQuestion {
     JLabel questionID;
     JButton backButton;
     mongoConnect admin;
+    mongoConnect temp;
     public AddQuestion() {
+        Thread t1=new Thread(this);
+        t1.start();
+    }
+
+    @Override
+    public void run() {
+        createConnection();
         initGUI();
+    }
+    private void createConnection() {
+
+        admin = new mongoConnect("Driving_Center", "symbolTest");
+        temp = new mongoConnect("Driving_Center", "id_Collection");
+
     }
 
     void initGUI() {
@@ -70,7 +84,6 @@ public class AddQuestion {
         questionPanel.add(questionLabel);
         questionPanel.add(questionText);
 
-        mongoConnect temp = new mongoConnect("Driving_Center", "id_Collection");
         questionID = new JLabel("  Question ID : " + temp.updateId("questionNo", false));
         questionID.setFont(f2);
         questionID.setBorder(new LineBorder(Color.gray, 2, true));
@@ -115,10 +128,8 @@ public class AddQuestion {
                 if (!isFormValid()) {
                     return;
                 }
-                admin = new mongoConnect("Driving_Center", "symbolTest");
                 Map<String, Object> documentMap = new HashMap<>();
                 try {
-                    mongoConnect temp = new mongoConnect("Driving_Center", "id_Collection");
                     int id = temp.updateId("questionNo", true);
                     Document newQuestion = new Document("Question", questionText.getText())
                             .append("questionID", id)
@@ -278,6 +289,7 @@ public class AddQuestion {
             System.out.println(correctAnswer);
         }
     };
+
 
 
 }

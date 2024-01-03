@@ -11,7 +11,7 @@ import org.bson.Document;
 import org.mindrot.jbcrypt.BCrypt;
 import users.UserPannel;
 
-public class AdminLogin{
+public class AdminLogin implements Runnable{
     JFrame mainFrame;
     private JPanel innerPanel;
     private JLabel heading;
@@ -20,12 +20,25 @@ public class AdminLogin{
     private JLabel passwordLabel;
     private JPasswordField password;
     private JButton LogIN;
+    private mongoConnect adminFetch;
+    private mongoConnect userFetch;
 
     public AdminLogin(){
 
-        initGUI();
+        Thread t1=new Thread(this);
+        t1.start();
 
+    }
+    @Override
+    public void run() {
+        initGUI();
+        createConncetion();
         addListner();
+    }
+
+    private void createConncetion() {
+        adminFetch = new mongoConnect("Driving_Center", "AdminInfo");
+        userFetch = new mongoConnect("Driving_Center", "usersInfo");
     }
 
     void initGUI(){
@@ -92,16 +105,13 @@ public class AdminLogin{
             public void actionPerformed(ActionEvent e) {
                 if (isFormValid()) {
                 try {
-                    mongoConnect adminFetch = new mongoConnect("Driving_Center", "AdminInfo");
 //                    Map<String, Object> adminDataSave = new HashMap<>() ;
 //                    adminDataSave.put("Name","Fuzail");
 //                    adminDataSave.put("Password","123");
 //                    adminFetch.createDocument(adminDataSave);
                     Document admin = adminFetch.readDocument("Name",userName.getText().trim());
                     if (admin == null) {
-                        adminFetch = new mongoConnect("Driving_Center", "usersInfo");
-                        admin = adminFetch.readDocument("userID",userName.getText().trim());
-
+                        admin = userFetch.readDocument("userID",userName.getText().trim());
                     }
                     if (admin == null) {
                         JOptionPane.showMessageDialog(innerPanel, "User Not Found");
@@ -153,4 +163,6 @@ public class AdminLogin{
         AdminLogin user=new AdminLogin();
 
     }
+
+
 }

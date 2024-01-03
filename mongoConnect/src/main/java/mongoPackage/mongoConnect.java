@@ -33,6 +33,7 @@ public class mongoConnect{
 
 
         } catch (Exception e) {
+            JOptionPane.showMessageDialog(null,"Database Connectivity Error");
             System.out.println(e);
         }
 

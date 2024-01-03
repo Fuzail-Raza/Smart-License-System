@@ -28,7 +28,7 @@ import com.infobip.sms.SendSMS.*;
 import users.UserPannel;
 
 
-public class DrivingInfo extends JFrame {
+public class DrivingInfo implements Runnable {
 
     private JFrame mainFrame;
     private JPanel Driving_Form;
@@ -63,6 +63,8 @@ public class DrivingInfo extends JFrame {
     private JLabel learnerHeading;
     private JButton backButton;
     JPanel addType;
+    mongoConnect userData;
+    mongoConnect temp;
     int xalignD =0, yalignD =0;
     int xalignL=0, yalignL =0;
     public DrivingInfo() {
@@ -80,9 +82,19 @@ public class DrivingInfo extends JFrame {
 //            }
 //        });
 
+        Thread t1=new Thread(this);
+        t1.start();
+    }
+
+    public void run() {
+        createConnection();
         initGUI();
     }
 
+    private void createConnection() {
+        userData=new mongoConnect("Driving_Center","Drivers");
+        temp=new mongoConnect("Driving_Center","id_Collection");
+    }
 
 
     void initGUI(){
@@ -138,7 +150,6 @@ public class DrivingInfo extends JFrame {
 
                 if (isFormValid()) {
                     saveData();
-                    mongoConnect temp = new mongoConnect("Driving_Center", "id_Collection");
                     temp.updateId("learnerNo", true);
                     String message = "Dear " + nameInput.getText() + ",\nRegistration Confirmed .Your Learner has been issued.\nLearner No: "+learnerNo1Label.getText();
                     SendSMS.send(message);
@@ -207,7 +218,6 @@ public class DrivingInfo extends JFrame {
     private void saveData() {
 
 
-        mongoConnect userData=new mongoConnect("Driving_Center","Drivers");
         Map<String, Object> documentMap = new HashMap<>();
         String path="C:\\Users\\Administrator\\Downloads\\Picsart_23-04-22_22-138-37-352.jpg";
         try {
@@ -352,7 +362,6 @@ public class DrivingInfo extends JFrame {
         learnerNo1.setBounds (115+xalignL, 390+ yalignL, 100, 30);
         Driving_Form.add(learnerNo1);
 
-        mongoConnect temp=new mongoConnect("Driving_Center","id_Collection");
 
         learnerNo1Label = new JLabel(String.valueOf(temp.updateId("learnerNo",false)));
         learnerNo1Label.setBounds (260+xalignL, 390+ yalignL, 100, 30);

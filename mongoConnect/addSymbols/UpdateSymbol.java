@@ -18,7 +18,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class UpdateSymbol {
+public class UpdateSymbol implements Runnable{
 
     JFrame mainFrame;
     JLabel questionIDInputLabel;
@@ -43,10 +43,21 @@ public class UpdateSymbol {
     boolean isImageUpdate;
     boolean isDeleteCall;
     JButton backButton;
-
+    mongoConnect admin;
     public UpdateSymbol(boolean isDeleteCall) {
         this.isDeleteCall=isDeleteCall;
+        Thread t1=new Thread(this);
+        t1.start();
+    }
+    @Override
+    public void run() {
+        createConnection();
         initGUI();
+    }
+
+    private void createConnection() {
+        admin = new mongoConnect("Driving_Center", "symbolTest");
+
     }
 
     void initGUI() {
@@ -190,8 +201,7 @@ public class UpdateSymbol {
                 }
                 else {
                     try {
-                        mongoConnect temp = new mongoConnect("Driving_Center", "symbolTest");
-                        Document symbolData = temp.searchDocument("questionID", Integer.parseInt(questionIDInputText.getText()));
+                        Document symbolData = admin.searchDocument("questionID", Integer.parseInt(questionIDInputText.getText()));
                         questionText.setText(symbolData.getString("Question"));
                         optionText[0].setText(symbolData.getString("Option1"));
                         optionText[1].setText(symbolData.getString("Option2"));
@@ -229,8 +239,7 @@ public class UpdateSymbol {
         delete.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                mongoConnect temp = new mongoConnect("Driving_Center", "symbolTest");
-                if(temp.deleteDocument("questionID",Integer.parseInt(questionIDInputText.getText()))){
+                if(admin.deleteDocument("questionID",Integer.parseInt(questionIDInputText.getText()))){
                     JOptionPane.showMessageDialog(mainFrame,"Document Deleted Successfully");
                 }
                 else{
@@ -406,6 +415,7 @@ public class UpdateSymbol {
             System.out.println(correctAnswer);
         }
     };
+
 
 
 }
