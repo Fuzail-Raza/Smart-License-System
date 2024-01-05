@@ -1,4 +1,5 @@
 package licenseTestForm;
+import javax.print.Doc;
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.EtchedBorder;
@@ -14,6 +15,7 @@ import java.time.Period;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 import mongoPackage.mongoConnect;
 import org.bson.Document;
@@ -41,14 +43,13 @@ public class LicenseTestForm implements Runnable {
     private JLabel dateOfExpiry;
     private JLabel dateOfIssueLabel;
     private JLabel dateOfExpiryLabel;
-    private JRadioButton symbolPassCheckBox;
-    private JRadioButton symbolFailCheckBox;
     private JRadioButton drivingPassCheckBox;
     private JRadioButton drivingFailCheckBox;
     private JTextArea remarksTextArea;
     JPanel licenseTestForm;
     private JPanel infoPanel;
-
+    private Boolean isSybolPass=false;
+    private JLabel symbolResultLabel;
     private JPanel testDetailPanel;
     private JButton submitButton;
     private JLabel learnerInput;
@@ -67,7 +68,7 @@ public class LicenseTestForm implements Runnable {
     private JLabel picture;
     private JLabel dateOfBirthLabel;
     private JLabel testHeading;
-
+    private JButton checkSymbolTest;
     private JSeparator separator;
     private boolean isRetrieved;
     private mongoConnect conncetionUsers;
@@ -162,8 +163,10 @@ public class LicenseTestForm implements Runnable {
         reamainingValidityLabel.setBounds (535, 250, 130, 30);
         symbolTest.setBounds (200, 375, 130, 30);
         drivingTest.setBounds (200, 410, 130, 30);
-        symbolPassCheckBox.setBounds (325, 375, 115, 30);
-        symbolFailCheckBox.setBounds (450, 375, 115, 30);
+        checkSymbolTest.setBounds(325, 375, 115, 30);
+        symbolResultLabel.setBounds(510, 375, 115, 30);
+//        symbolPassCheckBox.setBounds (325, 375, 115, 30);
+//        symbolFailCheckBox.setBounds (450, 375, 115, 30);
         drivingPassCheckBox.setBounds (325, 410, 115, 30);
         drivingFailCheckBox.setBounds (450, 410, 115, 30);
         reamarks.setBounds (200, 460, 94, 30);
@@ -314,16 +317,12 @@ public class LicenseTestForm implements Runnable {
 
         licenseTestForm.add(new JLabel());
 
-        buttonGroupSymbol=new ButtonGroup();
 
-        symbolPassCheckBox=new JRadioButton("Pass");
-        buttonGroupSymbol.add(symbolPassCheckBox);
-        licenseTestForm.add(symbolPassCheckBox);
+        symbolResultLabel=new JLabel("");
+        licenseTestForm.add(symbolResultLabel);
 
-        symbolFailCheckBox=new JRadioButton("Fail");
-        buttonGroupSymbol.add(symbolFailCheckBox);
-        licenseTestForm.add(symbolFailCheckBox);
-
+        checkSymbolTest=new JButton("Check");
+        licenseTestForm.add(checkSymbolTest);
 
         drivingTest=new JLabel("Driving Test : ");
         licenseTestForm.add(drivingTest);
@@ -363,6 +362,35 @@ public class LicenseTestForm implements Runnable {
         print=new JButton("Print");
         licenseTestForm.add(print);
 
+        submitButton.setEnabled(false);
+
+        drivingPassCheckBox.setEnabled(false);
+        drivingFailCheckBox.setEnabled(false);
+        checkSymbolTest.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    mongoConnect temp = new mongoConnect("Driving_Center", "signTestResult");
+                    Document d = temp.readDocument("cnic", cnicLabel.getText());
+                    int marks = d.getInteger("TestMarks");
+                    if (marks > 4) {
+                        symbolResultLabel.setText("PASS");
+                        drivingPassCheckBox.setEnabled(true);
+                        drivingFailCheckBox.setEnabled(true);
+                        isSybolPass=true;
+                    } else {
+                        symbolResultLabel.setText("Fail");
+                        buttonGroupDriving.setSelected(drivingFailCheckBox.getModel(),false);
+                        isSybolPass=false;
+                    }
+                    submitButton.setEnabled(true);
+                }
+                catch (Exception ex){
+                    JOptionPane.showMessageDialog(mainFrame,"Please Take Symbol Test First","Test Not Valid",JOptionPane.INFORMATION_MESSAGE);
+                }
+            }
+        });
+
 
     }
 
@@ -378,6 +406,7 @@ public class LicenseTestForm implements Runnable {
                     }
                     else {
                         try {
+
                             Document userFetchData = conncetionUsers.readDocument("LearnerNo", textField1.getText().trim());
                             nameLabel.setText(userFetchData.getString("Name"));
                             cnicLabel.setText(userFetchData.getString("Cnic"));
@@ -399,6 +428,21 @@ public class LicenseTestForm implements Runnable {
                         } catch (Exception ex) {
                             JOptionPane.showMessageDialog(mainFrame, "User Not Found", "User Not Fund", JOptionPane.ERROR_MESSAGE);
                         }
+
+                        try {
+                            Document d = connectionSaveResult.readDocument("learnerNo", textField1.getText());
+                            LocalDate dateOfIssue = LocalDate.parse(d.getString("lastApply"), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+
+                            Period period = Period.between(dateOfIssue, LocalDate.now());
+
+                            if (period.getDays() < 41) {
+                                JOptionPane.showMessageDialog(mainFrame, "Days after Last Apply is " + period.getDays() + " days.Cannot GIve Test before 41 Days.");
+                                return;
+                            }
+                        }
+                        catch (Exception ex){
+                            System.out.println("Error");
+                        }
                     }
 
                 }
@@ -408,8 +452,8 @@ public class LicenseTestForm implements Runnable {
                         JOptionPane.showMessageDialog(mainFrame,"No information provided to Submit","Information not Provided",JOptionPane.ERROR_MESSAGE);
                     }
 
-                    else if (!symbolPassCheckBox.isSelected() && !symbolFailCheckBox.isSelected()) {
-                        JOptionPane.showMessageDialog(mainFrame, "Please Select Symbol Test Condtion Pass/Fail", "Test Result", JOptionPane.INFORMATION_MESSAGE);
+                    else if (symbolResultLabel.getText().isEmpty()) {
+                        JOptionPane.showMessageDialog(mainFrame, "Please Give Symbol Test First", "Test Result", JOptionPane.INFORMATION_MESSAGE);
                     }
                     else if (!drivingPassCheckBox.isSelected() && !drivingFailCheckBox.isSelected()) {
                         JOptionPane.showMessageDialog(mainFrame, "Please Select Driving Test Condtion Pass/Fail", "Test Result", JOptionPane.INFORMATION_MESSAGE);
@@ -419,15 +463,17 @@ public class LicenseTestForm implements Runnable {
                         LocalDate dateOfIssue = LocalDate.parse(dateOfIssueLabel.getText(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 
                         Period period = Period.between(dateOfIssue, LocalDate.now());
-
+                        JOptionPane.showMessageDialog(mainFrame, "Days "+period.getDays() + "as  "+dateOfIssueLabel.getText() + " as " + LocalDate.now());
+// TODO: 06/01/2024 Make Condition Correct 
                         if (period.getDays() < 41) {
                             JOptionPane.showMessageDialog(mainFrame, "Days after issuing Learner is " + period.getDays() + " days.Cannot GIve Test before 41 Days.");
                         } else {
                             Map<String, Object> documentMap = new HashMap<>();
-                            documentMap.put("Cnic", textField1.getText());
-                            if (symbolPassCheckBox.isSelected()) {
+                            documentMap.put("learnerNo", learnerInput.getText());
+                            if (isSybolPass) {
                                 documentMap.put("SymbolTest", true);
-                            } else if (symbolFailCheckBox.isSelected()) {
+                            }
+                            else {
                                 documentMap.put("SymbolTest", false);
                             }
 
@@ -437,8 +483,11 @@ public class LicenseTestForm implements Runnable {
                                 documentMap.put("Driving Test", false);
                             }
 
+                            documentMap.put("lastApply",LocalDate.now());
+
                             if (connectionSaveResult.createDocument(documentMap)) {
                                 JOptionPane.showMessageDialog(mainFrame, "Form Submitted!", "Submitted", JOptionPane.INFORMATION_MESSAGE);
+                                issueDrivingLicense();
                             } else {
                                 JOptionPane.showMessageDialog(mainFrame, "Form Submission Error", "Not Submitted", JOptionPane.ERROR_MESSAGE);
                             }
@@ -454,6 +503,12 @@ public class LicenseTestForm implements Runnable {
                     mainFrame.dispose();
                     new UserPannel();
                 }
+            }
+
+            private void issueDrivingLicense() {
+
+
+
             }
 
         };
@@ -541,10 +596,10 @@ public class LicenseTestForm implements Runnable {
 
             g.drawString("Symbol Test: " ,100, 320+gap);
 
-            drawCheckbox(g, 230, 308+gap, symbolPassCheckBox.isSelected());
+            drawCheckbox(g, 230, 308+gap, isSybolPass);
             g.drawString("Pass " ,260, 320+gap);
 
-            drawCheckbox(g, 310, 308+gap, symbolFailCheckBox.isSelected());
+            drawCheckbox(g, 310, 308+gap,isSybolPass);
             g.drawString("Fail" ,340, 320+gap);
 
             g.drawString("Driving Test: " ,100, 370+gap);

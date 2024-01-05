@@ -1,5 +1,6 @@
 package mongoPackage;
 import com.mongodb.client.*;
+import com.mongodb.client.model.UpdateOptions;
 import com.mongodb.client.model.Updates;
 import org.bson.Document;
 import org.bson.types.Binary;
@@ -11,6 +12,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Updates.combine;
 import static com.mongodb.client.model.Updates.set;
 
 import java.util.ArrayList;
@@ -64,6 +66,19 @@ public class mongoConnect{
         try {
         collection.updateOne(eq("Ide", prevData), set(updateField,UpdateFieldData ));
         System.out.println("Document updated.");
+            return true;
+        }
+        catch (Exception e){
+            System.out.println("Document updated.");
+            return false;
+        }
+
+    }
+    public boolean updateDriverDocument(String fieldName,String prevData,String issue,String issueDate,String expiry,String expiryDate,String learner,String learnerNo){
+        try {
+            collection.updateOne(eq(fieldName, prevData), combine(set(issue, issueDate), set(expiry, expiryDate), set(learner, learnerNo)));
+
+            System.out.println("Document updated.");
             return true;
         }
         catch (Exception e){

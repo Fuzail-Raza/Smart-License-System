@@ -84,7 +84,7 @@ public class UpdateDriverinfo implements Runnable{
     }
 
     void createConnection(){
-        conncetionUsers=new mongoConnect("Driving_Center","testing");
+        conncetionUsers=new mongoConnect("Driving_Center","Drivers");
     }
 
 
@@ -180,19 +180,24 @@ public class UpdateDriverinfo implements Runnable{
                     JOptionPane.showMessageDialog(mainFrame,"Please Enter Question ID","No Input Enter",JOptionPane.ERROR_MESSAGE);
                 }
                 else {
-                    Document userData = conncetionUsers.searchDocument("Cnic",learnerInput.getText());
-                    nameInput.setText(userData.getString("Name"));
-                    cnicInput.setText(userData.getString("Cnic"));
-                    fatherNameInput.setText(userData.getString("Father Name"));
-                    fatherCnicInput.setText(userData.getString("Father Cnic"));
-                    phoneNoInput.setText(userData.getString("Phone No"));
-                    learnerNo1Label.setText(userData.getString("learnerNo"));
-                    dateOfIssue1Label.setText(userData.getString("Date of Issue"));
-                    dateOfExpiry1Label.setText(userData.getString("Date of Expiry"));
-                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
                     try {
-                        dateOfBirthInput.setDate(dateFormat.parse(userData.getString("Date of Birth")));
-                    } catch (ParseException ex) {
+                        Document userData = conncetionUsers.searchDocument("LearnerNo", learnerInput.getText());
+                        nameInput.setText(userData.getString("Name"));
+                        cnicInput.setText(userData.getString("Cnic"));
+                        fatherNameInput.setText(userData.getString("Father Name"));
+                        fatherCnicInput.setText(userData.getString("Father Cnic"));
+                        phoneNoInput.setText(userData.getString("Phone No"));
+                        learnerNo1Label.setText(userData.getString("LearnerNo"));
+                        dateOfIssue1Label.setText(userData.getString("Date of Issue"));
+                        dateOfExpiry1Label.setText(userData.getString("Date of Expiry"));
+                        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                        try {
+                            dateOfBirthInput.setDate(dateFormat.parse(userData.getString("Date of Birth")));
+                        } catch (ParseException ex) {
+                            throw new RuntimeException(ex);
+                        }
+                    }
+                    catch (Exception ex) {
                         throw new RuntimeException(ex);
                     }
 
@@ -593,5 +598,9 @@ public class UpdateDriverinfo implements Runnable{
         public boolean imageUpdate(Image img, int infoflags, int x, int y, int width, int height) {
             return false;
         }
+    }
+
+    public static void main(String[] args) {
+        new UpdateDriverinfo(true);
     }
 }

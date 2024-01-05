@@ -243,7 +243,7 @@ public class AddQuestion implements Runnable {
         return true;
     }
 
-    private static boolean isImageFile(String filePath) {
+    public static boolean isImageFile(String filePath) {
         String lowercaseFilePath = filePath.toLowerCase();
         return lowercaseFilePath.endsWith(".png") || lowercaseFilePath.endsWith(".jpg");
     }

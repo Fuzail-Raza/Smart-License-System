@@ -23,6 +23,7 @@ import java.awt.print.PrinterJob;
 import java.security.PrivateKey;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.Period;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.HashMap;
@@ -172,6 +173,16 @@ public class SymbolTest {
             return false;
         }
 
+        LocalDate dateOfIssue = LocalDate.parse(userInfo.getString("Date of Issue"), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+
+        Period period = Period.between(dateOfIssue, LocalDate.now());
+
+        if (period.getDays() < 41) {
+            JOptionPane.showMessageDialog(mainFrame, "Days after issuing Learner is " + period.getDays() + " days.Cannot GIve Test before 41 Days.");
+            return false;
+        }
+
+
         user=new mongoConnect("Driving_Center","signTestResult");
         Document userTestInfo=user.readDocument("cnic",cnic);
 
@@ -190,6 +201,18 @@ public class SymbolTest {
             message.setVisible(true);
 
             return false;
+        }
+        else if (userTestInfo!=null && (userTestInfo.getInteger("TestMarks")<=4)) {
+            userTestInfo.getString("TestDate");
+            LocalDate date = LocalDate.parse(userInfo.getString("Date of Issue"), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+
+            Period per = Period.between(dateOfIssue, LocalDate.now());
+
+            if (per.getDays() < 41) {
+                JOptionPane.showMessageDialog(mainFrame, "Days after Last Test is " + per.getDays() + " days.Cannot GIve Test before 41 Days.");
+                return false;
+            }
+
         }
 
 //        if(userTestInfo!=null && (userTestInfo.getInteger("TestMarks")<5)){

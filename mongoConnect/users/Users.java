@@ -11,6 +11,7 @@ import javax.swing.border.Border;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -22,6 +23,8 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+
+import static addSymbols.AddQuestion.isImageFile;
 
 public class Users implements Runnable{
     private JFrame mainFrame;
@@ -57,6 +60,9 @@ public class Users implements Runnable{
     private JLabel userID;
     private JLabel userIDText;
     private JButton backButton;
+    private String picturPath;
+    private JButton addPic;
+    private Boolean isImageAdded;
     int xalignD =0, yalignD =0;
     int xalignL=0, yalignL =0;
     mongoConnect conncetionUsers;
@@ -212,13 +218,17 @@ public class Users implements Runnable{
             return false;
         }
 
+        if(!isImageAdded){
+            JOptionPane.showMessageDialog(mainFrame, "Please Add Image", "Form Validation Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
         return true;
     }
 
     private void saveData() {
 
         Map<String, Object> documentMap = new HashMap<>();
-        String path="C:\\Users\\Administrator\\Downloads\\Picsart_23-04-22_22-138-37-352.jpg";
+        String path=picturPath;
         try {
             documentMap.put("Name", nameInput.getText());
             documentMap.put("Cnic", cnicInput.getText());
@@ -257,8 +267,9 @@ public class Users implements Runnable{
     }
 
     private JLabel addImage(){
+        isImageAdded=false;
         JLabel pic=new JLabel();
-        ImageIcon imageIcon = new ImageIcon("E:\\Programms\\Java\\ACP-Tasks\\JAVA project\\Images\\1675105387954.jpeg"); // Replace with the actual path to your image
+        ImageIcon imageIcon = new ImageIcon("symbolImages\\placeholder2.png"); // Replace with the actual path to your image
         Image image = imageIcon.getImage();
         Image scaledImage = image.getScaledInstance(170, 160, Image.SCALE_SMOOTH);
         ImageIcon scaledImageIcon = new ImageIcon(scaledImage);
@@ -282,6 +293,11 @@ public class Users implements Runnable{
         picture.setBounds (720+ xalignD, 65-10, 170, 160);
         picture.setBorder(new LineBorder(Color.gray, 2, true));
         User_Form.add(picture);
+
+        addPic=new JButton("Add Image");
+        addPic.setBounds(740+xalignD,275+yalignD,135,25);
+        User_Form.add(addPic);
+
 
         cnic=new JLabel("Cnic No :");
         cnic.setBounds (415+ xalignD, 110+ yalignD, 100, 25);
@@ -391,6 +407,41 @@ public class Users implements Runnable{
         User_Form.setBorder(titledBorder);
 
 
+
+        addPic.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JFileChooser fileChooser = new JFileChooser();
+
+                FileNameExtensionFilter filter = new FileNameExtensionFilter("Image Files", "png", "jpg");
+                fileChooser.setFileFilter(filter);
+
+                int result = fileChooser.showOpenDialog(mainFrame);
+
+
+                if (result == JFileChooser.APPROVE_OPTION) {
+                    // User selected a file
+                    picturPath = fileChooser.getSelectedFile().getAbsolutePath();
+
+                    if (isImageFile(picturPath)) {
+                        try {
+                            byte[] imageData = mongoConnect.storeImage(picturPath);
+                            ImageIcon imageIcon = new ImageIcon(imageData);
+                            Image scaledImage = imageIcon.getImage().getScaledInstance(190, 165, Image.SCALE_SMOOTH);
+                            ImageIcon scaledImageIcon = new ImageIcon(scaledImage);
+                            picture.setBorder(new LineBorder(Color.gray, 2, true));
+                            picture.setIcon(scaledImageIcon);
+                            isImageAdded=true;
+
+                        } catch (Exception ex) {
+                            throw new RuntimeException(ex);
+                        }
+                    } else {
+                        JOptionPane.showMessageDialog(mainFrame, "Please select a valid image file (png or jpg).");
+                    }
+                }
+            }
+        });
 
     }
 

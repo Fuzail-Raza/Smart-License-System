@@ -5,6 +5,7 @@ import javax.swing.border.Border;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -13,6 +14,7 @@ import java.awt.print.PageFormat;
 import java.awt.print.Printable;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
+import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.format.DateTimeFormatter;
@@ -23,9 +25,13 @@ import java.util.Map;
 import com.infobip.sms.SendSMS;
 import com.toedter.calendar.JDateChooser;
 import java.text.SimpleDateFormat;
+
+import licenseTestForm.LicenseTestForm;
 import mongoPackage.mongoConnect;
-import com.infobip.sms.SendSMS.*;
+import org.bson.Document;
 import users.UserPannel;
+
+import static addSymbols.AddQuestion.isImageFile;
 
 
 public class DrivingInfo implements Runnable {
@@ -62,7 +68,10 @@ public class DrivingInfo implements Runnable {
     private JPanel learnerSelectPanel;
     private JLabel learnerHeading;
     private JButton backButton;
+    private String picturePath;
+    private Boolean isImageAdded;
     JPanel addType;
+    JButton picPath;
     mongoConnect userData;
     mongoConnect temp;
     int xalignD =0, yalignD =0;
@@ -149,7 +158,24 @@ public class DrivingInfo implements Runnable {
             public void actionPerformed(ActionEvent e) {
 
                 if (isFormValid()) {
-                    saveData();
+                    int a= 0;
+                    try {
+                        a = isDriverExists();
+                    } catch (ParseException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                    if(a==0) {
+                        saveData();
+                        JOptionPane.showMessageDialog(mainFrame,"Learner Created Successfully");
+                    }
+                    else if(a==1){
+                        JOptionPane.showMessageDialog(mainFrame,"Driver Already Exists");
+                        printDocument();
+                        return;
+                    }
+                    else if(a==2){
+                        JOptionPane.showMessageDialog(mainFrame,"Learner Updated Successfully");
+                    }
                     temp.updateId("learnerNo", true);
                     String message = "Dear " + nameInput.getText() + ",\nRegistration Confirmed .Your Learner has been issued.\nLearner No: "+learnerNo1Label.getText();
                     SendSMS.send(message);
@@ -157,6 +183,52 @@ public class DrivingInfo implements Runnable {
                     printDocument();
 
                 }
+            }
+
+            private int isDriverExists() throws ParseException {
+
+                Document data=userData.readDocument("Cnic",cnicInput.getText());
+                try {
+                    String type = data.getString("Type");
+                    if (type.equals(type1List.getSelectedItem())) {
+                        if (isExpired(data.getString("Date of Expiry"))) {
+                            userData.updateDriverDocument("LearnerNo", data.getString("LearnerNo"), "Date of Issue", dateOfIssue1Label.getText(), "Date of Expiry", dateOfExpiry1Label.getText(), "LearnerNo", learnerNo1Label.getText());
+                            return 2;
+                        }
+
+                        nameInput.setText(data.getString("Name"));
+
+                        cnicInput.setText(data.getString("Cnic"));
+
+                        fatherNameInput.setText(data.getString("Father Name"));
+
+                        fatherCnicInput.setText(data.getString("Father Cnic"));
+
+                        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                        dateOfBirthInput.setDate(dateFormat.parse(data.getString("Date of Birth")));
+
+                        phoneNoInput.setText(data.getString("Phone No"));
+
+                        type1List.setSelectedItem(data.getString("Type"));
+
+                        learnerNo1Label.setText(data.getString("LearnerNo"));
+
+                        dateOfExpiry1Label.setText(data.getString("Date of Expiry"));
+
+                        dateOfIssue1Label.setText(data.getString("Date of Issue"));
+
+                        setEnable(false);
+                        return 1;
+                    }
+                }
+                catch (Exception e){
+                    return 0;
+                }
+                return 0;
+            }
+
+            private boolean isExpired(String dateOfExpiry) {
+                return Integer.parseInt(LicenseTestForm.calculateExpiryDuration(dateOfExpiry)) <= 0;
             }
         });
 
@@ -204,7 +276,7 @@ public class DrivingInfo implements Runnable {
         }
 
 
-        String phonePattern = "^(030[1-9]|031[0-9]|032[0-9]|033[0-5])[0-9]{7}$";
+        String phonePattern = "^(030[0-9]|031[0-9]|032[0-9]|033[0-5])[0-9]{7}$";
         if (!phoneNoInput.getText().matches(phonePattern)) {
             JOptionPane.showMessageDialog(mainFrame, "Invalid phone number. Please use the format: 03XXXXXXXXX.", "Form Validation Error", JOptionPane.ERROR_MESSAGE);
             return false;
@@ -213,13 +285,38 @@ public class DrivingInfo implements Runnable {
             return false;
         }
 
+        if(!isImageAdded){
+            JOptionPane.showMessageDialog(mainFrame, "Please Add Image", "Form Validation Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
         return true;
+
     }
+
+    void setEnable(Boolean is){
+
+        nameInput.setEnabled(is);
+
+        cnicInput.setEnabled(is);
+
+        fatherNameInput.setEnabled(is);
+
+        fatherCnicInput.setEnabled(is);
+
+        dateOfBirthInput.setEnabled(is);
+
+        phoneNoInput.setEnabled(is);
+
+        type1List.setEnabled(is);
+
+
+    }
+
     private void saveData() {
 
 
         Map<String, Object> documentMap = new HashMap<>();
-        String path="C:\\Users\\Administrator\\Downloads\\Picsart_23-04-22_22-138-37-352.jpg";
+        String path=picturePath;
         try {
             documentMap.put("Name", nameInput.getText());
             documentMap.put("Cnic", cnicInput.getText());
@@ -249,8 +346,9 @@ public class DrivingInfo implements Runnable {
         return dateFormat.format(selectedDate);
     }
     private JLabel addImage(){
+        isImageAdded=false;
         JLabel pic=new JLabel();
-        ImageIcon imageIcon = new ImageIcon("E:\\Programms\\Java\\ACP-Tasks\\JAVA project\\Images\\1675105387954.jpeg"); // Replace with the actual path to your image
+        ImageIcon imageIcon = new ImageIcon("symbolImages\\placeholder2.png"); // Replace with the actual path to your image
         Image image = imageIcon.getImage();
         Image scaledImage = image.getScaledInstance(170, 160, Image.SCALE_SMOOTH);
         ImageIcon scaledImageIcon = new ImageIcon(scaledImage);
@@ -268,6 +366,10 @@ public class DrivingInfo implements Runnable {
         nameInput=new JTextField();
         nameInput.setBounds (210+ xalignD, 110+ yalignD, 170, 30);
         Driving_Form.add(nameInput);
+
+        picPath=new JButton("Add Image");
+        picPath.setBounds(740+xalignD,275+yalignD,135,25);
+        Driving_Form.add(picPath);
 
         picture=addImage();
         picture.setBounds (720+ xalignD, 65-10, 170, 160);
@@ -345,6 +447,42 @@ public class DrivingInfo implements Runnable {
         Driving_Form.setBorder(titledBorder);
 
 
+
+        picPath.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JFileChooser fileChooser = new JFileChooser();
+
+                FileNameExtensionFilter filter = new FileNameExtensionFilter("Image Files", "png", "jpg");
+                fileChooser.setFileFilter(filter);
+
+                int result = fileChooser.showOpenDialog(mainFrame);
+
+
+
+                if (result == JFileChooser.APPROVE_OPTION) {
+                    // User selected a file
+                    picturePath = fileChooser.getSelectedFile().getAbsolutePath();
+
+                    if (isImageFile(picturePath)) {
+                        try {
+                            byte[] imageData = mongoConnect.storeImage(picturePath);
+                            ImageIcon imageIcon = new ImageIcon(imageData);
+                            Image scaledImage = imageIcon.getImage().getScaledInstance(190, 165, Image.SCALE_SMOOTH);
+                            ImageIcon scaledImageIcon = new ImageIcon(scaledImage);
+                            picture.setBorder(new LineBorder(Color.gray, 2, true));
+                            picture.setIcon(scaledImageIcon);
+                            isImageAdded=true;
+
+                        } catch (Exception ex) {
+                            throw new RuntimeException(ex);
+                        }
+                    } else {
+                        JOptionPane.showMessageDialog(mainFrame, "Please select a valid image file (png or jpg).");
+                    }
+                }
+            }
+        });
 
     }
 

@@ -125,6 +125,7 @@ public class DisplayDrivers {
         JScrollPane scrollBar=new JScrollPane(table);
 
         scrollBar.setBounds(100,250,750,300);
+        model.addColumn("Learner No");
         model.addColumn("Name");
         model.addColumn("Cnic");
         model.addColumn("Father Name");
@@ -141,6 +142,7 @@ public class DisplayDrivers {
 
         for (Document d:drivers) {
             Vector<Object> row = new Vector<>();
+            row.add(String.valueOf(d.get("LearnerNo")));
             row.add(String.valueOf(d.get("Name")));
             row.add(String.valueOf(d.get("Cnic")));
             row.add(String.valueOf(d.get("Father Name")));

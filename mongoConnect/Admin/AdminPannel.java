@@ -28,6 +28,7 @@ public class AdminPannel {
     private JButton updateSign;
     private JButton display;
     private JButton displayDriver;
+    private JButton logoutButton;
 
     public AdminPannel(){
         mainFrame=new JFrame();
@@ -49,6 +50,7 @@ public class AdminPannel {
         updateSign = new JButton ("Update Sign Question");
         display = new JButton ("Display All Users");
         displayDriver = new JButton ("Display Driver Info");
+        logoutButton = new JButton ("Log Out");
         mainPanel=new JPanel();
         mainPanel.setLayout(null);
 
@@ -66,6 +68,8 @@ public class AdminPannel {
         mainPanel.add (updateSign);
         mainPanel.add (display);
         mainPanel.add (displayDriver);
+        mainPanel.add (logoutButton);
+
 
         heading.setBounds (245, 80, 315, 70);
         updateUserInfo.setBounds (535, 185, 170, 30);
@@ -77,7 +81,7 @@ public class AdminPannel {
         updateSign.setBounds (535, 235, 170, 30);
         display.setBounds (115, 285, 170, 30);
         displayDriver.setBounds (325, 285, 170, 30);
-
+        logoutButton.setBounds (535, 335, 170, 30);
 
         Border etchedBorder = BorderFactory.createEtchedBorder(EtchedBorder.LOWERED);
 
@@ -97,7 +101,7 @@ public class AdminPannel {
         display.addActionListener(buttonListner);
         displayDriver.addActionListener(buttonListner);
         updateDriver.addActionListener(buttonListner);
-
+        logoutButton.addActionListener(buttonListner);
 
         mainPanel.setBorder(titledBorder);
 
@@ -139,6 +143,10 @@ public class AdminPannel {
             else if(e.getActionCommand().equals("Update Driver Data")){
                 mainFrame.dispose();
                 new UpdateDriverinfo(false);
+            }
+            else if(e.getActionCommand().equals("Log Out")){
+                mainFrame.dispose();
+                new AdminLogin();
             }
         }
     };
