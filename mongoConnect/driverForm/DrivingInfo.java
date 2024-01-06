@@ -1,5 +1,6 @@
 package driverForm;
 
+import javax.print.Doc;
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.EtchedBorder;
@@ -164,6 +165,12 @@ public class DrivingInfo implements Runnable {
                     } catch (ParseException ex) {
                         throw new RuntimeException(ex);
                     }
+
+                    if(isLicensExists()){
+                        JOptionPane.showMessageDialog(mainFrame,"Regular Driving License Already Exists","License Exists",JOptionPane.INFORMATION_MESSAGE);
+                        return;
+                    }
+
                     if(a==0) {
                         saveData();
                         JOptionPane.showMessageDialog(mainFrame,"Learner Created Successfully");
@@ -183,6 +190,16 @@ public class DrivingInfo implements Runnable {
                     printDocument();
 
                 }
+            }
+
+            private boolean isLicensExists() {
+
+                mongoConnect temp=new mongoConnect("Driving_Center","Licenses");
+                Document data=temp.readDocument("Cnic",cnicInput.getText());
+                if(data.getString("Type").equals(type1List.getSelectedItem())){
+                    return true;
+                }
+                return false;
             }
 
             private int isDriverExists() throws ParseException {

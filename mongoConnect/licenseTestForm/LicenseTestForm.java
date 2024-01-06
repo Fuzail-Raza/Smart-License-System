@@ -1,5 +1,4 @@
 package licenseTestForm;
-import javax.print.Doc;
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.EtchedBorder;
@@ -13,10 +12,11 @@ import java.awt.print.*;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 
+import com.infobip.sms.SendSMS;
 import mongoPackage.mongoConnect;
 import org.bson.Document;
 import org.bson.types.Binary;
@@ -408,6 +408,18 @@ public class LicenseTestForm implements Runnable {
                         try {
 
                             Document userFetchData = conncetionUsers.readDocument("LearnerNo", textField1.getText().trim());
+
+                            try {
+                                mongoConnect temp = new mongoConnect("Driving_Center", "Licenses");
+                                Document data = temp.readDocument("Cnic", userFetchData.getString("Cnic"));
+                                if (!data.isEmpty() && data.getString("Type").equals(userFetchData.getString("Type"))) {
+                                    JOptionPane.showMessageDialog(mainFrame, "Regular Driving License Already Exists", "License Exists", JOptionPane.INFORMATION_MESSAGE);
+                                    return;
+                                }
+                            }
+                            catch (Exception ignored){
+                            }
+
                             nameLabel.setText(userFetchData.getString("Name"));
                             cnicLabel.setText(userFetchData.getString("Cnic"));
                             fatherNameLabel.setText(userFetchData.getString("Father Name"));
@@ -462,11 +474,11 @@ public class LicenseTestForm implements Runnable {
                     else {
                         LocalDate dateOfIssue = LocalDate.parse(dateOfIssueLabel.getText(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 
-                        Period period = Period.between(dateOfIssue, LocalDate.now());
-                        JOptionPane.showMessageDialog(mainFrame, "Days "+period.getDays() + "as  "+dateOfIssueLabel.getText() + " as " + LocalDate.now());
-// TODO: 06/01/2024 Make Condition Correct 
-                        if (period.getDays() < 41) {
-                            JOptionPane.showMessageDialog(mainFrame, "Days after issuing Learner is " + period.getDays() + " days.Cannot GIve Test before 41 Days.");
+                        long period = ChronoUnit.DAYS.between(dateOfIssue, LocalDate.now());
+                        JOptionPane.showMessageDialog(mainFrame, "Days "+period+ "as  "+dateOfIssueLabel.getText() + " as " + LocalDate.now());
+
+                        if (period < 41) {
+                            JOptionPane.showMessageDialog(mainFrame, "Days after issuing Learner is " + period+ " days.Cannot GIve Test before 41 Days.");
                         } else {
                             Map<String, Object> documentMap = new HashMap<>();
                             documentMap.put("learnerNo", learnerInput.getText());
@@ -486,9 +498,14 @@ public class LicenseTestForm implements Runnable {
                             documentMap.put("lastApply",LocalDate.now());
 
                             if (connectionSaveResult.createDocument(documentMap)) {
-                                JOptionPane.showMessageDialog(mainFrame, "Form Submitted!", "Submitted", JOptionPane.INFORMATION_MESSAGE);
-                                issueDrivingLicense();
-                            } else {
+                                if(drivingPassCheckBox.isSelected()&&issueDrivingLicense()){
+                                    JOptionPane.showMessageDialog(mainFrame, "License Issued Successfully", "Submitted", JOptionPane.INFORMATION_MESSAGE);
+                                }
+                                else {
+                                    JOptionPane.showMessageDialog(mainFrame, "License Not Issued", "No issuance", JOptionPane.ERROR_MESSAGE);
+                                }
+                            }
+                            else {
                                 JOptionPane.showMessageDialog(mainFrame, "Form Submission Error", "Not Submitted", JOptionPane.ERROR_MESSAGE);
                             }
                         }
@@ -505,10 +522,28 @@ public class LicenseTestForm implements Runnable {
                 }
             }
 
-            private void issueDrivingLicense() {
+            private Boolean issueDrivingLicense() {
 
+                try {
+                    mongoConnect temp=new mongoConnect("Driving_Center","id_Collection");
+                    int licenseNo=temp.updateId("licenseID",true);
+                    temp= new mongoConnect("Driving_Center", "Licenses");
 
+                    Map<String, Object> data=new HashMap<>();
+                    data.put("Cnic", cnicLabel.getText());
+                    data.put("LicenseNo",licenseNo);
+                    data.put("Type",typeLabel.getText());
+                    data.put("Date of issue",currentDate(false));
+                    data.put("Date of Expiry",currentDate(true));
 
+                    temp.createDocument(data);
+                    String message = "Dear " + nameLabel.getText() + ",\nRegistration Confirmed .Your License has been issued for "+typeLabel.getText()+"\nLicense No: "+licenseNo;
+                    SendSMS.send(message);
+                    return true;
+                }
+                catch (Exception e){
+                    return false;
+                }
             }
 
         };
@@ -516,6 +551,20 @@ public class LicenseTestForm implements Runnable {
         print.addActionListener(buttonListener);
         submitButton.addActionListener(buttonListener);
         backButton.addActionListener(buttonListener);
+
+    }
+
+    static String currentDate(Boolean interval){
+
+
+        LocalDate currentDate = LocalDate.now();
+        if (interval){
+            currentDate= currentDate.plusYears(5);
+        }
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+        return currentDate.format(formatter);
 
     }
 
