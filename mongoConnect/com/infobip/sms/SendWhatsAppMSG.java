@@ -6,6 +6,9 @@ import com.infobip.ApiKey;
 import com.infobip.BaseUrl;
 import com.infobip.api.WhatsAppApi;
 import com.infobip.model.*;
+import okhttp3.*;
+
+import java.io.IOException;
 
 /**
  * Send WhatsApp template message by using Infobip API Java Client.
@@ -23,7 +26,8 @@ public class SendWhatsAppMSG {
     private static final String SENDER = "447860099299";
     private static final String RECIPIENT = "923014384681";
 
-    public static void main(String[] args) {
+    static void send(String msg) throws IOException {
+
         // Create the API client and the Whatsapp API instances.
         ApiClient apiClient = ApiClient.forApiKey(ApiKey.from(API_KEY))
                 .withBaseUrl(BaseUrl.from(BASE_URL))
@@ -63,6 +67,7 @@ public class SendWhatsAppMSG {
                 .addMessagesItem(message);
 
 
+
         try {
             // Send message.
             WhatsAppBulkMessageInfo whatsAppBulkMessageInfo = whatsAppApi.sendWhatsAppTemplateMessage(bulkMessage).execute();
@@ -71,5 +76,41 @@ public class SendWhatsAppMSG {
             System.out.println("HTTP status code: " + e.responseStatusCode());
             System.out.println("Response body: " + e.rawResponseBody());
         }
+    }
+
+    static void send() throws ApiException {
+
+        ApiClient apiClient = ApiClient.forApiKey(ApiKey.from(API_KEY))
+                .withBaseUrl(BaseUrl.from(BASE_URL))
+                .build();
+
+        WhatsAppApi whatsAppApi = new WhatsAppApi(apiClient);
+        WhatsAppMessage message = new WhatsAppMessage()
+                .from(SENDER)
+                .to(RECIPIENT)
+                .content(new WhatsAppTemplateContent()
+                        .language("en")
+                        .templateName("welcome_multiple_languages")
+                        .templateData(new WhatsAppTemplateDataContent()
+                                .body(new WhatsAppTemplateBodyContent()
+                                        .addPlaceholdersItem("Fuzail")
+                                )
+                        )
+                );
+        WhatsAppBulkMessage bulkMessage = new WhatsAppBulkMessage()
+                .addMessagesItem(message);
+
+        WhatsAppBulkMessageInfo messageInfo = whatsAppApi
+                .sendWhatsAppTemplateMessage(bulkMessage)
+                .execute();
+
+        System.out.println(messageInfo.getMessages().get(0).getStatus().getDescription());
+
+    }
+
+
+    public static void main(String[] args) throws IOException, ApiException {
+//        send("Hi");
+        send();
     }
 }

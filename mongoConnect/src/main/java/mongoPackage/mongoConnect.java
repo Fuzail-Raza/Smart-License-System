@@ -1,5 +1,6 @@
 package mongoPackage;
 import com.mongodb.client.*;
+import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.UpdateOptions;
 import com.mongodb.client.model.Updates;
 import org.bson.Document;
@@ -24,8 +25,8 @@ public class mongoConnect{
     MongoDatabase database;
     MongoCollection<Document> collection;
     public mongoConnect(String databaseName,String collectionName){
-//        uri = "mongodb://localhost:27017";
-        uri = "mongodb+srv://Fuzail:Fuzailraza111@cluster0.belxlmj.mongodb.net/?retryWrites=true&w=majority";
+        uri = "mongodb://localhost:27017";
+//        uri = "mongodb+srv://Fuzail:Fuzailraza111@cluster0.belxlmj.mongodb.net/?retryWrites=true&w=majority";
 
 
         try {
@@ -209,6 +210,27 @@ public class mongoConnect{
             return readDoc;
         }
         else {
+            System.out.println("No matching documents found.");
+        }
+        return null;
+
+    }
+
+    public Document readLicenseDocument(String fieldName,String ide,String type,String typeDetail){
+        Document readDoc = collection.find(
+                Filters.and(
+                        Filters.eq(fieldName, ide),
+                        Filters.eq(type, typeDetail)
+                )
+        ).first();
+        if (readDoc != null) {
+            JOptionPane.showMessageDialog(null,"Document found: " + readDoc.toJson());
+
+            return readDoc;
+        }
+        else {
+            JOptionPane.showMessageDialog(null,"Document Not found: " + readDoc.toJson());
+
             System.out.println("No matching documents found.");
         }
         return null;

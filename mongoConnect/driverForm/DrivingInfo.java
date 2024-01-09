@@ -66,12 +66,10 @@ public class DrivingInfo implements Runnable {
     private JLabel type1;
     private JComboBox<String> type1List;
     private JLabel learnerNo1Label;
-    private JPanel learnerSelectPanel;
     private JLabel learnerHeading;
     private JButton backButton;
     private String picturePath;
     private Boolean isImageAdded;
-    JPanel addType;
     JButton picPath;
     mongoConnect userData;
     mongoConnect temp;

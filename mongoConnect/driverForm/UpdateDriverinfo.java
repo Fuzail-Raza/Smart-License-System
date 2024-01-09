@@ -67,7 +67,6 @@ public class UpdateDriverinfo implements Runnable{
     private JLabel learnerNo1Label;
     private JPanel learnerSelectPanel;
     private JLabel learnerHeading;
-    JPanel addType;
     private JLabel leanerLabel;
     private JTextField learnerInput;
     private JButton retrieve;
