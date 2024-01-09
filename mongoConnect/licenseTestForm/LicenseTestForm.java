@@ -198,7 +198,7 @@ public class LicenseTestForm implements Runnable {
 
         return String.valueOf(period.getYears());
     }
-    ImageIcon addImage(byte[] imageData){
+     ImageIcon  addImage(byte[] imageData){
         JLabel pic=new JLabel();
         pic.setText("");
         ImageIcon imageIcon = new ImageIcon(imageData);

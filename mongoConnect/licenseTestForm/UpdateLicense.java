@@ -24,6 +24,7 @@ import org.bson.types.Binary;
 import users.UserPannel;
 
 import static addSymbols.AddQuestion.isImageFile;
+import static licenseTestForm.LicenseTestForm.currentDate;
 
 public class UpdateLicense implements Runnable {
 
@@ -67,7 +68,9 @@ public class UpdateLicense implements Runnable {
     private mongoConnect connectionLicenses;
     private JButton backButton;
     private JButton picPath;
+    private static Boolean isExpired;
     private String picturePath="";
+    private Boolean isPicUpdated;
     public UpdateLicense() {
         Thread t1 = new Thread(this);
         t1.run();
@@ -180,6 +183,7 @@ public class UpdateLicense implements Runnable {
             return expiryDuration.getDays()+" Days";
         }
         else{
+            isExpired=true;
             return "Expired";
         }
 
@@ -250,6 +254,7 @@ public class UpdateLicense implements Runnable {
         licenseTestForm.add(fatherCniclabel);
 
         picPath=new JButton("Update Image");
+        picPath.setEnabled(false);
         licenseTestForm.add(picPath);
 
         dateofBirth=new JLabel("Date of Birth");
@@ -374,6 +379,8 @@ public class UpdateLicense implements Runnable {
             public void actionPerformed(ActionEvent e) {
 
                 if(e.getActionCommand().equals("Retrieve")){
+                    isExpired=false;
+                    isPicUpdated=false;
 
                     if(textField1.getText().trim().isEmpty()) {
                         JOptionPane.showMessageDialog(mainFrame,"Please Enter License No","Learner No not Provided",JOptionPane.ERROR_MESSAGE);
@@ -401,26 +408,42 @@ public class UpdateLicense implements Runnable {
                             ageLabel.setText(calculateAge(userFetchData.getString("Date of Birth")));
                             typeLabel.setText(userFetchData.getString("Type"));
                             String expiry = String.valueOf(calculateExpiryDuration(licenseData.getString("Date of Expiry")));
-                            reamainingValidityLabel.setText(String.valueOf(expiry));
+                            reamainingValidityLabel.setText(expiry);
                             bloodGroupLabel.setText(userFetchData.getString("Blood Group"));
 
                             byte[] imageData = conncetionUsers.fetchImage(userFetchData.get("Image", Binary.class));
                             picture.setIcon(addImage(imageData));
                             isRetrieved = true;
                             print.setEnabled(true);
+                            if(isExpired){
+                                submitButton.setEnabled(true);
+                                picPath.setEnabled(true);
+                                dateOfIssueLabel.setText(currentDate(false));
+                                dateOfExpiryLabel.setText(currentDate(true));
+                            }
+                            else{
+                                JOptionPane.showMessageDialog(mainFrame,"Valid Regular License Already Exists","License Exists",JOptionPane.ERROR_MESSAGE);
+                            }
                         } catch (Exception ex) {
                             JOptionPane.showMessageDialog(mainFrame, "User Not Found", "User Not Fund", JOptionPane.ERROR_MESSAGE);
                         }
                     }
 
                 }
-                // TODO: 10/01/2024 Add Validation to Update License ->only update if Licesnse is expire and enable submit button otherWise Show errornd also make sure to update pic
-
                 else if (e.getActionCommand().equals("Submit")){
 
                     if(!isRetrieved){
                         JOptionPane.showMessageDialog(mainFrame,"No information provided to Submit","Information not Provided",JOptionPane.ERROR_MESSAGE);
                     }
+                    if(isExpired){
+                        if(isPicUpdated) {
+                            UpdateDrivingLicense();
+                        }
+                        else{
+                            JOptionPane.showMessageDialog(mainFrame,"Please Upload Latest Pic","Pic not Updated",JOptionPane.ERROR_MESSAGE);
+                        }
+                    }
+
 
 
                 }
@@ -435,22 +458,15 @@ public class UpdateLicense implements Runnable {
                 }
             }
 
-            private Boolean issueDrivingLicense() {
+            private Boolean UpdateDrivingLicense() {
 
                 try {
                     mongoConnect temp=new mongoConnect("Driving_Center","id_Collection");
                     int licenseNo=temp.updateId("licenseID",true);
                     temp= new mongoConnect("Driving_Center", "Licenses");
-
-                    Map<String, Object> data=new HashMap<>();
-                    data.put("Cnic", cnicLabel.getText());
-                    data.put("LicenseNo",licenseNo);
-                    data.put("Type",typeLabel.getText());
-                    data.put("Date of issue",currentDate(false));
-                    data.put("Date of Expiry",currentDate(true));
-
-                    temp.createDocument(data);
-                    String message = "Dear " + nameLabel.getText() + ",\nRegistration Confirmed .Your License has been issued for "+typeLabel.getText()+"\nLicense No: "+licenseNo;
+                    temp.updateLicenseDocument("Cnic",cnicLabel.getText(),"Date of issue",currentDate(false),"Date of Expiry",currentDate(true),"LicenseNo",licenseNo);
+                    conncetionUsers.updateImage("Cnic",cnicLabel.getText(),"Image",picturePath);
+                    String message = "Dear " + nameLabel.getText() + ",\nRegistration Confirmed .Your License has been Renewed for "+typeLabel.getText()+"\nLicense No: "+licenseNo;
                     SendSMS.send(message);
                     return true;
                 }
@@ -467,19 +483,6 @@ public class UpdateLicense implements Runnable {
 
     }
 
-    static String currentDate(Boolean interval){
-
-
-        LocalDate currentDate = LocalDate.now();
-        if (interval){
-            currentDate= currentDate.plusYears(5);
-        }
-
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-
-        return currentDate.format(formatter);
-
-    }
 
     private void printDocument() {
         PrinterJob printerJob = PrinterJob.getPrinterJob();

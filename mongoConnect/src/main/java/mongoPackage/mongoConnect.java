@@ -1,7 +1,6 @@
 package mongoPackage;
 import com.mongodb.client.*;
 import com.mongodb.client.model.Filters;
-import com.mongodb.client.model.UpdateOptions;
 import com.mongodb.client.model.Updates;
 import org.bson.Document;
 import org.bson.types.Binary;
@@ -78,6 +77,20 @@ public class mongoConnect{
     public boolean updateDriverDocument(String fieldName,String prevData,String issue,String issueDate,String expiry,String expiryDate,String learner,String learnerNo){
         try {
             collection.updateOne(eq(fieldName, prevData), combine(set(issue, issueDate), set(expiry, expiryDate), set(learner, learnerNo)));
+
+            System.out.println("Document updated.");
+            return true;
+        }
+        catch (Exception e){
+            System.out.println("Document updated.");
+            return false;
+        }
+
+    }
+
+    public boolean updateLicenseDocument(String fieldName,String prevData,String issue,String issueDate,String expiry,String expiryDate,String learner,int LicenseNo){
+        try {
+            collection.updateOne(eq(fieldName, prevData), combine(set(issue, issueDate), set(expiry, expiryDate), set(learner, LicenseNo)));
 
             System.out.println("Document updated.");
             return true;
@@ -302,8 +315,22 @@ public class mongoConnect{
     public static void main(String[] args) {
 
 
+
         new mongoConnect("Driving_Center","testing");
 
+
+    }
+
+    public boolean updateImage(String id,String value,String toUpdate,String path) {
+        try {
+            collection.updateOne(eq(id, value), set(toUpdate, storeImage(path)));
+            System.out.println("Document updated.");
+            return true;
+        }
+        catch (Exception e){
+            System.out.println("Document updated.");
+            return false;
+        }
 
     }
 }

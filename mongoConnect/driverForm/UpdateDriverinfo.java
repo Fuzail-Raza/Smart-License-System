@@ -5,6 +5,7 @@ import javax.swing.border.Border;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -26,11 +27,15 @@ import addSymbols.UpdateSymbol;
 import com.infobip.sms.SendSMS;
 import com.toedter.calendar.JDateChooser;
 import java.text.SimpleDateFormat;
+
+import licenseTestForm.LicenseTestForm;
 import mongoPackage.mongoConnect;
 import com.infobip.sms.SendSMS.*;
 import org.bson.Document;
+import org.bson.types.Binary;
 import org.mindrot.jbcrypt.BCrypt;
 
+import static addSymbols.AddQuestion.isImageFile;
 import static users.UpdateUser.isNumeric;
 
 
@@ -53,6 +58,9 @@ public class UpdateDriverinfo implements Runnable{
     private JLabel ageLabel;
     private JLabel phoneNo;
     private JLabel bloodGroup;
+    private JButton picPath;
+    private String picturePath="";
+    private Boolean isImageAdded=false;
     JComboBox<String> bloodGroupsList;
     private JButton submitButton;
     private JLabel picture;
@@ -189,6 +197,8 @@ public class UpdateDriverinfo implements Runnable{
                         learnerNo1Label.setText(userData.getString("LearnerNo"));
                         dateOfIssue1Label.setText(userData.getString("Date of Issue"));
                         dateOfExpiry1Label.setText(userData.getString("Date of Expiry"));
+                        byte[] imageData = mongoConnect.fetchImage(userData.get("Image", Binary.class));
+                        picture.setIcon(addImage(imageData));
                         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
                         try {
                             dateOfBirthInput.setDate(dateFormat.parse(userData.getString("Date of Birth")));
@@ -206,6 +216,8 @@ public class UpdateDriverinfo implements Runnable{
                     else{
                         submitButton.setEnabled(true);
                     }
+                    picPath.setEnabled(true);
+
                 }
             }
         });
@@ -229,6 +241,15 @@ public class UpdateDriverinfo implements Runnable{
             return true;
         }
 
+    }
+
+    ImageIcon  addImage(byte[] imageData){
+        JLabel pic=new JLabel();
+        pic.setText("");
+        ImageIcon imageIcon = new ImageIcon(imageData);
+        Image image = imageIcon.getImage();
+        Image scaledImage = image.getScaledInstance(170, 160, Image.SCALE_SMOOTH);
+        return new ImageIcon(scaledImage);
     }
 
 
@@ -267,12 +288,16 @@ public class UpdateDriverinfo implements Runnable{
         if(!handleSelectedDate()){
             return false;
         }
+        if(!isImageAdded){
+            JOptionPane.showMessageDialog(mainFrame, "Please Upload Latest Picture", "Update Picture", JOptionPane.INFORMATION_MESSAGE);
+            return false;
+        }
 
         return true;
     }
     private void saveData() {
 
-
+// TODO: 10/01/2024 If error Occrs Check Pic Store
         Map<String, Object> documentMap = new HashMap<>();
         String path="C:\\Users\\Administrator\\Downloads\\Picsart_23-04-22_22-138-37-352.jpg";
         try {
@@ -284,6 +309,7 @@ public class UpdateDriverinfo implements Runnable{
             documentMap.put("Phone No", phoneNoInput.getText());
             documentMap.put("Blood Group", bloodGroupsList.getSelectedItem());
             documentMap.put("city", "Lahore");
+            documentMap.put("Image", mongoConnect.storeImage(picturePath));
             documentMap.put("Date of Birth",selectedDate());
             documentMap.put("Date of Issue",dateOfIssue1Label.getText());
             documentMap.put("Date of Expiry",dateOfExpiry1Label.getText());
@@ -307,7 +333,7 @@ public class UpdateDriverinfo implements Runnable{
     }
     private JLabel addImage(){
         JLabel pic=new JLabel();
-        ImageIcon imageIcon = new ImageIcon("E:\\Programms\\Java\\ACP-Tasks\\JAVA project\\Images\\1675105387954.jpeg"); // Replace with the actual path to your image
+        ImageIcon imageIcon = new ImageIcon("symbolImages\\placeholder2.png");
         Image image = imageIcon.getImage();
         Image scaledImage = image.getScaledInstance(170, 160, Image.SCALE_SMOOTH);
         ImageIcon scaledImageIcon = new ImageIcon(scaledImage);
@@ -369,6 +395,11 @@ public class UpdateDriverinfo implements Runnable{
         fatherCnicInput.setBounds (540+ xalignD, 155+ yalignD, 170, 30);
         Driving_Form.add(fatherCnicInput);
 
+        picPath=new JButton("Update Image");
+        picPath.setBounds(740+xalignD,275+yalignD,135,25);
+        picPath.setEnabled(false);
+        Driving_Form.add(picPath);
+
         dateofBirth=new JLabel("Date of Birth");
         dateofBirth.setBounds (65+ xalignD, 200+ yalignD, 100, 30);
         Driving_Form.add(dateofBirth);
@@ -415,6 +446,42 @@ public class UpdateDriverinfo implements Runnable{
 
         Driving_Form.setBorder(titledBorder);
 
+
+        picPath.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JFileChooser fileChooser = new JFileChooser();
+
+                FileNameExtensionFilter filter = new FileNameExtensionFilter("Image Files", "png", "jpg");
+                fileChooser.setFileFilter(filter);
+
+                int result = fileChooser.showOpenDialog(mainFrame);
+
+
+
+                if (result == JFileChooser.APPROVE_OPTION) {
+                    // User selected a file
+                    picturePath = fileChooser.getSelectedFile().getAbsolutePath();
+
+                    if (isImageFile(picturePath)) {
+                        try {
+                            byte[] imageData = mongoConnect.storeImage(picturePath);
+                            ImageIcon imageIcon = new ImageIcon(imageData);
+                            Image scaledImage = imageIcon.getImage().getScaledInstance(190, 165, Image.SCALE_SMOOTH);
+                            ImageIcon scaledImageIcon = new ImageIcon(scaledImage);
+                            picture.setBorder(new LineBorder(Color.gray, 2, true));
+                            picture.setIcon(scaledImageIcon);
+                            isImageAdded=true;
+
+                        } catch (Exception ex) {
+                            throw new RuntimeException(ex);
+                        }
+                    } else {
+                        JOptionPane.showMessageDialog(mainFrame, "Please select a valid image file (png or jpg).");
+                    }
+                }
+            }
+        });
 
 
     }
@@ -600,6 +667,6 @@ public class UpdateDriverinfo implements Runnable{
     }
 
     public static void main(String[] args) {
-        new UpdateDriverinfo(true);
+        new UpdateDriverinfo(false);
     }
 }
