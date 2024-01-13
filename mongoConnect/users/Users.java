@@ -269,7 +269,7 @@ public class Users implements Runnable{
     private JLabel addImage(){
         isImageAdded=false;
         JLabel pic=new JLabel();
-        ImageIcon imageIcon = new ImageIcon("symbolImages\\placeholder2.png"); // Replace with the actual path to your image
+        ImageIcon imageIcon = new ImageIcon("symbolImages\\placeholder2.png");
         Image image = imageIcon.getImage();
         Image scaledImage = image.getScaledInstance(170, 160, Image.SCALE_SMOOTH);
         ImageIcon scaledImageIcon = new ImageIcon(scaledImage);

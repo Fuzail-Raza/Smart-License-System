@@ -20,7 +20,6 @@ public class AdminPannel {
     private JPanel mainPanel;
     private JLabel heading;
     private JButton updateUserInfo;
-    private JButton updateDriver;
     private JButton addUser;
     private JButton deleteUser;
     private JButton addSign;
@@ -42,7 +41,6 @@ public class AdminPannel {
     private void iniGUI() {
         heading = new JLabel ("Admin Portal");
         updateUserInfo = new JButton ("Update User Info");
-        updateDriver = new JButton ("Update Driver Data");
         addUser = new JButton ("Add User");
         deleteUser = new JButton ("Delete User");
         addSign = new JButton ("Add Sign Question");
@@ -60,7 +58,6 @@ public class AdminPannel {
 
         mainPanel.add (heading);
         mainPanel.add (updateUserInfo);
-        mainPanel.add (updateDriver);
         mainPanel.add (addUser);
         mainPanel.add (deleteUser);
         mainPanel.add (addSign);
@@ -70,10 +67,16 @@ public class AdminPannel {
         mainPanel.add (displayDriver);
         mainPanel.add (logoutButton);
 
+//        String htmlContent = "<html><body style='background: url(\"file:symbolImages/bg1.jpg\") no-repeat center center fixed;'>" +
+//                "<h1>Hello, HTML Background!</h1>" +
+//                "</body></html>";
+//        JEditorPane editorPane = new JEditorPane("text/html", htmlContent);
+//        editorPane.setEditable(false);
+//        editorPane.setBounds(0,0,mainFrame.getWidth(),mainFrame.getHeight());
+//        mainPanel.add(editorPane);
 
         heading.setBounds (245, 80, 315, 70);
         updateUserInfo.setBounds (535, 185, 170, 30);
-        updateDriver.setBounds (535, 285, 170, 30);
         addUser.setBounds (115, 185, 170, 30);
         deleteUser.setBounds (325, 185, 170, 30);
         addSign.setBounds (115, 235, 170, 30);
@@ -100,7 +103,6 @@ public class AdminPannel {
         updateSign.addActionListener(buttonListner);
         display.addActionListener(buttonListner);
         displayDriver.addActionListener(buttonListner);
-        updateDriver.addActionListener(buttonListner);
         logoutButton.addActionListener(buttonListner);
 
         mainPanel.setBorder(titledBorder);
@@ -139,10 +141,6 @@ public class AdminPannel {
             else if(e.getActionCommand().equals("Display Driver Info")){
                 displayDriversF();
 
-            }
-            else if(e.getActionCommand().equals("Update Driver Data")){
-                mainFrame.dispose();
-                new UpdateDriverinfo(false);
             }
             else if(e.getActionCommand().equals("Log Out")){
                 mainFrame.dispose();

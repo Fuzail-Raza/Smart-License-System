@@ -22,6 +22,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 public class UpdateUser implements Runnable {
     private JFrame mainFrame;
@@ -180,24 +181,29 @@ public class UpdateUser implements Runnable {
                     JOptionPane.showMessageDialog(mainFrame,"Please Enter Question ID","No Input Enter",JOptionPane.ERROR_MESSAGE);
                 }
                 else {
-                    Document userData = conncetionUsers.searchDocument("userID", Integer.parseInt(userIdInput.getText()));
-                    nameInput.setText(userData.getString("Name"));
-                    cnicInput.setText(userData.getString("Cnic"));
-                    fatherNameInput.setText(userData.getString("Father Name"));
-                    fatherCnicInput.setText(userData.getString("Father Cnic"));
-                    phoneNoInput.setText(userData.getString("Phone No"));
-                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
                     try {
-                        dateOfBirthInput.setDate(dateFormat.parse(userData.getString("Date of Birth")));
-                        dateOfJoining.setDate(dateFormat.parse(userData.getString("Date of Joining")));
-                    } catch (ParseException ex) {
-                        throw new RuntimeException(ex);
+                        Document userData = conncetionUsers.searchDocument("userID", userIdInput.getText());
+                        nameInput.setText(userData.getString("Name"));
+                        cnicInput.setText(userData.getString("Cnic"));
+                        fatherNameInput.setText(userData.getString("Father Name"));
+                        fatherCnicInput.setText(userData.getString("Father Cnic"));
+                        phoneNoInput.setText(userData.getString("Phone No"));
+                        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                        try {
+                            dateOfBirthInput.setDate(dateFormat.parse(userData.getString("Date of Birth")));
+                            dateOfJoining.setDate(dateFormat.parse(userData.getString("Date of Joining")));
+                        } catch (ParseException ex) {
+                            throw new RuntimeException(ex);
+                        }
+                        prevPassword = userData.getString("password");
+                        if (!isDelete) {
+                            setEnabled(true);
+                        }
+                        submitButton.setEnabled(true);
                     }
-                    prevPassword=userData.getString("password");
-                    if(!isDelete) {
-                        setEnabled(true);
+                    catch (Exception ex){
+                        JOptionPane.showMessageDialog(mainFrame,"User Not Found","User Not Found",JOptionPane.ERROR_MESSAGE);
                     }
-                    submitButton.setEnabled(true);
                 }
             }
         });
@@ -300,7 +306,7 @@ public class UpdateUser implements Runnable {
     private void updateData() {
 
         Map<String, Object> documentMap = new HashMap<>();
-        String path="C:\\Users\\Administrator\\Downloads\\Picsart_23-04-22_22-138-37-352.jpg";
+        String path="symbolImages\\placeholder2.png";
         try {
             documentMap.put("Name", nameInput.getText());
             documentMap.put("Cnic", cnicInput.getText());
@@ -343,7 +349,7 @@ public class UpdateUser implements Runnable {
 
     private JLabel addImage(){
         JLabel pic=new JLabel();
-        ImageIcon imageIcon = new ImageIcon("E:\\Programms\\Java\\ACP-Tasks\\JAVA project\\Images\\1675105387954.jpeg"); // Replace with the actual path to your image
+        ImageIcon imageIcon = new ImageIcon("symbolImages\\placeholder2.png");
         Image image = imageIcon.getImage();
         Image scaledImage = image.getScaledInstance(170, 160, Image.SCALE_SMOOTH);
         ImageIcon scaledImageIcon = new ImageIcon(scaledImage);

@@ -92,6 +92,12 @@ public class AdminLogin implements Runnable{
         userName.setBounds (335, 150, 170, 30);
         heading.setBounds (245, 80, 205, 40);
 
+//        innerPanel.setBackground(Color.decode("#22397D"));
+////        innerPanel.setForeground(Color.white);
+//        Border shadow=BorderFactory.createMatteBorder(0,0,5,0,Color.decode("#0C1937"));
+//        innerPanel.setBorder(shadow);
+////        innerPanel.setFocusPainted(false);
+
         mainFrame.add(innerPanel);
         mainFrame.setVisible(true);
         mainFrame.setSize(720,580);

@@ -34,6 +34,7 @@ import com.infobip.sms.SendSMS.*;
 import org.bson.Document;
 import org.bson.types.Binary;
 import org.mindrot.jbcrypt.BCrypt;
+import users.UserPannel;
 
 import static addSymbols.AddQuestion.isImageFile;
 import static users.UpdateUser.isNumeric;
@@ -176,7 +177,7 @@ public class UpdateDriverinfo implements Runnable{
             @Override
             public void actionPerformed(ActionEvent e) {
                 mainFrame.dispose();
-                new AdminPannel();
+                new UserPannel();
             }
         });
 
@@ -297,9 +298,7 @@ public class UpdateDriverinfo implements Runnable{
     }
     private void saveData() {
 
-// TODO: 10/01/2024 If error Occrs Check Pic Store
         Map<String, Object> documentMap = new HashMap<>();
-        String path="C:\\Users\\Administrator\\Downloads\\Picsart_23-04-22_22-138-37-352.jpg";
         try {
             documentMap.put("learnerNo", learnerInput.getText());
             documentMap.put("Name", nameInput.getText());

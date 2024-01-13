@@ -3,6 +3,7 @@ package users;
 import Admin.AdminLogin;
 import Symboltest.SymbolTest;
 import driverForm.DrivingInfo;
+import driverForm.UpdateDriverinfo;
 import licenseTestForm.LicenseTestForm;
 
 import javax.swing.*;
@@ -20,6 +21,8 @@ public class UserPannel {
     private JButton licenseTestForm;
     private JButton addDriverInfo;
     private JButton symbolTest;
+    private JButton UpdateLicense;
+    private JButton updateDriver;
     private JButton logout;
     public UserPannel(){
         initGUI();
@@ -37,19 +40,22 @@ public class UserPannel {
         licenseTestForm = new JButton ("License Test Form");
         addDriverInfo = new JButton ("Add Driver Info");
         symbolTest = new JButton ("Symbol Test");
+        updateDriver = new JButton ("Update Driver Data");
         logout = new JButton ("Log Out");
 
         mainPanel.add (heading);
         mainPanel.add (licenseTestForm);
         mainPanel.add (addDriverInfo);
         mainPanel.add (symbolTest);
+        mainPanel.add (updateDriver);
         mainPanel.add (logout);
 
         heading.setBounds (245, 80, 315, 70);
         licenseTestForm.setBounds (535, 185, 180, 50);
         addDriverInfo.setBounds (115, 185, 180, 50);
         symbolTest.setBounds (325, 185, 185, 50);
-        logout.setBounds (285, 275, 255, 45);
+        updateDriver.setBounds (115, 275, 180, 50);
+        logout.setBounds (350, 275, 230, 45);
 
         Font headingFont = new Font("Arial", Font.BOLD, 28);
         heading.setHorizontalAlignment(SwingConstants.CENTER);
@@ -95,6 +101,14 @@ public class UserPannel {
             public void actionPerformed(ActionEvent e) {
                 mainFrame.dispose();
                 new LicenseTestForm();
+            }
+        });
+
+        updateDriver.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                mainFrame.dispose();
+                new UpdateDriverinfo(false);
             }
         });
         logout.addActionListener(new ActionListener() {

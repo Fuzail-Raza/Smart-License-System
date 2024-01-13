@@ -30,6 +30,7 @@ import java.text.SimpleDateFormat;
 import licenseTestForm.LicenseTestForm;
 import mongoPackage.mongoConnect;
 import org.bson.Document;
+import org.bson.types.Binary;
 import users.UserPannel;
 
 import static addSymbols.AddQuestion.isImageFile;
@@ -192,12 +193,17 @@ public class DrivingInfo implements Runnable {
 
             private boolean isLicensExists() {
 
-                mongoConnect temp=new mongoConnect("Driving_Center","Licenses");
-                Document data=temp.readDocument("Cnic",cnicInput.getText());
-                if(data.getString("Type").equals(type1List.getSelectedItem())){
-                    return true;
+                try {
+                    mongoConnect temp = new mongoConnect("Driving_Center", "Licenses");
+                    Document data = temp.readDocument("Cnic", cnicInput.getText());
+                    if (data.getString("Type").equals(type1List.getSelectedItem())) {
+                        return true;
+                    }
+                    return false;
                 }
-                return false;
+                catch (Exception e) {
+                    return false;
+                }
             }
 
             private int isDriverExists() throws ParseException {
@@ -231,6 +237,8 @@ public class DrivingInfo implements Runnable {
                         dateOfExpiry1Label.setText(data.getString("Date of Expiry"));
 
                         dateOfIssue1Label.setText(data.getString("Date of Issue"));
+                        byte[] imageData = mongoConnect.fetchImage(data.get("Image", Binary.class));
+                        picture.setIcon(addImage(imageData));
 
                         setEnable(false);
                         return 1;
@@ -323,7 +331,7 @@ public class DrivingInfo implements Runnable {
         phoneNoInput.setEnabled(is);
 
         type1List.setEnabled(is);
-
+        picPath.setVisible(is);
 
     }
 
@@ -370,6 +378,15 @@ public class DrivingInfo implements Runnable {
         pic.setText("");
         pic.setIcon(scaledImageIcon);
         return pic;
+    }
+
+    private ImageIcon addImage(byte[] imageData){
+        JLabel pic=new JLabel();
+        pic.setText("");
+        ImageIcon imageIcon = new ImageIcon(imageData);
+        Image image = imageIcon.getImage();
+        Image scaledImage = image.getScaledInstance(170, 160, Image.SCALE_SMOOTH);
+        return new ImageIcon(scaledImage);
     }
     private void addDriverInfo(){
 
