@@ -69,7 +69,7 @@ public class UpdateSymbol implements Runnable{
         Border etchedBorder = BorderFactory.createEtchedBorder(EtchedBorder.LOWERED);
 
 
-        TitledBorder titledBorder = BorderFactory.createTitledBorder(etchedBorder, "Driving License User LOGIN");
+        TitledBorder titledBorder = BorderFactory.createTitledBorder(etchedBorder, "Driving License Admin LOGIN");
         titledBorder.setTitleColor(Color.BLACK);
         Font labelFont = new Font("Arial", Font.BOLD, 18);
         titledBorder.setTitleJustification(TitledBorder.CENTER);

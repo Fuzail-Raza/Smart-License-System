@@ -90,7 +90,7 @@ public class Users implements Runnable{
         createConnection();
 
         mainFrame=new JFrame();
-        mainFrame.setTitle("Driver Info");
+        mainFrame.setTitle("User Info");
 
         xalignL=-20;
         xalignD=-20;
@@ -398,7 +398,7 @@ public class Users implements Runnable{
         Border etchedBorder = BorderFactory.createEtchedBorder(EtchedBorder.LOWERED);
 
 
-        TitledBorder titledBorder = BorderFactory.createTitledBorder(etchedBorder, "Learner Holder Information");
+        TitledBorder titledBorder = BorderFactory.createTitledBorder(etchedBorder, "User Information");
         titledBorder.setTitleColor(Color.BLACK);
         Font labelFont = new Font("Arial", Font.BOLD, 18);
         titledBorder.setTitleJustification(TitledBorder.CENTER);

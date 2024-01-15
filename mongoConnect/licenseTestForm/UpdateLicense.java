@@ -329,7 +329,7 @@ public class UpdateLicense implements Runnable {
                             ImageIcon scaledImageIcon = new ImageIcon(scaledImage);
                             picture.setBorder(new LineBorder(Color.gray, 2, true));
                             picture.setIcon(scaledImageIcon);
-
+                            isPicUpdated=true;
                         } catch (Exception ex) {
                             throw new RuntimeException(ex);
                         }
@@ -412,6 +412,7 @@ public class UpdateLicense implements Runnable {
                             bloodGroupLabel.setText(userFetchData.getString("Blood Group"));
 
                             byte[] imageData = conncetionUsers.fetchImage(userFetchData.get("Image", Binary.class));
+
                             picture.setIcon(addImage(imageData));
                             isRetrieved = true;
                             print.setEnabled(true);

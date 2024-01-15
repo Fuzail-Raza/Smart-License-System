@@ -25,6 +25,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.Period;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -136,6 +137,7 @@ public class SymbolTest {
                 }
 
                 if(isTakeTest()) {
+                    JOptionPane.showMessageDialog(mainFrame,"Test is Starting Now","Test",JOptionPane.INFORMATION_MESSAGE);
                     mainFrame.getContentPane().removeAll();
                     fetchQuestions();
                     sysmbolTest = addQuestion();
@@ -175,14 +177,13 @@ public class SymbolTest {
 
         LocalDate dateOfIssue = LocalDate.parse(userInfo.getString("Date of Issue"), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 
-        Period period = Period.between(dateOfIssue, LocalDate.now());
-
-        if (period.getDays() < 41) {
-            JOptionPane.showMessageDialog(mainFrame, "Days after issuing Learner is " + period.getDays() + " days.Cannot GIve Test before 41 Days.");
+        long daysBetween = ChronoUnit.DAYS.between(dateOfIssue, LocalDate.now());
+        if (daysBetween < 41) {
+            JOptionPane.showMessageDialog(mainFrame, "Days after issuing Learner is " + daysBetween + " days.Cannot GIve Test before 41 Days.");
             return false;
         }
 
-
+// TODO: 15/01/2024 Add Expiry CHeck before proceding
         user=new mongoConnect("Driving_Center","signTestResult");
         Document userTestInfo=user.readDocument("cnic",cnic);
 
@@ -203,13 +204,12 @@ public class SymbolTest {
             return false;
         }
         else if (userTestInfo!=null && (userTestInfo.getInteger("TestMarks")<=4)) {
-            userTestInfo.getString("TestDate");
-            LocalDate date = LocalDate.parse(userInfo.getString("Date of Issue"), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+//            userTestInfo.getString("TestDate");
+            LocalDate date = LocalDate.parse(userTestInfo.getString("TestDate"), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 
-            Period per = Period.between(dateOfIssue, LocalDate.now());
-
-            if (per.getDays() < 41) {
-                JOptionPane.showMessageDialog(mainFrame, "Days after Last Test is " + per.getDays() + " days.Cannot GIve Test before 41 Days.");
+            daysBetween = ChronoUnit.DAYS.between(date, LocalDate.now());
+            if (daysBetween < 41) {
+                JOptionPane.showMessageDialog(mainFrame, "Days after Last Test is " + daysBetween + " days.Cannot GIve Test before 41 Days.");
                 return false;
             }
 
@@ -390,11 +390,11 @@ public class SymbolTest {
 
     private void perfomeSubmission() {
         if (selectedOption.equals(correctOption)){
-            JOptionPane.showMessageDialog(null,questionNo+"True");
+//            JOptionPane.showMessageDialog(null,questionNo+"True");
             testCheck.put(questionNo,true);
         }
         else{
-            JOptionPane.showMessageDialog(null,questionNo+"False");
+//            JOptionPane.showMessageDialog(null,questionNo+"False");
             testCheck.put(questionNo,false);
         }
         for (int i=0;i<10;i++) {
@@ -407,6 +407,7 @@ public class SymbolTest {
         mainFrame.dispose();
                 saveResult();
         printDocument();
+        new UserPannel();
         score=0;
     }
 

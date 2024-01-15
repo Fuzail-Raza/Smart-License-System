@@ -5,6 +5,7 @@ import Symboltest.SymbolTest;
 import driverForm.DrivingInfo;
 import driverForm.UpdateDriverinfo;
 import licenseTestForm.LicenseTestForm;
+import licenseTestForm.UpdateLicense;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -21,7 +22,7 @@ public class UserPannel {
     private JButton licenseTestForm;
     private JButton addDriverInfo;
     private JButton symbolTest;
-    private JButton UpdateLicense;
+    private JButton updateLicense;
     private JButton updateDriver;
     private JButton logout;
     public UserPannel(){
@@ -41,6 +42,7 @@ public class UserPannel {
         addDriverInfo = new JButton ("Add Driver Info");
         symbolTest = new JButton ("Symbol Test");
         updateDriver = new JButton ("Update Driver Data");
+        updateLicense=new JButton("Update License");
         logout = new JButton ("Log Out");
 
         mainPanel.add (heading);
@@ -48,6 +50,7 @@ public class UserPannel {
         mainPanel.add (addDriverInfo);
         mainPanel.add (symbolTest);
         mainPanel.add (updateDriver);
+        mainPanel.add(updateLicense);
         mainPanel.add (logout);
 
         heading.setBounds (245, 80, 315, 70);
@@ -55,7 +58,8 @@ public class UserPannel {
         addDriverInfo.setBounds (115, 185, 180, 50);
         symbolTest.setBounds (325, 185, 185, 50);
         updateDriver.setBounds (115, 275, 180, 50);
-        logout.setBounds (350, 275, 230, 45);
+        updateLicense.setBounds(325,275,180,50);
+        logout.setBounds (535, 275, 180, 50);
 
         Font headingFont = new Font("Arial", Font.BOLD, 28);
         heading.setHorizontalAlignment(SwingConstants.CENTER);
@@ -109,6 +113,14 @@ public class UserPannel {
             public void actionPerformed(ActionEvent e) {
                 mainFrame.dispose();
                 new UpdateDriverinfo(false);
+            }
+        });
+
+        updateLicense.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                mainFrame.dispose();
+                new UpdateLicense();
             }
         });
         logout.addActionListener(new ActionListener() {

@@ -160,7 +160,7 @@ public class UpdateDriverinfo implements Runnable{
         submitButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if (isDelete) {
-                    conncetionUsers.deleteDocument("Cnic", learnerInput.getText());
+                    conncetionUsers.deleteDocument("LearnerNo", learnerInput.getText());
                 }
                 else {
                     if (isFormValid()) {
@@ -184,8 +184,9 @@ public class UpdateDriverinfo implements Runnable{
         retrieve.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(false){
-                    JOptionPane.showMessageDialog(mainFrame,"Please Enter Question ID","No Input Enter",JOptionPane.ERROR_MESSAGE);
+                if(learnerInput.getText().isEmpty()){
+                    JOptionPane.showMessageDialog(mainFrame,"Please Enter Learner ID","No Input Enter",JOptionPane.ERROR_MESSAGE);
+                    return;
                 }
                 else {
                     try {
@@ -201,14 +202,12 @@ public class UpdateDriverinfo implements Runnable{
                         byte[] imageData = mongoConnect.fetchImage(userData.get("Image", Binary.class));
                         picture.setIcon(addImage(imageData));
                         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-                        try {
-                            dateOfBirthInput.setDate(dateFormat.parse(userData.getString("Date of Birth")));
-                        } catch (ParseException ex) {
-                            throw new RuntimeException(ex);
-                        }
+                        dateOfBirthInput.setDate(dateFormat.parse(userData.getString("Date of Birth")));
+
                     }
                     catch (Exception ex) {
-                        throw new RuntimeException(ex);
+                        JOptionPane.showMessageDialog(mainFrame,"No Driver Found","Not Found",JOptionPane.INFORMATION_MESSAGE);
+                        return;
                     }
 
                     if(!isDelete) {
@@ -281,7 +280,7 @@ public class UpdateDriverinfo implements Runnable{
         }
 
 
-        String phonePattern = "^(030[1-9]|031[0-9]|032[0-9]|033[0-5])[0-9]{7}$";
+        String phonePattern = "^(030[0-9]|031[0-9]|032[0-9]|033[0-9])[0-9]{7}$";
         if (!phoneNoInput.getText().matches(phonePattern)) {
             JOptionPane.showMessageDialog(mainFrame, "Invalid phone number. Please use the format: 03XXXXXXXXX.", "Form Validation Error", JOptionPane.ERROR_MESSAGE);
             return false;
