@@ -157,7 +157,7 @@ public class Users implements Runnable{
                 if (isFormValid()) {
                 saveData();
                     String message = "Dear " + nameInput.getText() + ",\nRegistration Confirmed .\nYour User ID is :"+userIDText.getText()+"\nYour Password is :"+ Arrays.toString(passwordText.getPassword()) +".";
-//                    SendSMS.send(message);
+                    SendSMS.send(message);
                     mainFrame.dispose();
                     new AdminPannel();
                 }

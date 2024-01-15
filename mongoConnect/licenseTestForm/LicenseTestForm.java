@@ -459,7 +459,7 @@ public class LicenseTestForm implements Runnable {
 
                 }
                 else if (e.getActionCommand().equals("Submit")){
-
+// TODO: 15/01/2024 Make a Last Check for Crorrectness
                     if(!isRetrieved){
                         JOptionPane.showMessageDialog(mainFrame,"No information provided to Submit","Information not Provided",JOptionPane.ERROR_MESSAGE);
                     }
