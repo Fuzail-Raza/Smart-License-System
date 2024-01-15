@@ -28,6 +28,7 @@ public class AdminPannel {
     private JButton display;
     private JButton displayDriver;
     private JButton logoutButton;
+    private JButton addAdmin;
 
     public AdminPannel(){
         mainFrame=new JFrame();
@@ -48,6 +49,7 @@ public class AdminPannel {
         updateSign = new JButton ("Update Sign Question");
         display = new JButton ("Display All Users");
         displayDriver = new JButton ("Display Driver Info");
+        addAdmin=new JButton("Add Admin");
         logoutButton = new JButton ("Log Out");
         mainPanel=new JPanel();
         mainPanel.setLayout(null);
@@ -65,6 +67,7 @@ public class AdminPannel {
         mainPanel.add (updateSign);
         mainPanel.add (display);
         mainPanel.add (displayDriver);
+        mainPanel.add(addAdmin);
         mainPanel.add (logoutButton);
 
 //        String htmlContent = "<html><body style='background: url(\"file:symbolImages/bg1.jpg\") no-repeat center center fixed;'>" +
@@ -84,6 +87,7 @@ public class AdminPannel {
         updateSign.setBounds (535, 235, 170, 30);
         display.setBounds (115, 285, 170, 30);
         displayDriver.setBounds (325, 285, 170, 30);
+        addAdmin.setBounds(535,285,170,30);
         logoutButton.setBounds (535, 335, 170, 30);
 
         Border etchedBorder = BorderFactory.createEtchedBorder(EtchedBorder.LOWERED);
@@ -103,6 +107,7 @@ public class AdminPannel {
         updateSign.addActionListener(buttonListner);
         display.addActionListener(buttonListner);
         displayDriver.addActionListener(buttonListner);
+        addAdmin.addActionListener(buttonListner);
         logoutButton.addActionListener(buttonListner);
 
         mainPanel.setBorder(titledBorder);
@@ -141,6 +146,10 @@ public class AdminPannel {
             else if(e.getActionCommand().equals("Display Driver Info")){
                 displayDriversF();
 
+            }
+            else if(e.getActionCommand().equals("Add Admin")){
+                mainFrame.dispose();
+                new AddAdmin();
             }
             else if(e.getActionCommand().equals("Log Out")){
                 mainFrame.dispose();
