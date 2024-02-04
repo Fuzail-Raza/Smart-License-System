@@ -54,24 +54,24 @@ Users are kept informed about their application status and test results through 
 5. Add System Operators in the Admin Panel.
 
 ## Admin Operations
-- `Update System Operator Information`
-- `Add System Operator`
-- `Delete System Operator`
-- `Add Symbol for Test`
-- `Delete Symbol for Test`
-- `Update Symbol for Test`
-- `Display System Operator Information`
-- `Display Drivers Information`
-- `Add Another Admin`
+- Update System Operator Information
+- Add System Operator
+- Delete System Operator
+- Add Symbol for Test
+- Delete Symbol for Test
+- Update Symbol for Test
+- Display System Operator Information
+- Display Drivers Information
+- Add Another Admin
 
 ## System Operator Portal (User)
 ### Operations
-- `License Test Form`
-- `Add Driver Info (Issue Learner)`
-- `Symbol Test`
-- `Update License`
-- `Update Driver Information`
-- `logout`
+- License Test Form
+- Add Driver Info (Issue Learner)
+- Symbol Test
+- Update License
+- Update Driver Information
+- logout
 
 ### System Operator Workflow
 1. `addDriverInfo` -> 2. `symbolTest` -> 3. `licenseTestForm`
