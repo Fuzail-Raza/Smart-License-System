@@ -110,7 +110,7 @@
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>
-			<version>1.2.6</version> <!-- Use the version you need -->
+			<version>1.2.13</version> <!-- Use the version you need -->
 		</dependency>
 	</dependencies>
 </project>
